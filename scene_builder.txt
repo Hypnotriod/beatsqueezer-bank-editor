@@ -1,8 +1,0 @@
-Add Scene Builder to Netbeans 8.0.2
-
-You can download JavaFX Scene Builder 8.2
- http://gluonhq.com/labs/scene-builder/
- http://www.oracle.com/technetwork/java/javafxscenebuilder-1x-archive-2199384.html
-Then to link it to Netbeans IDE 8.0.2 go to Tools>Options>Java>JavaFX
-Select Browse from the Scene Builder Home drop down menu
-Finally navigate to the previously downloaded JavaFX Scene Builder 2.0 and click Open and then Ok
