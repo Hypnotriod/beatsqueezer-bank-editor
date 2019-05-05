@@ -1,0 +1,8 @@
+
+.list-cell:empty {
+    -fx-opacity: 0;
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    
+}
