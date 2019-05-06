@@ -3,7 +3,7 @@ package com.hypnotriod.beatsqueezereditor.constants;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
 public class CResources {
     public static final String PATH_MAIN_SCENE = "view/components/MainScene.fxml";

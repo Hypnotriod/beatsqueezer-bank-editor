@@ -7,31 +7,32 @@ package com.hypnotriod.beatsqueezereditor.tools;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
 public class FileName {
-  private String fullPath;
-  private char pathSeparator, extensionSeparator;
 
-  public FileName(String str, char sep, char ext) {
-    fullPath = str;
-    pathSeparator = sep;
-    extensionSeparator = ext;
-  }
+    private String fullPath;
+    private char pathSeparator, extensionSeparator;
 
-  public String extension() {
-    int dot = fullPath.lastIndexOf(extensionSeparator);
-    return fullPath.substring(dot + 1);
-  }
+    public FileName(String str, char sep, char ext) {
+        fullPath = str;
+        pathSeparator = sep;
+        extensionSeparator = ext;
+    }
 
-  public String filename() { // gets filename without extension
-    int dot = fullPath.lastIndexOf(extensionSeparator);
-    int sep = fullPath.lastIndexOf(pathSeparator);
-    return fullPath.substring(sep + 1, dot);
-  }
+    public String extension() {
+        int dot = fullPath.lastIndexOf(extensionSeparator);
+        return fullPath.substring(dot + 1);
+    }
 
-  public String path() {
-    int sep = fullPath.lastIndexOf(pathSeparator);
-    return fullPath.substring(0, sep);
-  }
+    public String filename() { // gets filename without extension
+        int dot = fullPath.lastIndexOf(extensionSeparator);
+        int sep = fullPath.lastIndexOf(pathSeparator);
+        return fullPath.substring(sep + 1, dot);
+    }
+
+    public String path() {
+        int sep = fullPath.lastIndexOf(pathSeparator);
+        return fullPath.substring(0, sep);
+    }
 }

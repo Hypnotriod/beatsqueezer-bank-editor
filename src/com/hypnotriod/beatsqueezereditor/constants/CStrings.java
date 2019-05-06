@@ -3,7 +3,7 @@ package com.hypnotriod.beatsqueezereditor.constants;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
 public class CStrings {
     public static final String TITLE = "Beatsqueezer bank editor v1.0.0";

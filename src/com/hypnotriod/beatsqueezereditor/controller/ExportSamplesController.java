@@ -1,4 +1,3 @@
-
 package com.hypnotriod.beatsqueezereditor.controller;
 
 import com.hypnotriod.beatsqueezereditor.base.BaseController;
@@ -17,44 +16,39 @@ import javafx.stage.FileChooser;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
-public class ExportSamplesController extends BaseController
-{
-    private final FileChooser.ExtensionFilter filter = 
-            new FileChooser.ExtensionFilter(CConfig.WAVE_FILE_BROWSE_NAME, CConfig.WAVE_FILE_BROWSE_FILTER_WAV);
-    
+public class ExportSamplesController extends BaseController {
+
+    private final FileChooser.ExtensionFilter filter
+            = new FileChooser.ExtensionFilter(CConfig.WAVE_FILE_BROWSE_NAME, CConfig.WAVE_FILE_BROWSE_FILTER_WAV);
+
     public ExportSamplesController(Facade facade) {
         super(facade);
     }
-    
-    public boolean checkCondition()
-    {
+
+    public boolean checkCondition() {
         String message;
         ArrayList<String> notesIDsMatches = new ArrayList<>();
-        for(Map.Entry<String, SampleVO> entry : getMainModel().sampleVOs.entrySet())
-        {
+        for (Map.Entry<String, SampleVO> entry : getMainModel().sampleVOs.entrySet()) {
             SampleVO sampleVO = entry.getValue();
-            if(notesIDsMatches.contains(CNotes.NOTES_NAMES[sampleVO.noteID]))
-            {
+            if (notesIDsMatches.contains(CNotes.NOTES_NAMES[sampleVO.noteID])) {
                 message = String.format(CStrings.NOTE_IS_DUBLICATED, CNotes.NOTES_NAMES[sampleVO.noteID]);
                 getFacade().mainView.showMessageBoxInfo(message);
                 return false;
             }
             notesIDsMatches.add(CNotes.NOTES_NAMES[sampleVO.noteID]);
         }
-        
-        if(getMainModel().sampleVOs.isEmpty())
-        {
+
+        if (getMainModel().sampleVOs.isEmpty()) {
             getFacade().mainView.showMessageBoxInfo(CStrings.NO_SAMPLES);
             return false;
         }
-        
+
         return true;
     }
-    
-    public File chooseFile()
-    {
+
+    public File chooseFile() {
         File result;
         FileChooser fileChooser = getMainModel().getFileChooser();
         String fileName = StringUtils.removeFileExtention(getMainModel().optionsVO.fileName) + ".wav";
@@ -64,40 +58,39 @@ public class ExportSamplesController extends BaseController
         fileChooser.getExtensionFilters().add(filter);
         fileChooser.setInitialFileName(fileName);
         result = fileChooser.showSaveDialog(getFacade().primaryStage);
-        
-        if(result != null){
+
+        if (result != null) {
             File existDirectory = result.getParentFile();
             fileChooser.setInitialDirectory(existDirectory);
         }
-        
+
         return result;
     }
-    
-    public void saveSamples(File file)
-    {
+
+    public void saveSamples(File file) {
         String name = StringUtils.removeFileExtention(file.getPath());
 
-        for(Map.Entry<String, SampleVO> entry : getMainModel().sampleVOs.entrySet())
-        {
+        for (Map.Entry<String, SampleVO> entry : getMainModel().sampleVOs.entrySet()) {
             SampleVO sampleVO = entry.getValue();
-            
-            if(sampleVO.samplesData != null)
+
+            if (sampleVO.samplesData != null) {
                 writeSample(StringUtils.getSampleName(name, sampleVO.noteID) + ".wav", sampleVO.samplesData, sampleVO.channels, sampleVO.loop, sampleVO.noteID);
-            if(sampleVO.samplesDataP != null)
+            }
+            if (sampleVO.samplesDataP != null) {
                 writeSample(StringUtils.getSampleNameP(name, sampleVO.noteID) + ".wav", sampleVO.samplesDataP, sampleVO.channels, sampleVO.loopP, sampleVO.noteID);
-            if(sampleVO.samplesDataF != null)
+            }
+            if (sampleVO.samplesDataF != null) {
                 writeSample(StringUtils.getSampleNameF(name, sampleVO.noteID) + ".wav", sampleVO.samplesDataF, sampleVO.channels, sampleVO.loopF, sampleVO.noteID);
+            }
         }
     }
-    
-    private void writeSample(String fullPath, byte[] samplesData, int channelsCount, SustainLoopVO loop, int noteID)
-    {
+
+    private void writeSample(String fullPath, byte[] samplesData, int channelsCount, SustainLoopVO loop, int noteID) {
         try {
-            if(loop != null) {
+            if (loop != null) {
                 long[] cuePoints = {loop.start};
                 WavFileWriter.writeWavSampleFile_16_44100(samplesData, fullPath, channelsCount, cuePoints, noteID);
-            }
-            else {
+            } else {
                 WavFileWriter.writeWavSampleFile_16_44100(samplesData, fullPath, channelsCount, null, noteID);
             }
         } catch (OutOfMemoryError e) {

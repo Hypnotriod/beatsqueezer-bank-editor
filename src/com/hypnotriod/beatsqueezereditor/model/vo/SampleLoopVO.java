@@ -7,9 +7,10 @@ package com.hypnotriod.beatsqueezereditor.model.vo;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
 public class SampleLoopVO {
+
     public long cuePointID;
     public long type;
     public long start;

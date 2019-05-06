@@ -1,4 +1,3 @@
-
 package com.hypnotriod.beatsqueezereditor.view;
 
 import com.hypnotriod.beatsqueezereditor.Main;
@@ -16,12 +15,14 @@ import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
 import com.hypnotriod.beatsqueezereditor.view.components.MainSceneController;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -31,23 +32,20 @@ import javax.sound.sampled.LineListener;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
-public class MainView extends BaseView
-{
+public class MainView extends BaseView {
+
     private MainSceneController _mainSceneController;
     private AnchorPane _mainScene;
-    
+
     public MainView(Facade facade) {
         super(facade);
-        
-        createMainScene();
 
-        _mainSceneController.refreshListView(true, true);
+        createMainScene();
     }
 
-    private void createMainScene()
-    {
+    private void createMainScene() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource(CResources.PATH_MAIN_SCENE));
@@ -58,63 +56,94 @@ public class MainView extends BaseView
                     getMainModel().sampleVOs,
                     getMainModel().optionsVO);
             _mainSceneController.setView(this);
-            
+
             Scene scene = new Scene(_mainScene);
             getFacade().primaryStage.setScene(scene);
             getFacade().primaryStage.show();
-            
+
             getFacade().primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream(CResources.PATH_ICON)));
             getFacade().primaryStage.setTitle(CStrings.TITLE);
             getFacade().primaryStage.setMinHeight(CConfig.APP_MIN_HEIGHT);
             getFacade().primaryStage.setMinWidth(CConfig.APP_MIN_WIDTH);
             getFacade().primaryStage.setMaxWidth(CConfig.APP_MAX_WIDTH);
-        } 
-        catch (IOException e) {
+
+            _mainSceneController.refreshListView(true, true);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    protected void handleVCNotification(String name, Object data) 
-    {
-        switch(name)
-        {
+    protected void handleVCNotification(String name, Object data) {
+        switch (name) {
             case MainSceneController.ON_ADD_SAMPLES:
-                performSamplesLoad((List<File>)data);
+                performSamplesLoad((List<File>) data);
                 break;
-                
+
             case MainSceneController.ON_EXPORT_SAMPLES:
                 performExportSamples();
                 break;
-                
+
             case MainSceneController.ON_SAVE_BANK:
-                performBankSaving();
+                performBankSave();
                 break;
-                
+
             case MainSceneController.ON_LOAD_BANK:
-                performBankLoading((File)data);
+                performBankLoad((File) data);
                 break;
-                
+
             case MainSceneController.ON_SAMPLE_DELETE:
-                performDeleteSample((String)data);
+                performDeleteSample((String) data);
                 break;
-                
+
             case MainSceneController.ON_SAMPLE_PLAY:
-                performPlaySample((PlayEventVO)data);
+                performPlaySample((PlayEventVO) data);
                 break;
-                
+
             case MainSceneController.ON_SAMPLE_DRAG:
-                performSampleDrag((SampleDragEventVO)data);
+                performSampleDrag((SampleDragEventVO) data);
                 break;
-                
+
             case MainSceneController.ON_SAMPLES_CLEAR:
                 performClearSamples();
                 break;
+
+            case MainSceneController.ON_FILES_DRAG:
+                performFilesDrag((DragEvent) data);
+                break;
         }
     }
-    
-    private void performSampleDrag(SampleDragEventVO dragEventVO)
-    {
+
+    private void performFilesDrag(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        String fileExtention;
+        List<File> samples;
+        boolean success = false;
+        if (db.hasFiles()) {
+            success = true;
+            String filePath = null;
+            samples = new ArrayList<>();
+            for (File file : db.getFiles()) {
+                filePath = file.getAbsolutePath();
+                fileExtention = "." + new FileName(filePath, '/', '.').extension().toLowerCase();
+                if (fileExtention.equals(CConfig.BANK_FILE_EXTENSION)) {
+                    samples.clear();
+                    performBankLoad(file);
+                    break;
+                } else if (fileExtention.equals(CConfig.WAVE_FILE_EXTENSION)
+                        || fileExtention.equals(CConfig.WAV_FILE_EXTENSION)) {
+                    samples.add(file);
+                }
+            }
+            if (samples.size() > 0) {
+                performSamplesLoad(samples);
+            }
+        }
+        event.setDropCompleted(success);
+        event.consume();
+    }
+
+    private void performSampleDrag(SampleDragEventVO dragEventVO) {
         Dragboard db = dragEventVO.dragEvent.getDragboard();
         String fileExtention;
         File sample = null;
@@ -122,108 +151,104 @@ public class MainView extends BaseView
         boolean success = false;
         if (db.hasFiles()) {
             success = true;
-            for (File file:db.getFiles()) {
+            for (File file : db.getFiles()) {
                 filePath = file.getAbsolutePath();
                 fileExtention = "." + new FileName(filePath, '/', '.').extension().toLowerCase();
-                if(fileExtention.equals(CConfig.WAVE_FILE_EXTENSION) 
-                || fileExtention.equals(CConfig.WAV_FILE_EXTENSION))
-                {
+                if (fileExtention.equals(CConfig.WAVE_FILE_EXTENSION)
+                        || fileExtention.equals(CConfig.WAV_FILE_EXTENSION)) {
                     sample = file;
                     break;
                 }
             }
-            if(sample != null)
+            if (sample != null) {
                 performSamplesLoadOnDrag(dragEventVO.sampleVO, sample);
+            }
         }
         dragEventVO.dragEvent.setDropCompleted(success);
         dragEventVO.dragEvent.consume();
     }
-    
-    private void performDeleteSample(String id)
-    {
+
+    private void performDeleteSample(String id) {
         manageSampleStop();
         getMainModel().deleteSample(id);
         _mainSceneController.refreshListView(true, true);
         _mainScene.requestFocus();
     }
-    
-    private synchronized void performPlaySample(PlayEventVO playEvent)
-    {
+
+    private synchronized void performPlaySample(PlayEventVO playEvent) {
         SustainLoopVO loop;
         AudioInputStream audioInputStream;
-        
+
         SampleVO sampleVO = playEvent.sampleVO;
-        
-        if(sampleVO.isPlaying == false)
-        {
+
+        if (sampleVO.isPlaying == false) {
             sampleStopInProgress = true;
             try {
                 getMainModel().stopAllSamples();
                 _mainSceneController.refreshListView(false, false);
-                
+
                 audioInputStream = sampleVO.getAudioStream();
-                if(audioInputStream != null)
-                {
+                if (audioInputStream != null) {
                     sampleVO.isPlaying = true;
 
-                    if(sampleVO.selectedSampleExt.equals(CConfig.EXT_P)) loop = sampleVO.loopP;
-                    else if(sampleVO.selectedSampleExt.equals(CConfig.EXT_F)) loop = sampleVO.loopF;  
-                    else loop = sampleVO.loop; 
+                    if (sampleVO.selectedSampleExt.equals(CConfig.EXT_P)) {
+                        loop = sampleVO.loopP;
+                    } else if (sampleVO.selectedSampleExt.equals(CConfig.EXT_F)) {
+                        loop = sampleVO.loopF;
+                    } else {
+                        loop = sampleVO.loop;
+                    }
                     RawPCMDataPlayer.play(
-                        audioInputStream, 
-                        (loop != null && sampleVO.loopEnabled) ? (int)(loop.start / sampleVO.channels)   : 0, 
-                        (loop != null && sampleVO.loopEnabled) ? (int)(loop.end / sampleVO.channels) - 1 : 0, 
-                        sampleVO.channels == 1 ? ((float)sampleVO.panorama / (float)CConfig.PANORAMA_MAX_VALUE) : 0.0f, 
-                        playEvent.position,
-                        lineListener);
+                            audioInputStream,
+                            (loop != null && sampleVO.loopEnabled) ? (int) (loop.start / sampleVO.channels) : 0,
+                            (loop != null && sampleVO.loopEnabled) ? (int) (loop.end / sampleVO.channels) - 1 : 0,
+                            sampleVO.channels == 1 ? ((float) sampleVO.panorama / (float) CConfig.PANORAMA_MAX_VALUE) : 0.0f,
+                            playEvent.position,
+                            lineListener);
                     sampleVO.playingSampleExt = sampleVO.selectedSampleExt;
                 }
-            } 
-            catch (Exception e) {
+            } catch (Exception e) {
                 String message = String.format(CStrings.AUDIO_OUTPUT_DEVICE_PROBLEM, e.getMessage());
                 getFacade().mainView.showMessageBoxError(message);
             }
             sampleStopInProgress = false;
-        }
-        else
-        {
+        } else {
             manageSampleStop();
             _mainSceneController.refreshListView(false, false);
         }
         _mainScene.requestFocus();
     }
-    
+
     private boolean sampleStopInProgress = false;
     private LineListener lineListener = new LineListener() {
         @Override
         public void update(LineEvent lineEvent) {
-            if(sampleStopInProgress == false && lineEvent.getType() == LineEvent.Type.STOP) {
+            if (sampleStopInProgress == false && lineEvent.getType() == LineEvent.Type.STOP) {
                 manageSampleStop();
             }
         }
     };
-    
-    private synchronized void manageSampleStop()
-    {
+
+    private synchronized void manageSampleStop() {
         sampleStopInProgress = true;
         getMainModel().stopAllSamples();
         RawPCMDataPlayer.stop();
         sampleStopInProgress = false;
     }
-    
-    private void performClearSamples()
-    {
+
+    private void performClearSamples() {
         getMainModel().clearAllSamples();
         manageSampleStop();
         refresh();
     }
-    
-    private void performExportSamples()
-    {
-        if(getFacade().exportSamplesController.checkCondition() == false) return;
+
+    private void performExportSamples() {
+        if (getFacade().exportSamplesController.checkCondition() == false) {
+            return;
+        }
         File file = getFacade().exportSamplesController.chooseFile();
         Thread thread;
-        if(file != null) {
+        if (file != null) {
             manageSampleStop();
             _mainSceneController.refreshListView(false, false);
             _mainSceneController.showLoading();
@@ -244,9 +269,8 @@ public class MainView extends BaseView
             thread.start();
         }
     }
-    
-    private void performSamplesLoadOnDrag(SampleVO sampleVO, File file)
-    {
+
+    private void performSamplesLoadOnDrag(SampleVO sampleVO, File file) {
         int pitch = this.getMainModel().optionsVO.pitch;
         Thread thread;
         manageSampleStop();
@@ -268,14 +292,13 @@ public class MainView extends BaseView
         thread.setDaemon(true);
         thread.start();
     }
-    
-    private void performSamplesLoad(List<File> withSamples)
-    {
+
+    private void performSamplesLoad(List<File> withSamples) {
         List<File> files = (withSamples == null) ? getFacade().loadSamplesController.chooseFiles() : withSamples;
         Thread thread;
         int pitchStep = this.getMainModel().optionsVO.pitchStep;
         int pitch = this.getMainModel().optionsVO.pitch;
-        if(files != null) {
+        if (files != null) {
             manageSampleStop();
             _mainSceneController.refreshListView(false, false);
             _mainSceneController.showLoading();
@@ -296,13 +319,14 @@ public class MainView extends BaseView
             thread.start();
         }
     }
-    
-    private void performBankSaving()
-    {
-        if(getFacade().saveBankController.checkCondition() == false) return;
+
+    private void performBankSave() {
+        if (getFacade().saveBankController.checkCondition() == false) {
+            return;
+        }
         File file = getFacade().saveBankController.chooseFile();
         Thread thread;
-        if(file != null) {
+        if (file != null) {
             manageSampleStop();
             _mainSceneController.refreshListView(false, false);
             _mainSceneController.showLoading();
@@ -323,12 +347,11 @@ public class MainView extends BaseView
             thread.start();
         }
     }
-    
-    private void performBankLoading(File fromFile)
-    {
+
+    private void performBankLoad(File fromFile) {
         File file = (fromFile == null) ? getFacade().loadBankController.chooseFile() : fromFile;
         Thread thread;
-        if(file != null) {
+        if (file != null) {
             performClearSamples();
             _mainSceneController.showLoading();
             thread = new Thread(new Runnable() {
@@ -348,17 +371,15 @@ public class MainView extends BaseView
             thread.start();
         }
     }
-    
-    public void refresh()
-    {
+
+    public void refresh() {
         _mainSceneController.refreshListView(true, true);
         _mainSceneController.refreshSelection();
         _mainSceneController.refreshFiltersValues();
         _mainScene.requestFocus();
     }
-    
-    public void showMessageBoxError(String message)
-    {
+
+    public void showMessageBoxError(String message) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -372,9 +393,8 @@ public class MainView extends BaseView
             }
         });
     }
-    
-    public void showMessageBoxInfo(String message)
-    {
+
+    public void showMessageBoxInfo(String message) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

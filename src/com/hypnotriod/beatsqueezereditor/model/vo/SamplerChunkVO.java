@@ -7,9 +7,10 @@ package com.hypnotriod.beatsqueezereditor.model.vo;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
 public class SamplerChunkVO {
+
     public long chunkDataSize;
     public long manufacturer;
     public long product;
@@ -22,9 +23,8 @@ public class SamplerChunkVO {
     public long samplerData;
 
     public SampleLoopVO[] sampleLoops = null;
-    
-    public void dispose()
-    {
+
+    public void dispose() {
         sampleLoops = null;
     }
 }

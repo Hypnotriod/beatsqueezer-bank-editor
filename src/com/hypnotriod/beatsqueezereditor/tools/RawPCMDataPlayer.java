@@ -11,72 +11,66 @@ import javax.sound.sampled.LineUnavailableException;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
-public class RawPCMDataPlayer 
-{
+public class RawPCMDataPlayer {
+
     public static AudioFormat AUDIO_FORMAT_44_16_STEREO = new AudioFormat(44100, 16, 2, true, false);
-    
+
     private static AudioInputStream audioStream = null;
     private static Clip clip = null;
     private static int loop = 0;
 
-    public static synchronized void play(AudioInputStream audioInputStream, int loopStart, int loopEnd, float pan, double position, LineListener lineListener) throws IOException, LineUnavailableException
-    {
+    public static synchronized void play(AudioInputStream audioInputStream, int loopStart, int loopEnd, float pan, double position, LineListener lineListener) throws IOException, LineUnavailableException {
         stop();
-        
+
         audioStream = audioInputStream;
-        
-        if(clip == null) {
-            clip = (Clip)AudioSystem.getClip();
+
+        if (clip == null) {
+            clip = (Clip) AudioSystem.getClip();
             clip.addLineListener(lineListener);
         }
         audioInputStream.reset();
         clip.open(audioInputStream);
-        
-        if(loopEnd != 0 && loopStart < loopEnd) {
+
+        if (loopEnd != 0 && loopStart < loopEnd) {
             clip.setLoopPoints(loopStart, loopEnd);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             loop = loopStart;
-        }
-        else {
+        } else {
             loop = 0;
         }
 
-        if(clip.isControlSupported(FloatControl.Type.PAN)){
-            FloatControl panControl = (FloatControl)clip.getControl(FloatControl.Type.PAN);
+        if (clip.isControlSupported(FloatControl.Type.PAN)) {
+            FloatControl panControl = (FloatControl) clip.getControl(FloatControl.Type.PAN);
             panControl.setValue(pan);
         }
-        
-        clip.setFramePosition((int)(position * clip.getFrameLength()));
+
+        clip.setFramePosition((int) (position * clip.getFrameLength()));
         clip.start();
     }
-    
-    public static synchronized void stop()
-    {
-        if(clip != null && clip.isOpen()) {
+
+    public static synchronized void stop() {
+        if (clip != null && clip.isOpen()) {
             clip.stop();
             clip.close();
             clip.drain();
         }
-        
-        if(audioStream != null) {
-            try { 
+
+        if (audioStream != null) {
+            try {
                 audioStream.reset();
                 audioStream.close();
                 audioStream = null;
-            } catch (IOException ex) { }
+            } catch (IOException ex) {
+            }
         }
     }
-    
-    public static synchronized int getFramePosition()
-    {
-        if(clip.getFramePosition() > clip.getFrameLength())
-        {
+
+    public static synchronized int getFramePosition() {
+        if (clip.getFramePosition() > clip.getFrameLength()) {
             return loop + (clip.getFramePosition() - clip.getFrameLength()) % (clip.getFrameLength() - loop);
-        }
-        else
-        {
+        } else {
             return clip.getFramePosition();
         }
     }

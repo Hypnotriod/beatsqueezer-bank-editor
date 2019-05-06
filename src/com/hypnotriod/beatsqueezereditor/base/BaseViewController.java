@@ -1,21 +1,18 @@
-
 package com.hypnotriod.beatsqueezereditor.base;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
-public class BaseViewController 
-{
+public class BaseViewController {
+
     private BaseView _view;
-    
-    public void setView(BaseView baseView)
-    {
+
+    public void setView(BaseView baseView) {
         _view = baseView;
     }
-            
-    protected void sendToView(String type, Object data)
-    {
+
+    protected void sendToView(String type, Object data) {
         _view.handleVCNotification(type, data);
     }
 }

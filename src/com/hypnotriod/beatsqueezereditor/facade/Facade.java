@@ -1,4 +1,3 @@
-
 package com.hypnotriod.beatsqueezereditor.facade;
 
 import com.hypnotriod.beatsqueezereditor.controller.ExportSamplesController;
@@ -12,22 +11,21 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
-public class Facade 
-{
+public class Facade {
+
     public Application mainApplication;
     public Stage primaryStage;
-    
+
     public LoadSamplesController loadSamplesController;
     public LoadBankController loadBankController;
     public SaveBankController saveBankController;
     public ExportSamplesController exportSamplesController;
     public MainView mainView;
     public MainModel mainModel;
-    
-    public Facade(Application application, Stage stage)
-    {
+
+    public Facade(Application application, Stage stage) {
         primaryStage = stage;
         mainApplication = application;
 
@@ -35,19 +33,16 @@ public class Facade
         initViews();
         initControllers();
     }
-    
-    private void initModel()
-    {
+
+    private void initModel() {
         mainModel = new MainModel();
     }
-    
-    private void initViews()
-    {
+
+    private void initViews() {
         mainView = new MainView(this);
     }
-    
-    private void initControllers()
-    {
+
+    private void initControllers() {
         loadSamplesController = new LoadSamplesController(this);
         saveBankController = new SaveBankController(this);
         loadBankController = new LoadBankController(this);

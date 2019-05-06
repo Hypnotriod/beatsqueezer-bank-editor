@@ -1,4 +1,3 @@
-
 package com.hypnotriod.beatsqueezereditor;
 
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
@@ -7,19 +6,19 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
-public class Main extends Application 
-{
+public class Main extends Application {
+
     Facade _facade;
-    
+
     @Override
     public void start(Stage primaryStage) {
         _facade = new Facade(this, primaryStage);
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }

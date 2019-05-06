@@ -12,17 +12,15 @@ import javafx.util.Duration;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
 public class TooltipHelper {
-    
-    public static Tooltip getTooltip1(String str) 
-    {
+
+    public static Tooltip getTooltip1(String str) {
         return getTooltip(str, 800, 60000, 200);
     }
-    
-    public static Tooltip getTooltip(String str, double openMillis, double visibleMillis, double closeMillis) 
-    {
+
+    public static Tooltip getTooltip(String str, double openMillis, double visibleMillis, double closeMillis) {
         Tooltip tooltip = new Tooltip(str);
         tooltip.setStyle("-fx-font-size: 12");
         try {
@@ -34,18 +32,17 @@ public class TooltipHelper {
                     boolean.class);
             constructor.setAccessible(true);
             Object tooltipBehavior = constructor.newInstance(
-                    new Duration(openMillis),  //open
+                    new Duration(openMillis), //open
                     new Duration(visibleMillis), //visible
-                    new Duration(closeMillis),  //close
+                    new Duration(closeMillis), //close
                     false);
             Field fieldBehavior = tooltip.getClass().getDeclaredField("BEHAVIOR");
             fieldBehavior.setAccessible(true);
             fieldBehavior.set(tooltip, tooltipBehavior);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.toString());
         }
         return tooltip;
     }
-    
+
 }

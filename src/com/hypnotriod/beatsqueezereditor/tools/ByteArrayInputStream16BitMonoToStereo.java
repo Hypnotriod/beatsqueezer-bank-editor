@@ -1,4 +1,3 @@
-
 package com.hypnotriod.beatsqueezereditor.tools;
 
 import java.io.ByteArrayInputStream;
@@ -6,12 +5,12 @@ import java.io.IOException;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
-public class ByteArrayInputStream16BitMonoToStereo extends ByteArrayInputStream
-{
+public class ByteArrayInputStream16BitMonoToStereo extends ByteArrayInputStream {
+
     private byte[] bytesIn = null;
-    
+
     public ByteArrayInputStream16BitMonoToStereo(byte[] bytes) {
         super(bytes);
     }
@@ -23,8 +22,9 @@ public class ByteArrayInputStream16BitMonoToStereo extends ByteArrayInputStream
     @Override
     public synchronized int read(byte[] bytes, int start, int end) {
         int result;
-        if(bytesIn == null || bytesIn.length != bytes.length / 2)
+        if (bytesIn == null || bytesIn.length != bytes.length / 2) {
             bytesIn = new byte[bytes.length / 2];
+        }
         result = super.read(bytesIn, start / 2, end / 2);
         doubleArray(bytesIn, bytes);
         return result != -1 ? result * 2 : -1;
@@ -34,20 +34,18 @@ public class ByteArrayInputStream16BitMonoToStereo extends ByteArrayInputStream
     public synchronized long skip(long l) {
         return super.skip(l / 2) * 2;
     }
-    
-    private void doubleArray(byte[] bytesIn, byte[] bytesOut)
-    {
+
+    private void doubleArray(byte[] bytesIn, byte[] bytesOut) {
         int j;
-        for(int i = 0; i < bytesIn.length; i+=2)
-        {
-            j = i*2;
+        for (int i = 0; i < bytesIn.length; i += 2) {
+            j = i * 2;
             bytesOut[j++] = bytesIn[i];
-            bytesOut[j++] = bytesIn[i+1];
+            bytesOut[j++] = bytesIn[i + 1];
             bytesOut[j++] = bytesIn[i];
-            bytesOut[j++] = bytesIn[i+1];
+            bytesOut[j++] = bytesIn[i + 1];
         }
     }
-    
+
     @Override
     public synchronized void reset() {
         bytesIn = null;

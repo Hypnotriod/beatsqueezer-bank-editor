@@ -1,11 +1,9 @@
-
 package com.hypnotriod.beatsqueezereditor.base;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
-public class BaseModel 
-{
-    
+public class BaseModel {
+
 }

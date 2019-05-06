@@ -1,4 +1,3 @@
-
 package com.hypnotriod.beatsqueezereditor.model;
 
 import com.hypnotriod.beatsqueezereditor.base.BaseModel;
@@ -12,97 +11,94 @@ import javafx.stage.FileChooser;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
-public class MainModel extends BaseModel
-{
+public class MainModel extends BaseModel {
+
     private final FileChooser fileChooser = new FileChooser();
     public final HashMap<String, SampleVO> sampleVOs = new HashMap<>();
     public final OptionsVO optionsVO = new OptionsVO();
-    
+
     private long _itemIDCounter = 0;
-    
-    public MainModel()
-    {
-        for(int i = 0; i < optionsVO.filtersValues.length; i++)
+
+    public MainModel() {
+        for (int i = 0; i < optionsVO.filtersValues.length; i++) {
             optionsVO.filtersValues[i] = -1;
+        }
     }
-    
-    public FileChooser getFileChooser()
-    {
+
+    public FileChooser getFileChooser() {
         File initialDirectory = fileChooser.getInitialDirectory();
-        if(initialDirectory == null || initialDirectory.exists() == false)
+        if (initialDirectory == null || initialDirectory.exists() == false) {
             fileChooser.setInitialDirectory(null);
-        
+        }
+
         return fileChooser;
     }
-    
-    public void addSampleVO(SampleVO sampleVO)
-    {
+
+    public void addSampleVO(SampleVO sampleVO) {
         sampleVOs.put(getSampleVOItemID(), sampleVO);
     }
-    
-    public int getNoteIdOfNextSample()
-    {
+
+    public int getNoteIdOfNextSample() {
         int result = optionsVO.noteID++;
-        if(optionsVO.noteID >= CNotes.NOTES_NAMES.length)
-            optionsVO.noteID = CNotes.NOTES_NAMES.length-1;
+        if (optionsVO.noteID >= CNotes.NOTES_NAMES.length) {
+            optionsVO.noteID = CNotes.NOTES_NAMES.length - 1;
+        }
         return result;
     }
-    
-    public void clearAllSamples()
-    {
-        for(Map.Entry<String, SampleVO> entry : sampleVOs.entrySet())
+
+    public void clearAllSamples() {
+        for (Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
             entry.getValue().dispose();
+        }
         sampleVOs.clear();
     }
-    
-    public boolean stopAllSamples()
-    {
+
+    public boolean stopAllSamples() {
         boolean wasPlayed = false;
-        
-        for(Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
-            if(entry.getValue().isPlaying) wasPlayed = true;
+
+        for (Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
+            if (entry.getValue().isPlaying) {
+                wasPlayed = true;
+            }
             entry.getValue().isPlaying = false;
         }
-        
+
         return wasPlayed;
     }
-    
-    public void deleteSample(String id)
-    {
+
+    public void deleteSample(String id) {
         sampleVOs.get(id).dispose();
         sampleVOs.remove(id);
     }
-    
-    public long getAllSamplesDataSize()
-    {
+
+    public long getAllSamplesDataSize() {
         long result = 0;
         SampleVO sampleVO;
 
-        for(Map.Entry<String, SampleVO> entry : sampleVOs.entrySet())
-        {
+        for (Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
             sampleVO = entry.getValue();
-            
+
             result += sampleVO.samplesData.length;
             /*if(entry.getValue().samplesData.length % CConfig.BLOCK_SIZE > 0) 
                 result += CConfig.BLOCK_SIZE - (entry.getValue().samplesData.length % CConfig.BLOCK_SIZE);*/
-            
-            if(sampleVO.samplesDataP != null) {
+
+            if (sampleVO.samplesDataP != null) {
                 result += sampleVO.samplesDataP.length;
                 /*if(entry.getValue().samplesDataP.length % CConfig.BLOCK_SIZE > 0) 
                     result += CConfig.BLOCK_SIZE - (entry.getValue().samplesDataP.length % CConfig.BLOCK_SIZE);*/
             }
-            if(sampleVO.samplesDataF != null) {
+            if (sampleVO.samplesDataF != null) {
                 result += sampleVO.samplesDataF.length;
                 /*if(entry.getValue().samplesDataF.length % CConfig.BLOCK_SIZE > 0) 
                     result += CConfig.BLOCK_SIZE - (entry.getValue().samplesDataF.length % CConfig.BLOCK_SIZE);*/
             }
         }
-        
+
         return result;
     }
-    
+
     private String getSampleVOItemID() {
         return String.valueOf(_itemIDCounter++);
     }

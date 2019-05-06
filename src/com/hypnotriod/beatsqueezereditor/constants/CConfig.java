@@ -3,7 +3,7 @@ package com.hypnotriod.beatsqueezereditor.constants;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
 public class CConfig {
     

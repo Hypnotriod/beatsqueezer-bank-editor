@@ -1,4 +1,3 @@
-
 package com.hypnotriod.beatsqueezereditor.model.vo;
 
 import com.hypnotriod.beatsqueezereditor.constants.CConfig;
@@ -9,10 +8,10 @@ import javax.sound.sampled.AudioInputStream;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
-public class SampleVO 
-{
+public class SampleVO {
+
     public int channels = 1;
     public byte[] samplesData = null;
     public WaveHeaderVO waveHeader = null;
@@ -33,55 +32,53 @@ public class SampleVO
     public SustainLoopVO loop = null;
     public SustainLoopVO loopP = null;
     public SustainLoopVO loopF = null;
-    
+
     public boolean isPlaying = false;
     public String selectedSampleExt = CConfig.EXT_DEFAULT;
     public String playingSampleExt = CConfig.EXT_DEFAULT;
-    
-    public SampleVO(int noteID)
-    {
+
+    public SampleVO(int noteID) {
         this.noteID = noteID;
     }
-    
-    public AudioInputStream getAudioStream()
-    {
+
+    public AudioInputStream getAudioStream() {
         byte[] data;
-        
-        if(selectedSampleExt.equals(CConfig.EXT_P)) data = samplesDataP;
-        else if(selectedSampleExt.equals(CConfig.EXT_F)) data = samplesDataF;  
-        else data = samplesData; 
-        
-        if(data != null)
-        {
-            if(channels == 2)
-            {
+
+        if (selectedSampleExt.equals(CConfig.EXT_P)) {
+            data = samplesDataP;
+        } else if (selectedSampleExt.equals(CConfig.EXT_F)) {
+            data = samplesDataF;
+        } else {
+            data = samplesData;
+        }
+
+        if (data != null) {
+            if (channels == 2) {
                 return new AudioInputStream(
-                    new ByteArrayInputStream(data),
-                    RawPCMDataPlayer.AUDIO_FORMAT_44_16_STEREO, 
-                    data.length
+                        new ByteArrayInputStream(data),
+                        RawPCMDataPlayer.AUDIO_FORMAT_44_16_STEREO,
+                        data.length
                 );
-            }
-            else
-            {
+            } else {
                 return new AudioInputStream(
-                    new ByteArrayInputStream16BitMonoToStereo(data),
-                    RawPCMDataPlayer.AUDIO_FORMAT_44_16_STEREO, 
-                    data.length
+                        new ByteArrayInputStream16BitMonoToStereo(data),
+                        RawPCMDataPlayer.AUDIO_FORMAT_44_16_STEREO,
+                        data.length
                 );
             }
         }
-        
+
         return null;
     }
-    
-    public void dispose()
-    {
-        if(waveHeader != null)
+
+    public void dispose() {
+        if (waveHeader != null) {
             waveHeader.dispose();
-        
+        }
+
         loop = null;
         samplesData = null;
-	waveHeader = null;
+        waveHeader = null;
         filePath = null;
         fileName = null;
     }

@@ -36,7 +36,7 @@ import javafx.util.Duration;
 
 /**
  *
- * @author ipikin
+ * @author Ilya Pikin
  */
 public class SampleListCellController implements Initializable {
 

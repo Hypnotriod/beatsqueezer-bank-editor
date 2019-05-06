@@ -9,16 +9,13 @@ import com.hypnotriod.beatsqueezereditor.model.vo.OptionsVO;
 import com.hypnotriod.beatsqueezereditor.model.vo.PlayEventVO;
 import com.hypnotriod.beatsqueezereditor.model.vo.SampleDragEventVO;
 import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
-import com.hypnotriod.beatsqueezereditor.tools.FileName;
 import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
 import com.hypnotriod.beatsqueezereditor.tools.TooltipHelper;
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -51,7 +48,7 @@ import javafx.util.Callback;
 /**
  * FXML Controller class
  *
- * @author Илья
+ * @author Ilya Pikin
  */
 public class MainSceneController extends BaseViewController implements Initializable, ISampleListCellHandler {
 
@@ -64,6 +61,8 @@ public class MainSceneController extends BaseViewController implements Initializ
     public static final String ON_SAMPLE_PLAY = "ON_SAMPLE_PLAY";
     public static final String ON_SAMPLE_DRAG = "ON_SAMPLE_DRAG";
     public static final String ON_SAMPLES_CLEAR = "ON_SAMPLES_CLEAR";
+
+    public static final String ON_FILES_DRAG = "ON_FILES_DRAG";
 
     @FXML
     private ListView listView;
@@ -115,7 +114,6 @@ public class MainSceneController extends BaseViewController implements Initializ
     private HashMap<String, SampleVO> sampleVOs;
     private OptionsVO optionsVO;
     private ArrayList<ComboBox<String>> cbsFilters;
-    private boolean dragAndDropInProgress = false;
 
     public void setSampleVOs(HashMap<String, SampleVO> sampleVOs, OptionsVO optionsVO) {
         this.sampleVOs = sampleVOs;
@@ -365,6 +363,7 @@ public class MainSceneController extends BaseViewController implements Initializ
         }
     };
 
+    private boolean dragAndDropInProgress = false;
     private EventHandler onListViewDragOver = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
@@ -401,32 +400,7 @@ public class MainSceneController extends BaseViewController implements Initializ
         public void handle(DragEvent event) {
             listView.setStyle(null);
             dragAndDropInProgress = false;
-            Dragboard db = event.getDragboard();
-            String fileExtention;
-            List<File> samples;
-            boolean success = false;
-            if (db.hasFiles()) {
-                success = true;
-                String filePath = null;
-                samples = new ArrayList<>();
-                for (File file : db.getFiles()) {
-                    filePath = file.getAbsolutePath();
-                    fileExtention = "." + new FileName(filePath, '/', '.').extension().toLowerCase();
-                    if (fileExtention.equals(CConfig.BANK_FILE_EXTENSION)) {
-                        samples.clear();
-                        sendToView(ON_LOAD_BANK, file);
-                        break;
-                    } else if (fileExtention.equals(CConfig.WAVE_FILE_EXTENSION)
-                            || fileExtention.equals(CConfig.WAV_FILE_EXTENSION)) {
-                        samples.add(file);
-                    }
-                }
-                if (samples.size() > 0) {
-                    sendToView(ON_ADD_SAMPLES, samples);
-                }
-            }
-            event.setDropCompleted(success);
-            event.consume();
+            sendToView(ON_FILES_DRAG, event);
         }
     };
 

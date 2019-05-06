@@ -7,7 +7,7 @@ package com.hypnotriod.beatsqueezereditor.constants;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
 public class CGroups {
     // 32 groups
