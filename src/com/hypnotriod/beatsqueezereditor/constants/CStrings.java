@@ -6,7 +6,7 @@ package com.hypnotriod.beatsqueezereditor.constants;
  * @author Илья
  */
 public class CStrings {
-    public static final String TITLE = "Beatsqueezer bank editor v0.9.8";
+    public static final String TITLE = "Beatsqueezer bank editor v1.0.0";
     
     public static final String ALERT_TITLE_ERROR            = "Error";
     public static final String ALERT_HEADER_ERROR           = "Ops, something went wrong!";

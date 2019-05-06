@@ -11,5 +11,7 @@ import javafx.scene.input.DragEvent;
 public interface ISampleListCellHandler {
     public void onSampleListCellDelete(String id);
     public void onSampleListCellPlay(SampleVO sampleVO, double position);
+    public void onSampleListDragEntered();
+    public void onSampleListDragExited();
     public void onSampleListCellFileDragged(SampleVO sampleVO, DragEvent event);
 }

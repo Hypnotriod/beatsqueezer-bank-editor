@@ -16,17 +16,13 @@ import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
 import com.hypnotriod.beatsqueezereditor.view.components.MainSceneController;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javax.sound.sampled.AudioInputStream;
@@ -64,8 +60,6 @@ public class MainView extends BaseView
             _mainSceneController.setView(this);
             
             Scene scene = new Scene(_mainScene);
-            scene.setOnDragDropped(onDragDropped);
-            scene.setOnDragOver(onDragOver);
             getFacade().primaryStage.setScene(scene);
             getFacade().primaryStage.show();
             
@@ -79,51 +73,6 @@ public class MainView extends BaseView
             e.printStackTrace();
         }
     }
-    
-    private EventHandler onDragOver = new EventHandler<DragEvent>() {
-        @Override
-        public void handle(DragEvent event) {
-            Dragboard db = event.getDragboard();
-            if (db.hasFiles()) {
-                event.acceptTransferModes(TransferMode.MOVE);
-            } else {
-                event.consume();
-            }
-        }
-    };
-    
-    private EventHandler onDragDropped = new EventHandler<DragEvent>() {
-        @Override
-        public void handle(DragEvent event) {
-            Dragboard db = event.getDragboard();
-            String fileExtention;
-            List<File> samples;
-            boolean success = false;
-            if (db.hasFiles()) {
-                success = true;
-                String filePath = null;
-                samples = new ArrayList<>();
-                for (File file:db.getFiles()) {
-                    filePath = file.getAbsolutePath();
-                    fileExtention = "." + new FileName(filePath, '/', '.').extension().toLowerCase();
-                    if(fileExtention.equals(CConfig.BANK_FILE_EXTENSION)) {
-                        samples.clear();
-                        performBankLoading(file);
-                        break;
-                    }
-                    else if(fileExtention.equals(CConfig.WAVE_FILE_EXTENSION) || 
-                            fileExtention.equals(CConfig.WAV_FILE_EXTENSION))
-                    {
-                        samples.add(file);
-                    }
-                }
-                if(samples.size() > 0)
-                    performSamplesLoad(samples);
-            }
-            event.setDropCompleted(success);
-            event.consume();
-        }
-    };
 
     @Override
     protected void handleVCNotification(String name, Object data) 
@@ -131,7 +80,7 @@ public class MainView extends BaseView
         switch(name)
         {
             case MainSceneController.ON_ADD_SAMPLES:
-                performSamplesLoad(null);
+                performSamplesLoad((List<File>)data);
                 break;
                 
             case MainSceneController.ON_EXPORT_SAMPLES:
@@ -143,7 +92,7 @@ public class MainView extends BaseView
                 break;
                 
             case MainSceneController.ON_LOAD_BANK:
-                performBankLoading(null);
+                performBankLoading((File)data);
                 break;
                 
             case MainSceneController.ON_SAMPLE_DELETE:
