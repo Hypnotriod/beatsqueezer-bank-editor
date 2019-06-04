@@ -23,7 +23,7 @@ public class CConfig {
     public static final String EXT_P                        = "_p";
     public static final String EXT_F                        = "_f";
 
-    public static final int  KNOBS_NUM 				= 26;
+    public static final int  KNOBS_NUM 				= 30;
     public static final int  GROUPS_NUM 			= 32;
     public static final int  SAMPLE_RATE 			= 44100;
     public static final int  BIT_RATE 				= 16;
