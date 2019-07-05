@@ -5,6 +5,7 @@ import com.hypnotriod.beatsqueezereditor.constants.CConfig;
 import com.hypnotriod.beatsqueezereditor.constants.CGroups;
 import com.hypnotriod.beatsqueezereditor.constants.CNotes;
 import com.hypnotriod.beatsqueezereditor.constants.CStrings;
+import com.hypnotriod.beatsqueezereditor.constants.CStyle;
 import com.hypnotriod.beatsqueezereditor.model.vo.OptionsVO;
 import com.hypnotriod.beatsqueezereditor.model.vo.PlayEventVO;
 import com.hypnotriod.beatsqueezereditor.model.vo.SampleDragEventVO;
@@ -36,7 +37,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -74,6 +77,8 @@ public class MainSceneController extends BaseViewController implements Initializ
     private Menu menuFilters;
     @FXML
     private Menu menuMacro;
+    @FXML
+    private Menu menuOptions;
     @FXML
     private VBox progressBox;
     @FXML
@@ -127,10 +132,37 @@ public class MainSceneController extends BaseViewController implements Initializ
     public void initialize(URL url, ResourceBundle rb) {
         initFiltersMenu();
         initMacroMenu();
+        initOptionsMenu();
         initListView();
         initComboboxes();
         initListeners();
         initTooltips();
+    }
+
+    private void initOptionsMenu() {
+        int i;
+        Menu menu;
+        RadioMenuItem radioMenuItem;
+        ToggleGroup toggleGroup;
+        for (i = 0; i < CStrings.MENUES_OPTIONS.length; i++) {
+            menu = new Menu(CStrings.MENUES_OPTIONS[i]);
+            menuOptions.getItems().add(menu);
+
+            switch (i) {
+                case 0:
+                    toggleGroup = new ToggleGroup();
+                    for (String value : CStrings.MENUES_NOTES_NAMES_DISPLAY) {
+                        radioMenuItem = new RadioMenuItem(value);
+                        radioMenuItem.setToggleGroup(toggleGroup);
+                        radioMenuItem.setOnAction(onMacroNotesNamesDisplay);
+                        menu.getItems().add(radioMenuItem);
+                        if (value.equals(CStrings.MENUES_NOTES_NAMES_DISPLAY[0])) {
+                            radioMenuItem.setSelected(true);
+                        }
+                    }
+                    break;
+            }
+        }
     }
 
     private void initMacroMenu() {
@@ -381,7 +413,7 @@ public class MainSceneController extends BaseViewController implements Initializ
         @Override
         public void handle(DragEvent event) {
             dragAndDropInProgress = true;
-            listView.setStyle("-fx-effect: innershadow(gaussian, #4682b4, 5, 1.0, 0, 0);");
+            listView.setStyle(CStyle.BORDER_HIGHLIGHT);
             event.consume();
         }
     };
@@ -430,6 +462,35 @@ public class MainSceneController extends BaseViewController implements Initializ
             }
         }
     }
+
+    EventHandler<ActionEvent> onMacroNotesNamesDisplay = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), CStrings.MENUES_NOTES_NAMES_DISPLAY);
+            switch (itemIndex) {
+                case 0:
+                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_C5;
+                    break;
+                case 1:
+                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_C4;
+                    break;
+                case 2:
+                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_C3;
+                    break;
+                case 3:
+                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_NUMBERS;
+                    break;
+                case 4:
+                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_PERCUSSION;
+                    break;
+            }
+            itemIndex = cbNoteID.getSelectionModel().getSelectedIndex();
+            cbNoteID.getItems().clear();
+            cbNoteID.getItems().addAll((Object[]) CNotes.NOTES_NAMES);
+            cbNoteID.getSelectionModel().select(itemIndex);
+            refreshListView(true, true);
+        }
+    };
 
     EventHandler<ActionEvent> onMacroPanorama = new EventHandler<ActionEvent>() {
         @Override
@@ -568,7 +629,9 @@ public class MainSceneController extends BaseViewController implements Initializ
     ChangeListener<String> cbNoteChangeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            optionsVO.noteID = CStrings.getIndexOfStringInArray(newValue, CNotes.NOTES_NAMES);
+            if (newValue != null) {
+                optionsVO.noteID = CStrings.getIndexOfStringInArray(newValue, CNotes.NOTES_NAMES);
+            }
         }
     };
 
@@ -641,7 +704,7 @@ public class MainSceneController extends BaseViewController implements Initializ
     @Override
     public void onSampleListDragExited() {
         if (dragAndDropInProgress) {
-            listView.setStyle("-fx-effect: innershadow(gaussian, #4682b4, 5, 1.0, 0, 0);");
+            listView.setStyle(CStyle.BORDER_HIGHLIGHT);
         }
     }
 

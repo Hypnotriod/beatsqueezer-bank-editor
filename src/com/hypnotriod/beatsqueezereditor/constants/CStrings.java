@@ -6,7 +6,7 @@ package com.hypnotriod.beatsqueezereditor.constants;
  * @author Ilya Pikin
  */
 public class CStrings {
-    public static final String TITLE = "Beatsqueezer bank editor v1.0.1";
+    public static final String TITLE = "Beatsqueezer Bank Editor v1.0.2";
     
     public static final String ALERT_TITLE_ERROR            = "Error";
     public static final String ALERT_HEADER_ERROR           = "Ops, something went wrong!";
@@ -36,17 +36,17 @@ public class CStrings {
     public static final String PIANO_SAMPLE_NAME_PROMT      = "Add \"_p\" to the end of your sample name: \"%s_p\"\nOr drag sample here.";
     public static final String FORTE_SAMPLE_NAME_PROMT      = "Add \"_f\" to the end of your sample name: \"%s_f\"\nOr drag sample here.";
     
-    public static final String TOOLTIP_NOTE                 = "The next sample(s) loaded will be associated with this note name.\nThe note name will be auto incremented on each sample load.\nNotes names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\".";
-    public static final String TOOLTIP_NOTE_SHORT           = "Notes names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\".";
+    public static final String TOOLTIP_NOTE                 = "The next sample(s) loaded will be associated with this note name.\nThe note name will be auto incremented on each sample load.\nNotes names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\"\nCheck for the alternative Notes Names at \"Options\"->\"Notes Names Display\".";
+    public static final String TOOLTIP_NOTE_SHORT           = "Notes names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\"\nCheck for the alternative Notes Names at \"Options\"->\"Notes Names Display\".";
     public static final String TOOLTIP_GROUP_ID             = "Only one instance of sample from the specific \"Cut Group\" (1 - 30) can be played simultaneously.\n \"self\" group means that only one instance of current sample can be played simultaneously.\n \"none\" group means that any number of instances of the current sample can be played simultaneously.";
     public static final String TOOLTIP_PITCH                = "The next sample(s) loaded will be pitched by semitones amount.";
     public static final String TOOLTIP_PITCH_STEP           = "By setting \"Pitch Step\" more than 1 semitone, program will\nautomatically generate missed pitched samples from the next sample(s) loaded.";
-    public static final String TOOLTIP_NORMALIZE            = "The gain of next sample loaded will be normalized up to dB amount\nby the peak normalization algorithm.";
+    public static final String TOOLTIP_NORMALIZE            = "The gain of next sample(s) loaded will be normalized up to dB amount\nby the peak normalization algorithm.";
     public static final String TOOLTIP_PANORAMA             = "Sample's panorama. \"-100%\" is full to the left and \"+100%\" is full to the right.\nCan only be used for mono samples.";
     public static final String TOOLTIP_DYNAMIC              = "When checked, the level of the sample will depend on the velocity.";
     public static final String TOOLTIP_DISABLE_NOTE_OFF     = "When checked, the sample will ignore the \"note off\" message and play to the end.";
     public static final String TOOLTIP_LOOP                 = "When checked, sample will loop from the \"loop point\" to the end.\nRequired \"Sustain Loop\", \"Loop\" or \"Marker\" info in the wav file.";
-    public static final String TOOLTIP_STEREO               = "When checked, the next sample loaded will keep its stereo channels.";
+    public static final String TOOLTIP_STEREO               = "When checked, the next sample(s) loaded will keep its stereo channels.";
     public static final String TOOLTIP_DEFAULT_SAMPLE       = "This sample will be played in full range of note velocity,\nif \"Piano\" or/and \"Forte\" samples are not exist.";
     public static final String TOOLTIP_PIANO_SAMPLE         = "If exists, this sample will be played for note velocity range of 1 - 60.\nOtherwise \"Default\" sample will be played.";
     public static final String TOOLTIP_FORTE_SAMPLE         = "If exists, this sample will be played for note velocity range of 110 - 127.\nOtherwise \"Default\" sample will be played.";
@@ -78,12 +78,12 @@ public class CStrings {
         "-19 dB",
         "-20 dB"
     };
-    
+
     public static final String[] ENABLE_DISABLE = {
         "Check",
         "Uncheck"
     };
-    
+
     public static final String[] MENUES_PAN = {
         "Stereo 100%",
         "Stereo 75%",
@@ -91,7 +91,7 @@ public class CStrings {
         "Stereo 25%",
         "To center"
     };
-    
+
     public static final String[] MENUES_MACRO = {
         "Panorama",
         "Cut Group",
@@ -100,7 +100,19 @@ public class CStrings {
         "Loop",
         "Note"
     };
-    
+
+    public static final String[] MENUES_OPTIONS = {
+        "Notes Names Display"
+    };
+
+    public static final String[] MENUES_NOTES_NAMES_DISPLAY = {
+        "C5 as Middle C",
+        "C4 as Middle C",
+        "C3 as Middle C",
+        "Numbers",
+        "Percussion Map"
+    };
+
     public static final String[] MENUES_NOTES_SHIFT_SEMITONES = {
         "-5 octaves",
         "-4 octaves",
@@ -133,9 +145,8 @@ public class CStrings {
         "+2 octaves",
         "+3 octaves",
         "+4 octaves",
-        "+5 octaves",
-    };
-    
+        "+5 octaves",};
+
     public static final String[] MENUES_PITCH_SEMITONES = {
         "-5 octaves",
         "-4 octaves",
@@ -169,9 +180,8 @@ public class CStrings {
         "+2 octaves",
         "+3 octaves",
         "+4 octaves",
-        "+5 octaves",
-    };
-    
+        "+5 octaves",};
+
     public static final String[] MENUES_PITCH_STEP_SEMITONES = {
         "1 semitone",
         "2 semitones",
@@ -195,7 +205,7 @@ public class CStrings {
         "9 octaves",
         "10 octaves"
     };
-    
+
     public static final String[] MENUES_FILTERS = {
         "Low Pass Cut Off",
         "Low Pass Resonance",
@@ -261,6 +271,15 @@ public class CStrings {
         "28",
         "29",
         "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "35",
+        "36",
+        "37",
+        "38",
+        "39",
         "40",
         "41",
         "42",
@@ -350,12 +369,11 @@ public class CStrings {
         "126",
         "127"
     };
-    
-    public static int getIndexOfStringInArray(String groupName, String[] stringsArray)
-    {
+
+    public static int getIndexOfStringInArray(String groupName, String[] stringsArray) {
         int i;
-        for(i = 0; i < stringsArray.length; i++) {
-            if(stringsArray[i].equals(groupName)) {
+        for (i = 0; i < stringsArray.length; i++) {
+            if (stringsArray[i].equals(groupName)) {
                 break;
             }
         }

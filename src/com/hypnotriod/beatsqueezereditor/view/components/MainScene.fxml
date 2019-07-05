@@ -24,6 +24,7 @@
             </Menu>
             <Menu fx:id="menuMacro" mnemonicParsing="false" text="Macro">
             </Menu>
+            <Menu fx:id="menuOptions" mnemonicParsing="false" text="Options" />
         </menus>
       </MenuBar>
       <ToolBar fx:id="toolBar" layoutX="7.0" layoutY="25.0" prefHeight="110.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">

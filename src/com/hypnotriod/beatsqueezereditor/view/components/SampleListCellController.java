@@ -4,6 +4,7 @@ import com.hypnotriod.beatsqueezereditor.constants.CConfig;
 import com.hypnotriod.beatsqueezereditor.constants.CGroups;
 import com.hypnotriod.beatsqueezereditor.constants.CNotes;
 import com.hypnotriod.beatsqueezereditor.constants.CStrings;
+import com.hypnotriod.beatsqueezereditor.constants.CStyle;
 import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
 import com.hypnotriod.beatsqueezereditor.model.vo.SustainLoopVO;
 import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
@@ -93,6 +94,8 @@ public class SampleListCellController implements Initializable {
         this.sampleVO = sampleVO;
         this.id = id;
 
+        cbNoteID.getItems().clear();
+        cbNoteID.getItems().addAll((Object[]) CNotes.NOTES_NAMES);
         cbNoteID.getSelectionModel().select(this.sampleVO.noteID);
         cbGroupID.getSelectionModel().select(this.sampleVO.groupID);
         chbDynamic.setSelected(this.sampleVO.dynamic);
@@ -158,8 +161,8 @@ public class SampleListCellController implements Initializable {
         labelForteSampleName.setOnDragEntered(onSampleDragEntered);
         labelForteSampleName.setOnDragExited(onSampleDragExited);
 
-        labelPianoSampleName.setStyle("-fx-background-color: rgba(0,168,355,0.08);");
-        labelForteSampleName.setStyle("-fx-background-color: rgba(0,168,355,0.08);");
+        labelPianoSampleName.setStyle(CStyle.LABEL_P_F_SAMPLE_NAME);
+        labelForteSampleName.setStyle(CStyle.LABEL_P_F_SAMPLE_NAME);
 
         initTooltips();
     }
@@ -188,7 +191,7 @@ public class SampleListCellController implements Initializable {
         @Override
         public void handle(DragEvent event) {
             event.consume();
-            ((Label) event.getTarget()).setStyle("-fx-background-color: #4682b4; -fx-text-fill: #fffafa");
+            ((Label) event.getTarget()).setStyle(CStyle.LABEL_P_F_BACKGROUND_HIGHLIGHT);
             handler.onSampleListDragEntered();
         }
     };
@@ -197,7 +200,7 @@ public class SampleListCellController implements Initializable {
         @Override
         public void handle(DragEvent event) {
             event.consume();
-            ((Label) event.getTarget()).setStyle("-fx-background-color: rgba(0,168,355,0.08);");
+            ((Label) event.getTarget()).setStyle(CStyle.LABEL_P_F_BACKGROUND_NORMAL);
             handler.onSampleListDragExited();
         }
     };
@@ -336,7 +339,9 @@ public class SampleListCellController implements Initializable {
     ChangeListener<String> cbNoteChangeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            sampleVO.noteID = CStrings.getIndexOfStringInArray(newValue, CNotes.NOTES_NAMES);
+            if (newValue != null) {
+                sampleVO.noteID = CStrings.getIndexOfStringInArray(newValue, CNotes.NOTES_NAMES);
+            }
         }
     };
 
