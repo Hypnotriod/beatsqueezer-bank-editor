@@ -21,6 +21,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -154,12 +155,22 @@ public class SampleListCellController implements Initializable {
         chbLoop.selectedProperty().addListener(chbLoopChangeListener);
         sliderPan.valueProperty().addListener(sliderPanChangeListener);
 
-        labelPianoSampleName.setOnDragDropped(onPianoSampleDragDropped);
-        labelPianoSampleName.setOnDragEntered(onSampleDragEntered);
-        labelPianoSampleName.setOnDragExited(onSampleDragExited);
-        labelForteSampleName.setOnDragDropped(onForteSampleDragDropped);
-        labelForteSampleName.setOnDragEntered(onSampleDragEntered);
-        labelForteSampleName.setOnDragExited(onSampleDragExited);
+        canvasWave.setOnDragDropped(onSampleDragDropped);
+        canvasWave.setOnDragEntered(onCanvasDragEntered);
+        canvasWave.setOnDragExited(onCanvasDragExited);
+        canvasWaveP.setOnDragDropped(onSampleDragDropped);
+        canvasWaveP.setOnDragEntered(onCanvasDragEntered);
+        canvasWaveP.setOnDragExited(onCanvasDragExited);
+        canvasWaveF.setOnDragDropped(onSampleDragDropped);
+        canvasWaveF.setOnDragEntered(onCanvasDragEntered);
+        canvasWaveF.setOnDragExited(onCanvasDragExited);
+
+        labelPianoSampleName.setOnDragDropped(onSampleDragDropped);
+        labelPianoSampleName.setOnDragEntered(onLabelDragEntered);
+        labelPianoSampleName.setOnDragExited(onLabelDragExited);
+        labelForteSampleName.setOnDragDropped(onSampleDragDropped);
+        labelForteSampleName.setOnDragEntered(onLabelDragEntered);
+        labelForteSampleName.setOnDragExited(onLabelDragExited);
 
         labelPianoSampleName.setStyle(CStyle.LABEL_P_F_SAMPLE_NAME);
         labelForteSampleName.setStyle(CStyle.LABEL_P_F_SAMPLE_NAME);
@@ -186,45 +197,44 @@ public class SampleListCellController implements Initializable {
         btnDelete.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_DELETE_SAMPLE));
         btnPlay.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PLAY));
     }
-
-    private EventHandler onSampleDragEntered = new EventHandler<DragEvent>() {
+    
+    private final EventHandler onCanvasDragEntered = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
             event.consume();
-            ((Label) event.getTarget()).setStyle(CStyle.LABEL_P_F_BACKGROUND_HIGHLIGHT);
+            ((Node) event.getTarget()).setOpacity(0.5f);
             handler.onSampleListDragEntered();
         }
     };
 
-    private EventHandler onSampleDragExited = new EventHandler<DragEvent>() {
+    private final EventHandler onCanvasDragExited = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
             event.consume();
-            ((Label) event.getTarget()).setStyle(CStyle.LABEL_P_F_BACKGROUND_NORMAL);
+            ((Node) event.getTarget()).setOpacity(1);
             handler.onSampleListDragExited();
         }
     };
 
-    private EventHandler onSampleDragOver = new EventHandler<DragEvent>() {
-        @Override
-        public void handle(DragEvent event) {
-            Dragboard db = event.getDragboard();
-            if (db.hasFiles()) {
-                event.consume();
-                event.acceptTransferModes(TransferMode.MOVE);
-            }
-        }
-    };
-
-    private EventHandler onPianoSampleDragDropped = new EventHandler<DragEvent>() {
+    private final EventHandler onLabelDragEntered = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
             event.consume();
-            handler.onSampleListCellFileDragged(sampleVO, event);
+            ((Node) event.getTarget()).setStyle(CStyle.LABEL_P_F_BACKGROUND_HIGHLIGHT);
+            handler.onSampleListDragEntered();
         }
     };
 
-    private EventHandler onForteSampleDragDropped = new EventHandler<DragEvent>() {
+    private final EventHandler onLabelDragExited = new EventHandler<DragEvent>() {
+        @Override
+        public void handle(DragEvent event) {
+            event.consume();
+            ((Node) event.getTarget()).setStyle(CStyle.LABEL_P_F_BACKGROUND_NORMAL);
+            handler.onSampleListDragExited();
+        }
+    };
+    
+    private final EventHandler onSampleDragDropped = new EventHandler<DragEvent>() {
         @Override
         public void handle(DragEvent event) {
             event.consume();
@@ -259,7 +269,7 @@ public class SampleListCellController implements Initializable {
         }
     }
 
-    private EventHandler<ActionEvent> timerActionEvent = new EventHandler<ActionEvent>() {
+    private final EventHandler<ActionEvent> timerActionEvent = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
             if (!sampleVO.isPlaying) {

@@ -19,7 +19,7 @@ public class CConfig {
     public static final String BANK_FILE_EXTENSION          = ".btsqbank";
     public static final String WAVE_FILE_EXTENSION          = ".wave";
     public static final String WAV_FILE_EXTENSION           = ".wav";
-    public static final String EXT_DEFAULT                  = "";
+    public static final String EXT_DEFAULT                  = "_d";
     public static final String EXT_P                        = "_p";
     public static final String EXT_F                        = "_f";
 

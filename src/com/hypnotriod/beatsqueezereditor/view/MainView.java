@@ -12,6 +12,7 @@ import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
 import com.hypnotriod.beatsqueezereditor.model.vo.SustainLoopVO;
 import com.hypnotriod.beatsqueezereditor.tools.FileName;
 import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
+import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
 import com.hypnotriod.beatsqueezereditor.view.components.MainSceneController;
 import java.io.File;
 import java.io.IOException;
@@ -48,8 +49,7 @@ public class MainView extends BaseView {
     private void createMainScene() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource(CResources.PATH_MAIN_SCENE));
-            _mainScene = (AnchorPane) loader.load();
+            _mainScene = (AnchorPane) loader.load(getClass().getResourceAsStream(CResources.PATH_MAIN_SCENE));
 
             _mainSceneController = loader.getController();
             _mainSceneController.setSampleVOs(
@@ -57,15 +57,15 @@ public class MainView extends BaseView {
                     getMainModel().optionsVO);
             _mainSceneController.setView(this);
 
-            Scene scene = new Scene(_mainScene);
-            getFacade().primaryStage.setScene(scene);
-            getFacade().primaryStage.show();
-
             getFacade().primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream(CResources.PATH_ICON)));
             getFacade().primaryStage.setTitle(CStrings.TITLE);
             getFacade().primaryStage.setMinHeight(CConfig.APP_MIN_HEIGHT);
             getFacade().primaryStage.setMinWidth(CConfig.APP_MIN_WIDTH);
             getFacade().primaryStage.setMaxWidth(CConfig.APP_MAX_WIDTH);
+
+            Scene scene = new Scene(_mainScene);
+            getFacade().primaryStage.setScene(scene);
+            getFacade().primaryStage.show();
 
             _mainSceneController.refreshListView(true, true);
         } catch (IOException e) {
@@ -279,6 +279,10 @@ public class MainView extends BaseView {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                if (sampleVO.selectedSampleExt.equals(CConfig.EXT_DEFAULT)) {
+                    sampleVO.fileName = StringUtils.removeFileExtention(file.getName());
+                    sampleVO.fileRealName = sampleVO.fileName;
+                }
                 getFacade().loadSamplesController.manageAdditionalSample(file, sampleVO.fileRealName + sampleVO.selectedSampleExt, pitch);
                 Platform.runLater(new Runnable() {
                     @Override

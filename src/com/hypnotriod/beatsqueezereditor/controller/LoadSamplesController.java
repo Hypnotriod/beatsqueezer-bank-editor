@@ -149,12 +149,19 @@ public class LoadSamplesController extends BaseController {
                 try {
                     sampleRate = NoteFrequencyUtil.getPitchedSampleRate(CConfig.SAMPLE_RATE, sampleVO.pitch + pitch);
                     waveHeaderVO = new WaveHeaderVO(file);
-                    if (extStr.equals(CConfig.EXT_P)) {
-                        sampleVO.waveHeaderP = waveHeaderVO;
-                        sampleVO.samplesDataP = convertWAVEData(file, sampleRate, sampleVO.channels);
-                    } else {
-                        sampleVO.waveHeaderF = waveHeaderVO;
-                        sampleVO.samplesDataF = convertWAVEData(file, sampleRate, sampleVO.channels);
+                    switch (extStr) {
+                        case CConfig.EXT_DEFAULT:
+                            sampleVO.waveHeader = waveHeaderVO;
+                            sampleVO.samplesData = convertWAVEData(file, sampleRate, sampleVO.channels);
+                            break;
+                        case CConfig.EXT_P:
+                            sampleVO.waveHeaderP = waveHeaderVO;
+                            sampleVO.samplesDataP = convertWAVEData(file, sampleRate, sampleVO.channels);
+                            break;
+                        default:
+                            sampleVO.waveHeaderF = waveHeaderVO;
+                            sampleVO.samplesDataF = convertWAVEData(file, sampleRate, sampleVO.channels);
+                            break;
                     }
                     parseLoopPoints(sampleVO, sampleRate, extStr, sampleVO.channels);
 
@@ -282,9 +289,9 @@ public class LoadSamplesController extends BaseController {
         byte[] buffer = new byte[CConfig.RESAMPLER_BUFFER_SIZE];
 
         WaveFileReader reader = new WaveFileReader();
-        try (AudioInputStream audioIn = reader.getAudioInputStream(waveFile)) {
+        try ( AudioInputStream audioIn = reader.getAudioInputStream(waveFile)) {
             AudioFormat format = new AudioFormat(sampleRate, CConfig.BIT_RATE, channels, true, false);
-            try (AudioInputStream resampler = AudioSystem.getAudioInputStream(format, audioIn)) {
+            try ( AudioInputStream resampler = AudioSystem.getAudioInputStream(format, audioIn)) {
                 while (true) {
                     readBytesCount = resampler.read(buffer, 0, CConfig.RESAMPLER_BUFFER_SIZE);
                     for (int i = 0; i < readBytesCount; i++) {
