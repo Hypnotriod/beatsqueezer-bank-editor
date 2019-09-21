@@ -1,0 +1,4 @@
+
+.list-cell:empty {
+    -fx-opacity: 0;
+}

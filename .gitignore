@@ -1,2 +1,4 @@
-/build/
-/nbproject/private/
+target/
+dependency-reduced-pom.xml
+nbactions.xml
+nb-configuration.xml
