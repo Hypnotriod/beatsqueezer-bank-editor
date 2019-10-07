@@ -34,7 +34,7 @@
                   <Label fx:id="labelPitch" alignment="CENTER" prefHeight="17.0" prefWidth="126.0" text="Pitch:" textAlignment="CENTER" />
                   <ComboBox fx:id="cbPitch" prefHeight="25.0" prefWidth="126.0" />
                   <Label fx:id="labelNote" alignment="CENTER" prefHeight="17.0" prefWidth="126.0" text="Note:" textAlignment="CENTER" />
-                  <ComboBox fx:id="cbNoteID" prefHeight="25.0" prefWidth="126.0" promptText="C#10" />
+                  <ComboBox fx:id="cbNoteId" prefHeight="25.0" prefWidth="126.0" promptText="C#10" />
                </children>
             </VBox>
             <VBox alignment="CENTER" prefHeight="100.0" prefWidth="134.0">
@@ -42,7 +42,7 @@
                   <Label fx:id="labelPitchStep" alignment="CENTER" prefHeight="17.0" prefWidth="126.0" text="Pitch Step:" />
                   <ComboBox fx:id="cbPitchStep" prefHeight="25.0" prefWidth="126.0" />
                   <Label fx:id="labelCutGroup" alignment="CENTER" prefHeight="17.0" prefWidth="126.0" text="Cut Group:" textAlignment="CENTER" />
-                  <ComboBox fx:id="cbGroupID" prefHeight="25.0" prefWidth="126.0" promptText="32" />
+                  <ComboBox fx:id="cbGroupId" prefHeight="25.0" prefWidth="126.0" promptText="32" />
                </children>
             </VBox>
             <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="100.0">

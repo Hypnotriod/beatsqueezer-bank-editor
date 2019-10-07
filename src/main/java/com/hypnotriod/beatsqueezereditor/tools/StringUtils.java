@@ -12,23 +12,23 @@ public class StringUtils {
         return fileName.replaceFirst("[.][^.]+$", "");
     }
 
-    public static String getSampleName(String prefixName, int noteID) {
+    public static String getSampleName(String prefixName, int noteId) {
         return prefixName + "_"
-                + String.format("%03d", noteID) + "_"
-                + Notes.NOTES_NAMES[noteID];
+                + String.format("%03d", noteId) + "_"
+                + Notes.NOTES_NAMES[noteId];
     }
 
-    public static String getSampleNameF(String prefixName, int noteID) {
+    public static String getSampleNameF(String prefixName, int noteId) {
         return prefixName + "_"
-                + String.format("%03d", noteID) + "_"
-                + Notes.NOTES_NAMES[noteID]
+                + String.format("%03d", noteId) + "_"
+                + Notes.NOTES_NAMES[noteId]
                 + "_f";
     }
 
-    public static String getSampleNameP(String prefixName, int noteID) {
+    public static String getSampleNameP(String prefixName, int noteId) {
         return prefixName + "_"
-                + String.format("%03d", noteID) + "_"
-                + Notes.NOTES_NAMES[noteID]
+                + String.format("%03d", noteId) + "_"
+                + Notes.NOTES_NAMES[noteId]
                 + "_p";
     }
 

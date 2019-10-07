@@ -57,13 +57,13 @@
       <VBox alignment="CENTER" layoutX="4.0" layoutY="113.0" prefHeight="56.0" prefWidth="120.0">
          <children>
             <Label fx:id="labelNote" alignment="CENTER" prefHeight="17.0" prefWidth="110.0" text="Note:" />
-            <ComboBox fx:id="cbNoteID" prefWidth="110.0" promptText="C#10" />
+            <ComboBox fx:id="cbNoteId" prefWidth="110.0" promptText="C#10" />
          </children>
       </VBox>
       <VBox alignment="CENTER" layoutX="124.0" layoutY="113.0" prefHeight="56.0" prefWidth="120.0">
          <children>
             <Label fx:id="labelCutGroup" alignment="CENTER" prefHeight="17.0" prefWidth="110.0" text="Cut Group:" />
-            <ComboBox fx:id="cbGroupID" prefHeight="25.0" prefWidth="110.0" promptText="10" />
+            <ComboBox fx:id="cbGroupId" prefHeight="25.0" prefWidth="110.0" promptText="10" />
          </children>
       </VBox>
       <VBox layoutX="249.0" layoutY="117.0" prefHeight="56.0" prefWidth="120.0">

@@ -29,15 +29,15 @@ public class ExportSamplesController extends BaseController {
 
     public boolean checkCondition() {
         String message;
-        ArrayList<String> notesIDsMatches = new ArrayList<>();
+        ArrayList<String> notesIdsMatches = new ArrayList<>();
         for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
             Sample sample = entry.getValue();
-            if (notesIDsMatches.contains(Notes.NOTES_NAMES[sample.noteID])) {
-                message = String.format(Strings.NOTE_IS_DUBLICATED, Notes.NOTES_NAMES[sample.noteID]);
+            if (notesIdsMatches.contains(Notes.NOTES_NAMES[sample.noteId])) {
+                message = String.format(Strings.NOTE_IS_DUBLICATED, Notes.NOTES_NAMES[sample.noteId]);
                 showMessageBoxInfo(message);
                 return false;
             }
-            notesIDsMatches.add(Notes.NOTES_NAMES[sample.noteID]);
+            notesIdsMatches.add(Notes.NOTES_NAMES[sample.noteId]);
         }
 
         if (getMainModel().samples.isEmpty()) {
@@ -74,24 +74,24 @@ public class ExportSamplesController extends BaseController {
             Sample sample = entry.getValue();
 
             if (sample.samplesData != null) {
-                writeSample(StringUtils.getSampleName(name, sample.noteID) + ".wav", sample.samplesData, sample.channels, sample.loop, sample.noteID);
+                writeSample(StringUtils.getSampleName(name, sample.noteId) + ".wav", sample.samplesData, sample.channels, sample.loop, sample.noteId);
             }
             if (sample.samplesDataP != null) {
-                writeSample(StringUtils.getSampleNameP(name, sample.noteID) + ".wav", sample.samplesDataP, sample.channels, sample.loopP, sample.noteID);
+                writeSample(StringUtils.getSampleNameP(name, sample.noteId) + ".wav", sample.samplesDataP, sample.channels, sample.loopP, sample.noteId);
             }
             if (sample.samplesDataF != null) {
-                writeSample(StringUtils.getSampleNameF(name, sample.noteID) + ".wav", sample.samplesDataF, sample.channels, sample.loopF, sample.noteID);
+                writeSample(StringUtils.getSampleNameF(name, sample.noteId) + ".wav", sample.samplesDataF, sample.channels, sample.loopF, sample.noteId);
             }
         }
     }
 
-    private void writeSample(String fullPath, byte[] samplesData, int channelsCount, SustainLoop loop, int noteID) {
+    private void writeSample(String fullPath, byte[] samplesData, int channelsCount, SustainLoop loop, int noteId) {
         try {
             if (loop != null) {
                 long[] cuePoints = {loop.start};
-                WavFileWriter.writeWavSampleFile_16_44100(samplesData, fullPath, channelsCount, cuePoints, noteID);
+                WavFileWriter.writeWavSampleFile_16_44100(samplesData, fullPath, channelsCount, cuePoints, noteId);
             } else {
-                WavFileWriter.writeWavSampleFile_16_44100(samplesData, fullPath, channelsCount, null, noteID);
+                WavFileWriter.writeWavSampleFile_16_44100(samplesData, fullPath, channelsCount, null, noteId);
             }
         } catch (OutOfMemoryError e) {
             showMessageBoxError(Strings.OUT_OF_MEMORY_ERROR);

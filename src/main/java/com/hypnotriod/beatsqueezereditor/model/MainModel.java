@@ -19,7 +19,7 @@ public class MainModel extends BaseModel {
     public final HashMap<String, Sample> samples = new HashMap<>();
     public final SampleOptions sampleOptions = new SampleOptions();
 
-    private long itemIDCounter = 0;
+    private long itemIdCounter = 0;
 
     public MainModel() {
         for (int i = 0; i < sampleOptions.filtersValues.length; i++) {
@@ -37,21 +37,21 @@ public class MainModel extends BaseModel {
     }
 
     public void addSample(Sample sample) {
-        samples.put(getSampleItemID(), sample);
+        samples.put(getSampleItemId(), sample);
     }
 
     public int getNoteIdOfNextSample() {
-        int result = sampleOptions.noteID++;
-        if (sampleOptions.noteID >= Notes.NOTES_NAMES.length) {
-            sampleOptions.noteID = Notes.NOTES_NAMES.length - 1;
+        int result = sampleOptions.noteId++;
+        if (sampleOptions.noteId >= Notes.NOTES_NAMES.length) {
+            sampleOptions.noteId = Notes.NOTES_NAMES.length - 1;
         }
         return result;
     }
 
     public void clearAllSamples() {
-        for (Map.Entry<String, Sample> entry : samples.entrySet()) {
+        samples.entrySet().forEach((entry) -> {
             entry.getValue().dispose();
-        }
+        });
         samples.clear();
     }
 
@@ -93,7 +93,7 @@ public class MainModel extends BaseModel {
         return result;
     }
 
-    private String getSampleItemID() {
-        return String.valueOf(itemIDCounter++);
+    private String getSampleItemId() {
+        return String.valueOf(itemIdCounter++);
     }
 }

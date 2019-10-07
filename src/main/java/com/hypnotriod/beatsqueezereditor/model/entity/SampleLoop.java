@@ -6,7 +6,7 @@ package com.hypnotriod.beatsqueezereditor.model.entity;
  */
 public class SampleLoop {
 
-    public long cuePointID;
+    public long cuePointId;
     public long type;
     public long start;
     public long end;

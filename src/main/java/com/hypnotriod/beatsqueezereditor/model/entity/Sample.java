@@ -26,8 +26,8 @@ public class Sample {
     public String fileRealName = null;
     public String fileName = null;
     public int pitch = 0;
-    public int noteID = 0;
-    public int groupID = 0;
+    public int noteId = 0;
+    public int groupId = 0;
     public boolean dynamic = false;
     public boolean disableNoteOff = false;
     public long panorama = 0;
@@ -39,10 +39,6 @@ public class Sample {
     public boolean isPlaying = false;
     public String selectedSampleExt = EXT_DEFAULT;
     public String playingSampleExt = EXT_DEFAULT;
-
-    public Sample(int noteID) {
-        this.noteID = noteID;
-    }
 
     public AudioInputStream getAudioStream() {
         byte[] data;

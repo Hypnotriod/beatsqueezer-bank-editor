@@ -123,12 +123,13 @@ public class LoadBankController extends BaseController {
                 loop = null;
             }
 
-            sample = new Sample(i);
+            sample = new Sample();
+            sample.noteId = i;
             sample.fileName = StringUtils.getSampleName(fileName, i);
             sample.fileRealName = sample.fileName;
             sample.channels = (buffer[12] & 0xFF) == 255 ? 2 : 1;
             sample.panorama = (buffer[12] & 0xFF) == 255 ? 0 : (buffer[12] & 0xFF) - Config.PANORAMA_MAX_VALUE;
-            sample.groupID = (buffer[13] & 0x1F);
+            sample.groupId = (buffer[13] & 0x1F);
             sample.dynamic = (buffer[13] & 0x20) == 0x20;
             sample.disableNoteOff = (buffer[13] & 0x40) == 0x40;
             sample.samplesData = sampleBuffer;

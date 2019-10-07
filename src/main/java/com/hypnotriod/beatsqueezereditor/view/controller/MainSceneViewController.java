@@ -88,9 +88,9 @@ public class MainSceneViewController extends BaseViewController implements Initi
     @FXML
     private ComboBox cbPitchStep;
     @FXML
-    private ComboBox cbNoteID;
+    private ComboBox cbNoteId;
     @FXML
-    private ComboBox cbGroupID;
+    private ComboBox cbGroupId;
     @FXML
     private ComboBox cbNormalize;
     @FXML
@@ -274,8 +274,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     private void initComboboxes() {
-        cbNoteID.getItems().addAll((Object[]) Notes.NOTES_NAMES);
-        cbGroupID.getItems().addAll((Object[]) Groups.GROUPS_NAMES);
+        cbNoteId.getItems().addAll((Object[]) Notes.NOTES_NAMES);
+        cbGroupId.getItems().addAll((Object[]) Groups.GROUPS_NAMES);
         cbNormalize.getItems().addAll((Object[]) Strings.NORMALIZE_DB_VALUES);
         cbPitch.getItems().addAll((Object[]) Strings.MENUES_PITCH_SEMITONES);
         cbPitchStep.getItems().addAll((Object[]) Strings.MENUES_PITCH_STEP_SEMITONES);
@@ -287,8 +287,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     private void initListeners() {
         cbPitch.getSelectionModel().selectedItemProperty().addListener(cbPitchChangeListener);
         cbPitchStep.getSelectionModel().selectedItemProperty().addListener(cbPitchStepListener);
-        cbNoteID.getSelectionModel().selectedItemProperty().addListener(cbNoteChangeListener);
-        cbGroupID.getSelectionModel().selectedItemProperty().addListener(cbGroupChangeListener);
+        cbNoteId.getSelectionModel().selectedItemProperty().addListener(cbNoteChangeListener);
+        cbGroupId.getSelectionModel().selectedItemProperty().addListener(cbGroupChangeListener);
         cbNormalize.getSelectionModel().selectedItemProperty().addListener(cbNormalizeChangeListener);
         chbDynamic.selectedProperty().addListener(chbDynamicChangeListener);
         chbDisableNoteOff.selectedProperty().addListener(chbDisableNoteOffChangeListener);
@@ -298,8 +298,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     public void refreshSelection() {
-        cbNoteID.getSelectionModel().select(this.sampleOptions.noteID);
-        cbGroupID.getSelectionModel().select(this.sampleOptions.groupID);
+        cbNoteId.getSelectionModel().select(this.sampleOptions.noteId);
+        cbGroupId.getSelectionModel().select(this.sampleOptions.groupId);
         cbNormalize.getSelectionModel().select(this.sampleOptions.normalizeIndex);
         chbDynamic.setSelected(this.sampleOptions.isDynamic);
         chbDisableNoteOff.setSelected(this.sampleOptions.playThrough);
@@ -312,8 +312,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     private void initTooltips() {
         cbPitch.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH));
         cbPitchStep.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH_STEP));
-        cbNoteID.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE));
-        cbGroupID.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
+        cbNoteId.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE));
+        cbGroupId.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
         cbNormalize.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NORMALIZE));
         sliderPan.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PANORAMA));
         chbDynamic.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DYNAMIC));
@@ -370,8 +370,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     Comparator<String> listViewComparator = new Comparator<String>() {
         @Override
         public int compare(String key1, String key2) {
-            int index1 = samples.get(key1).noteID;
-            int index2 = samples.get(key2).noteID;
+            int index1 = samples.get(key1).noteId;
+            int index2 = samples.get(key2).noteId;
             if (index1 < index2) {
                 return -1;
             } else if (index1 > index2) {
@@ -385,8 +385,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     Comparator<Sample> samplesComparator = new Comparator<Sample>() {
         @Override
         public int compare(Sample key1, Sample key2) {
-            int index1 = key1.noteID;
-            int index2 = key2.noteID;
+            int index1 = key1.noteId;
+            int index2 = key2.noteId;
             if (index1 < index2) {
                 return -1;
             } else if (index1 > index2) {
@@ -486,10 +486,10 @@ public class MainSceneViewController extends BaseViewController implements Initi
                     Notes.NOTES_NAMES = Notes.NOTES_NAMES_PERCUSSION;
                     break;
             }
-            itemIndex = cbNoteID.getSelectionModel().getSelectedIndex();
-            cbNoteID.getItems().clear();
-            cbNoteID.getItems().addAll((Object[]) Notes.NOTES_NAMES);
-            cbNoteID.getSelectionModel().select(itemIndex);
+            itemIndex = cbNoteId.getSelectionModel().getSelectedIndex();
+            cbNoteId.getItems().clear();
+            cbNoteId.getItems().addAll((Object[]) Notes.NOTES_NAMES);
+            cbNoteId.getSelectionModel().select(itemIndex);
             refreshListView(true, true);
         }
     };
@@ -524,7 +524,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
         public void handle(ActionEvent event) {
             int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), Groups.GROUPS_NAMES);
             for (Map.Entry<String, Sample> entry : samples.entrySet()) {
-                entry.getValue().groupID = itemIndex;
+                entry.getValue().groupId = itemIndex;
             }
             refreshListView(false, false);
         }
@@ -583,11 +583,11 @@ public class MainSceneViewController extends BaseViewController implements Initi
             }
 
             for (Map.Entry<String, Sample> entry : samples.entrySet()) {
-                entry.getValue().noteID += pitch;
-                if (entry.getValue().noteID < 0) {
-                    entry.getValue().noteID = 0;
-                } else if (entry.getValue().noteID >= Notes.NOTES_NAMES.length) {
-                    entry.getValue().noteID = (Notes.NOTES_NAMES.length - 1);
+                entry.getValue().noteId += pitch;
+                if (entry.getValue().noteId < 0) {
+                    entry.getValue().noteId = 0;
+                } else if (entry.getValue().noteId >= Notes.NOTES_NAMES.length) {
+                    entry.getValue().noteId = (Notes.NOTES_NAMES.length - 1);
                 }
             }
             refreshListView(false, false);
@@ -632,7 +632,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
             if (newValue != null) {
-                sampleOptions.noteID = Strings.getIndexOfStringInArray(newValue, Notes.NOTES_NAMES);
+                sampleOptions.noteId = Strings.getIndexOfStringInArray(newValue, Notes.NOTES_NAMES);
             }
         }
     };
@@ -640,7 +640,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
     ChangeListener<String> cbGroupChangeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            sampleOptions.groupID = Strings.getIndexOfStringInArray(newValue, Groups.GROUPS_NAMES);
+            sampleOptions.groupId = Strings.getIndexOfStringInArray(newValue, Groups.GROUPS_NAMES);
         }
     };
 

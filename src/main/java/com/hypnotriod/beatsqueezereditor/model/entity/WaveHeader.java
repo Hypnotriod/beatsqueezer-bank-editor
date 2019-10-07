@@ -16,7 +16,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class WaveHeader {
 
     public static final String CHUNK_SMPL = "smpl";
-    public static final String CHUNK_CUE  = "cue ";
+    public static final String CHUNK_CUE = "cue ";
     public static final String CHUNK_LOOP = "loop";
     public static final String CHUNK_DATA = "data";
 
@@ -35,7 +35,8 @@ public class WaveHeader {
         String chunkId;
         FileInputStream fileStream;
         FileInputStreamBinaryReader reader = null;
-
+        String[] chunks = {CHUNK_SMPL, CHUNK_CUE, CHUNK_LOOP, CHUNK_DATA};
+        
         try {
             parseHeader(waveFile);
 
@@ -45,7 +46,6 @@ public class WaveHeader {
             fileStream.skip(36); //Pass Header
 
             while (true) {
-                String[] chunks = {CHUNK_SMPL, CHUNK_CUE, CHUNK_LOOP, CHUNK_DATA};
                 chunkId = searchForChunks(reader, chunks, 4);
 
                 if (chunkId == null) {
@@ -115,9 +115,9 @@ public class WaveHeader {
         cuePoints = new CuePoint[(int) cuePointsNum];
         for (int i = 0; i < cuePoints.length; i++) {
             cuePoints[i] = new CuePoint();
-            cuePoints[i].cuePointID = reader.readInt32(); 			// 4
+            cuePoints[i].cuePointId = reader.readInt32(); 			// 4
             cuePoints[i].playOrderPosition = reader.readInt32();                // 4
-            cuePoints[i].dataChunkID = reader.readInt32(); 			// 4
+            cuePoints[i].dataChunkId = reader.readInt32(); 			// 4
             cuePoints[i].chunkStart = reader.readInt32(); 			// 4
             cuePoints[i].blockStart = reader.readInt32(); 			// 4
             cuePoints[i].frameOffset = reader.readInt32(); 			// 4
@@ -143,7 +143,7 @@ public class WaveHeader {
 
         for (int i = 0; i < samplerChk.numSampleLoops; i++) {
             samplerChk.sampleLoops[i] = new SampleLoop();
-            samplerChk.sampleLoops[i].cuePointID = reader.readInt32();	// 4
+            samplerChk.sampleLoops[i].cuePointId = reader.readInt32();	// 4
             samplerChk.sampleLoops[i].type = reader.readInt32();	// 4
             samplerChk.sampleLoops[i].start = reader.readInt32();	// 4
             samplerChk.sampleLoops[i].end = reader.readInt32();         // 4

@@ -9,8 +9,8 @@ import com.hypnotriod.beatsqueezereditor.constants.Strings;
  */
 public class SampleOptions {
 
-    public int noteID = 0;
-    public int groupID = 1;
+    public int noteId = 0;
+    public int groupId = 1;
     public int normalizeIndex = 0;
     public boolean isDynamic = true;
     public boolean playThrough = false;

@@ -30,11 +30,11 @@ public class SaveBankController extends BaseController {
 
     public boolean checkCondition() {
         String message;
-        ArrayList<String> notesIDsMatches = new ArrayList<>();
+        ArrayList<String> notesIdsMatches = new ArrayList<>();
         for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
             Sample sample = entry.getValue();
-            if (notesIDsMatches.contains(Notes.NOTES_NAMES[sample.noteID])) {
-                message = String.format(Strings.NOTE_IS_DUBLICATED, Notes.NOTES_NAMES[sample.noteID]);
+            if (notesIdsMatches.contains(Notes.NOTES_NAMES[sample.noteId])) {
+                message = String.format(Strings.NOTE_IS_DUBLICATED, Notes.NOTES_NAMES[sample.noteId]);
                 showMessageBoxInfo(message);
                 return false;
             }
@@ -47,7 +47,7 @@ public class SaveBankController extends BaseController {
                 return false;
             }
 
-            notesIDsMatches.add(Notes.NOTES_NAMES[sample.noteID]);
+            notesIdsMatches.add(Notes.NOTES_NAMES[sample.noteId]);
         }
 
         if (getMainModel().samples.isEmpty()) {
@@ -115,7 +115,7 @@ public class SaveBankController extends BaseController {
         // Add samples info and data
         for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
             Sample sample = entry.getValue();
-            dataShift = Config.HEADER_CHUNK_SIZE + Config.KNOBS_CHUNK_SIZE + sample.noteID * Config.SAMPLE_CHUNK_SIZE;
+            dataShift = Config.HEADER_CHUNK_SIZE + Config.KNOBS_CHUNK_SIZE + sample.noteId * Config.SAMPLE_CHUNK_SIZE;
 
             // Add sample data first byte address
             ByteArrayTool.writeValueToByteArray(
@@ -149,7 +149,7 @@ public class SaveBankController extends BaseController {
             // Add config
             ByteArrayTool.writeValueToByteArray(
                     data,
-                    sample.groupID
+                    sample.groupId
                     | ((sample.dynamic == true) ? 0x20 : 0x00)
                     | ((sample.disableNoteOff == true) ? 0x40 : 0x00)
                     | ((sample.loop != null && sample.loopEnabled == true) ? 0x80 : 0x00),
@@ -159,7 +159,7 @@ public class SaveBankController extends BaseController {
             // Write sample data
             allSamplesDataOffset = writeSampleData(allSamplesDataOffset, data, sample.samplesData);
 
-            dataShift = Config.PIANO_FORTE_START_INDEX + sample.noteID * Config.PIANO_FORTE_SAMPLE_CHUNK_SIZE;
+            dataShift = Config.PIANO_FORTE_START_INDEX + sample.noteId * Config.PIANO_FORTE_SAMPLE_CHUNK_SIZE;
             if (sample.samplesDataP != null) {
                 // Add sample Piano data last byte address
                 sampleLength = sample.samplesDataP.length;

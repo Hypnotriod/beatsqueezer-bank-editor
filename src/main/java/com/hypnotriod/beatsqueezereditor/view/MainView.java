@@ -39,8 +39,8 @@ import javax.sound.sampled.LineUnavailableException;
  * @author Ilya Pikin
  */
 public class MainView extends BaseView {
-    
-    public static final int  BYTES_PER_MEGABYTE = 1024 * 1024;
+
+    public static final int BYTES_PER_MEGABYTE = 1024 * 1024;
 
     private MainSceneViewController mainSceneController;
     private AnchorPane mainScene;
@@ -255,62 +255,41 @@ public class MainView extends BaseView {
             return;
         }
         File file = getFacade().getExportSamplesController().chooseFile();
-        Thread thread;
         if (file != null) {
             manageSampleStop();
             mainSceneController.refreshListView(false, false);
-            mainSceneController.showLoading();
-            thread = new Thread(() -> {
+            startAsyncProcess(() -> {
                 getFacade().getExportSamplesController().saveSamples(file);
-                Platform.runLater(() -> {
-                    mainSceneController.hideLoading();
-                    refresh();
-                });
+                finalizeAsyncProcess();
             });
-            thread.setDaemon(true);
-            thread.start();
         }
     }
 
     private void performSamplesLoadOnDrag(Sample sample, File file) {
         int pitch = this.getMainModel().sampleOptions.pitch;
-        Thread thread;
         manageSampleStop();
         mainSceneController.refreshListView(false, false);
-        mainSceneController.showLoading();
-        thread = new Thread(() -> {
+        startAsyncProcess(() -> {
             if (sample.selectedSampleExt.equals(Sample.EXT_DEFAULT)) {
                 sample.fileName = StringUtils.removeFileExtension(file.getName());
                 sample.fileRealName = sample.fileName;
             }
             getFacade().getLoadSamplesController().manageAdditionalSample(file, sample.fileRealName + sample.selectedSampleExt, pitch);
-            Platform.runLater(() -> {
-                mainSceneController.hideLoading();
-                refresh();
-            });
+            finalizeAsyncProcess();
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     private void performSamplesLoad(List<File> withSamples) {
         List<File> files = (withSamples == null) ? getFacade().getLoadSamplesController().chooseFiles() : withSamples;
-        Thread thread;
         int pitchStep = this.getMainModel().sampleOptions.pitchStep;
         int pitch = this.getMainModel().sampleOptions.pitch;
         if (files != null) {
             manageSampleStop();
             mainSceneController.refreshListView(false, false);
-            mainSceneController.showLoading();
-            thread = new Thread(() -> {
+            startAsyncProcess(() -> {
                 getFacade().getLoadSamplesController().loadSamples(files, pitchStep, pitch);
-                Platform.runLater(() -> {
-                    mainSceneController.hideLoading();
-                    refresh();
-                });
+                finalizeAsyncProcess();
             });
-            thread.setDaemon(true);
-            thread.start();
         }
     }
 
@@ -319,39 +298,39 @@ public class MainView extends BaseView {
             return;
         }
         File file = getFacade().getSaveBankController().chooseFile();
-        Thread thread;
         if (file != null) {
             manageSampleStop();
             mainSceneController.refreshListView(false, false);
-            mainSceneController.showLoading();
-            thread = new Thread(() -> {
+            startAsyncProcess(() -> {
                 getFacade().getSaveBankController().saveBank(file);
-                Platform.runLater(() -> {
-                    mainSceneController.hideLoading();
-                    refresh();
-                });
+                finalizeAsyncProcess();
             });
-            thread.setDaemon(true);
-            thread.start();
         }
     }
 
     private void performBankLoad(File fromFile) {
         File file = (fromFile == null) ? getFacade().getLoadBankController().chooseFile() : fromFile;
-        Thread thread;
         if (file != null) {
             performClearSamples();
-            mainSceneController.showLoading();
-            thread = new Thread(() -> {
+            startAsyncProcess(() -> {
                 getFacade().getLoadBankController().loadBank(file);
-                Platform.runLater(() -> {
-                    mainSceneController.hideLoading();
-                    refresh();
-                });
+                finalizeAsyncProcess();
             });
-            thread.setDaemon(true);
-            thread.start();
         }
+    }
+
+    private void startAsyncProcess(Runnable runnable) {
+        mainSceneController.showLoading();
+        Thread thread = new Thread(runnable);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private void finalizeAsyncProcess() {
+        Platform.runLater(() -> {
+            mainSceneController.hideLoading();
+            refresh();
+        });
     }
 
     public void refresh() {
@@ -364,8 +343,8 @@ public class MainView extends BaseView {
 
     public void updateTitle() {
         getFacade().getPrimaryStage().setTitle(String.format(Strings.TITLE,
-                        StringUtils.removeFileExtension(getMainModel().sampleOptions.fileName),
-                        (float) (getMainModel().getAllSamplesDataSize() + Config.DATA_START_INDEX) / (float) BYTES_PER_MEGABYTE));
+                StringUtils.removeFileExtension(getMainModel().sampleOptions.fileName),
+                (float) (getMainModel().getAllSamplesDataSize() + Config.DATA_START_INDEX) / (float) BYTES_PER_MEGABYTE));
     }
 
     public void showMessageBoxError(String message) {

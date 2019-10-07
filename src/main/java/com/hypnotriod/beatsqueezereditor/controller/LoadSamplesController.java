@@ -65,10 +65,6 @@ public class LoadSamplesController extends BaseController {
     }
 
     private void parseFiles(List<File> files, int pitchStep, int pitch) {
-        int i;
-        Sample sample;
-        WaveHeader waveHeader;
-        int sampleRate;
         File additionalFile;
         ArrayList<File> additionalFiles = new ArrayList<>();
 
@@ -78,31 +74,9 @@ public class LoadSamplesController extends BaseController {
             if (additionalFile != null) {
                 additionalFiles.add(additionalFile);
             } else {
-                for (i = 0; i < pitchStep; i++) {
+                for (int i = 0; i < pitchStep; i++) {
                     try {
-                        sampleRate = NoteFrequencyUtil.getPitchedSampleRate(Config.SAMPLE_RATE, i + pitch);
-                        waveHeader = new WaveHeader(file);
-                        sample = new Sample(getMainModel().getNoteIdOfNextSample());
-                        sample.pitch = i;
-                        sample.groupID = getMainModel().sampleOptions.groupID;
-                        sample.dynamic = getMainModel().sampleOptions.isDynamic;
-                        sample.panorama = getMainModel().sampleOptions.panorama;
-                        sample.disableNoteOff = getMainModel().sampleOptions.playThrough;
-                        sample.fileName = StringUtils.removeFileExtension(file.getName());
-                        sample.fileRealName = sample.fileName;
-                        sample.filePath = file.getPath();
-                        sample.waveHeader = waveHeader;
-                        sample.channels = (getMainModel().sampleOptions.stereo && sample.waveHeader.channels == 2) ? 2 : 1;
-                        sample.samplesData = convertWAVEData(file, sampleRate, sample.channels);
-                        parseLoopPoints(sample, sampleRate, Sample.EXT_DEFAULT, sample.waveHeader.channels);
-                        if (sample.loop != null) {
-                            sample.loopEnabled = getMainModel().sampleOptions.loopEnabled;
-                        }
-                        if (i > 0) {
-                            sample.fileName += String.format(Strings.SAMPLE_PITCHED, i);
-                        }
-
-                        getMainModel().addSample(sample);
+                        addSample(file, i, pitch);
                     } catch (OutOfMemoryError e) {
                         showMessageBoxError(Strings.OUT_OF_MEMORY_ERROR);
                         return;
@@ -115,9 +89,36 @@ public class LoadSamplesController extends BaseController {
             }
         }
 
-        for (File file : additionalFiles) {
+        additionalFiles.forEach((file) -> {
             manageAdditionalSample(file, null, pitch);
+        });
+    }
+
+    private void addSample(File file, int pitch, int pitchRoot) throws Exception {
+        int sampleRate = NoteFrequencyUtil.getPitchedSampleRate(Config.SAMPLE_RATE, pitch + pitchRoot);
+        WaveHeader waveHeader = new WaveHeader(file);
+        Sample sample = new Sample();
+        sample.noteId = getMainModel().getNoteIdOfNextSample();
+        sample.pitch = pitch;
+        sample.groupId = getMainModel().sampleOptions.groupId;
+        sample.dynamic = getMainModel().sampleOptions.isDynamic;
+        sample.panorama = getMainModel().sampleOptions.panorama;
+        sample.disableNoteOff = getMainModel().sampleOptions.playThrough;
+        sample.fileName = StringUtils.removeFileExtension(file.getName());
+        sample.fileRealName = sample.fileName;
+        sample.filePath = file.getPath();
+        sample.waveHeader = waveHeader;
+        sample.channels = (getMainModel().sampleOptions.stereo && sample.waveHeader.channels == 2) ? 2 : 1;
+        sample.samplesData = convertWAVEData(file, sampleRate, sample.channels);
+        parseLoopPoints(sample, sampleRate, Sample.EXT_DEFAULT, sample.waveHeader.channels);
+        if (sample.loop != null) {
+            sample.loopEnabled = getMainModel().sampleOptions.loopEnabled;
         }
+        if (pitch > 0) {
+            sample.fileName += String.format(Strings.SAMPLE_PITCHED, pitch);
+        }
+
+        getMainModel().addSample(sample);
     }
 
     private File checkIsAdditionalSample(File file) {

@@ -41,9 +41,9 @@ import javafx.util.Duration;
 public class SampleListCellViewController implements Initializable {
 
     @FXML
-    private ComboBox cbNoteID;
+    private ComboBox cbNoteId;
     @FXML
-    private ComboBox cbGroupID;
+    private ComboBox cbGroupId;
     @FXML
     private CheckBox chbDynamic;
     @FXML
@@ -93,10 +93,10 @@ public class SampleListCellViewController implements Initializable {
         this.sample = sample;
         this.id = id;
 
-        cbNoteID.getItems().clear();
-        cbNoteID.getItems().addAll((Object[]) Notes.NOTES_NAMES);
-        cbNoteID.getSelectionModel().select(this.sample.noteID);
-        cbGroupID.getSelectionModel().select(this.sample.groupID);
+        cbNoteId.getItems().clear();
+        cbNoteId.getItems().addAll((Object[]) Notes.NOTES_NAMES);
+        cbNoteId.getSelectionModel().select(this.sample.noteId);
+        cbGroupId.getSelectionModel().select(this.sample.groupId);
         chbDynamic.setSelected(this.sample.dynamic);
         chbDisableNoteOff.setSelected(this.sample.disableNoteOff);
         chbLoop.setSelected(this.sample.loop != null && this.sample.loopEnabled == true);
@@ -147,11 +147,11 @@ public class SampleListCellViewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cbNoteID.getItems().addAll((Object[]) Notes.NOTES_NAMES);
-        cbGroupID.getItems().addAll((Object[]) Groups.GROUPS_NAMES);
+        cbNoteId.getItems().addAll((Object[]) Notes.NOTES_NAMES);
+        cbGroupId.getItems().addAll((Object[]) Groups.GROUPS_NAMES);
 
-        cbNoteID.getSelectionModel().selectedItemProperty().addListener(cbNoteChangeListener);
-        cbGroupID.getSelectionModel().selectedItemProperty().addListener(cbGroupChangeListener);
+        cbNoteId.getSelectionModel().selectedItemProperty().addListener(cbNoteChangeListener);
+        cbGroupId.getSelectionModel().selectedItemProperty().addListener(cbGroupChangeListener);
         chbDynamic.selectedProperty().addListener(chbDynamicChangeListener);
         chbDisableNoteOff.selectedProperty().addListener(chbDisableNoteOffChangeListener);
         chbLoop.selectedProperty().addListener(chbLoopChangeListener);
@@ -181,8 +181,8 @@ public class SampleListCellViewController implements Initializable {
     }
 
     private void initTooltips() {
-        cbNoteID.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE_SHORT));
-        cbGroupID.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
+        cbNoteId.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE_SHORT));
+        cbGroupId.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
         sliderPan.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PANORAMA));
         chbDynamic.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DYNAMIC));
         chbDisableNoteOff.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DISABLE_NOTE_OFF));
@@ -356,7 +356,7 @@ public class SampleListCellViewController implements Initializable {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
             if (newValue != null) {
-                sample.noteID = Strings.getIndexOfStringInArray(newValue, Notes.NOTES_NAMES);
+                sample.noteId = Strings.getIndexOfStringInArray(newValue, Notes.NOTES_NAMES);
             }
         }
     };
@@ -364,7 +364,7 @@ public class SampleListCellViewController implements Initializable {
     ChangeListener<String> cbGroupChangeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            sample.groupID = Strings.getIndexOfStringInArray(newValue, Groups.GROUPS_NAMES);
+            sample.groupId = Strings.getIndexOfStringInArray(newValue, Groups.GROUPS_NAMES);
         }
     };
 
