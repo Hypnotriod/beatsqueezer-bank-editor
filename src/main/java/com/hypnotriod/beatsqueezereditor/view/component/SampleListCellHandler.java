@@ -1,6 +1,6 @@
 package com.hypnotriod.beatsqueezereditor.view.component;
 
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
+import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import javafx.scene.input.DragEvent;
 
 /**
@@ -11,11 +11,11 @@ public interface SampleListCellHandler {
 
     public void onSampleListCellDelete(String id);
 
-    public void onSampleListCellPlay(SampleVO sampleVO, double position);
+    public void onSampleListCellPlay(Sample sample, double position);
 
     public void onSampleListDragEntered();
 
     public void onSampleListDragExited();
 
-    public void onSampleListCellFileDragged(SampleVO sampleVO, DragEvent event);
+    public void onSampleListCellFileDragged(Sample sample, DragEvent event);
 }

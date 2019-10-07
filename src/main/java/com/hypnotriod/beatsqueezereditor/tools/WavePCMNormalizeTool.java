@@ -10,7 +10,7 @@ public class WavePCMNormalizeTool {
         Math.log10(sampleValue) * 20;   // sampleValue to dbValue
         Math.pow(10, dbValue / 20);     // dbValue to sampleValue
      */
-    private static final double AMPLITUDE_16_BIT_MAX_DB = Math.log10(Short.MAX_VALUE) * 20;
+    public static final double AMPLITUDE_16_BIT_MAX_DB = Math.log10(Short.MAX_VALUE) * 20;
 
     public static void normalize16Bit(byte[] data, double toDB) {
         int maxNormalizedSampleValue = (int) Math.pow(10, (AMPLITUDE_16_BIT_MAX_DB - Math.abs(toDB)) / 20);

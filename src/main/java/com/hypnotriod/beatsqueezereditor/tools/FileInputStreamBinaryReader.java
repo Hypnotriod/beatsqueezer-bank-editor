@@ -9,54 +9,54 @@ import java.io.IOException;
  */
 public class FileInputStreamBinaryReader {
 
-    private final byte[] _buffer = new byte[8];
-    private FileInputStream _fileStream;
+    private final byte[] buffer = new byte[8];
+    private FileInputStream fileStream;
 
     public FileInputStream getFileStream() {
-        return _fileStream;
+        return fileStream;
     }
 
     public int available() throws IOException {
-        return _fileStream.available();
+        return fileStream.available();
     }
 
     public FileInputStreamBinaryReader(FileInputStream fileStream) {
-        _fileStream = fileStream;
+        this.fileStream = fileStream;
     }
 
     public int readInt32() throws IOException {
-        _fileStream.read(_buffer, 0, 4);
-        return (_buffer[0] & 0xFF) | ((_buffer[1] & 0xFF) << 8)
-                | ((_buffer[2] & 0xFF) << 16) | (_buffer[3] << 24);
+        fileStream.read(buffer, 0, 4);
+        return (buffer[0] & 0xFF) | ((buffer[1] & 0xFF) << 8)
+                | ((buffer[2] & 0xFF) << 16) | (buffer[3] << 24);
     }
 
     public short readInt16() throws IOException {
-        _fileStream.read(_buffer, 0, 2);
-        return (short) ((_buffer[0] & 0xFF) | (_buffer[1] << 8));
+        fileStream.read(buffer, 0, 2);
+        return (short) ((buffer[0] & 0xFF) | (buffer[1] << 8));
     }
 
     public char readChar() throws IOException {
-        return (char) _fileStream.read();
+        return (char) fileStream.read();
     }
 
     public byte[] readBytes(int numBytes) throws IOException {
         byte[] bytes = new byte[numBytes];
-        _fileStream.read(bytes);
+        fileStream.read(bytes);
         return bytes;
     }
 
     public void skip(long numBytes) throws IOException {
-        _fileStream.skip(numBytes);
+        fileStream.skip(numBytes);
     }
 
     public void dispose() {
-        if (_fileStream != null) {
+        if (fileStream != null) {
             try {
-                _fileStream.close();
+                fileStream.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
             } finally {
-                _fileStream = null;
+                fileStream = null;
             }
         }
     }

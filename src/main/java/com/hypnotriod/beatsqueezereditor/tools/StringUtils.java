@@ -1,6 +1,6 @@
 package com.hypnotriod.beatsqueezereditor.tools;
 
-import com.hypnotriod.beatsqueezereditor.constants.CNotes;
+import com.hypnotriod.beatsqueezereditor.constants.Notes;
 
 /**
  *
@@ -8,27 +8,27 @@ import com.hypnotriod.beatsqueezereditor.constants.CNotes;
  */
 public class StringUtils {
 
-    public static String removeFileExtention(String fileName) {
+    public static String removeFileExtension(String fileName) {
         return fileName.replaceFirst("[.][^.]+$", "");
     }
 
     public static String getSampleName(String prefixName, int noteID) {
         return prefixName + "_"
                 + String.format("%03d", noteID) + "_"
-                + CNotes.NOTES_NAMES[noteID];
+                + Notes.NOTES_NAMES[noteID];
     }
 
     public static String getSampleNameF(String prefixName, int noteID) {
         return prefixName + "_"
                 + String.format("%03d", noteID) + "_"
-                + CNotes.NOTES_NAMES[noteID]
+                + Notes.NOTES_NAMES[noteID]
                 + "_f";
     }
 
     public static String getSampleNameP(String prefixName, int noteID) {
         return prefixName + "_"
                 + String.format("%03d", noteID) + "_"
-                + CNotes.NOTES_NAMES[noteID]
+                + Notes.NOTES_NAMES[noteID]
                 + "_p";
     }
 

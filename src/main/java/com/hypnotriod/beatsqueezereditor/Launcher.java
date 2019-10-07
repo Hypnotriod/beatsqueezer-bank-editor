@@ -2,7 +2,7 @@ package com.hypnotriod.beatsqueezereditor;
 
 /**
  *
- * @author Илья
+ * @author Ilya Pikin
  */
 public class Launcher {
     public static void main(String[] args) {

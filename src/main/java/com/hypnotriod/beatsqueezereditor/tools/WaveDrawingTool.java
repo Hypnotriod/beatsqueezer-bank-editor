@@ -1,6 +1,6 @@
 package com.hypnotriod.beatsqueezereditor.tools;
 
-import com.hypnotriod.beatsqueezereditor.model.vo.SustainLoopVO;
+import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
  */
 public class WaveDrawingTool {
 
-    public static void drawWave16Bit(Canvas canvas, byte[] data, int channels, SustainLoopVO loopVO, int framePosition) {
+    public static void drawWave16Bit(Canvas canvas, byte[] data, int channels, SustainLoop loop, int framePosition) {
         if (canvas == null || data == null) {
             return;
         }
@@ -78,12 +78,12 @@ public class WaveDrawingTool {
             }
         }
 
-        if (loopVO != null && loopVO.start != 0) {
+        if (loop != null && loop.start != 0) {
             gc.setGlobalAlpha(0.5);
             gc.setStroke(Color.WHITE);
             gc.setLineWidth(2);
 
-            pointX = ((float) loopVO.start / ((float) data.length / 2.0f)) * (float) canvas.getWidth();
+            pointX = ((float) loop.start / ((float) data.length / 2.0f)) * (float) canvas.getWidth();
 
             gc.fillRect(pointX, 0, canvas.getWidth() - pointX, canvas.getHeight());
 

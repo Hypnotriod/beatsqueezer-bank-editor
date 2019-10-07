@@ -1,11 +1,12 @@
 package com.hypnotriod.beatsqueezereditor.controller;
 
 import com.hypnotriod.beatsqueezereditor.base.BaseController;
-import com.hypnotriod.beatsqueezereditor.constants.CConfig;
-import com.hypnotriod.beatsqueezereditor.constants.CNotes;
-import com.hypnotriod.beatsqueezereditor.constants.CStrings;
+import com.hypnotriod.beatsqueezereditor.constants.Config;
+import com.hypnotriod.beatsqueezereditor.constants.FileExtensions;
+import com.hypnotriod.beatsqueezereditor.constants.Notes;
+import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
+import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import com.hypnotriod.beatsqueezereditor.tools.ByteArrayTool;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,8 +21,8 @@ import javafx.stage.FileChooser;
  */
 public class SaveBankController extends BaseController {
 
-    private final FileChooser.ExtensionFilter filter
-            = new FileChooser.ExtensionFilter(CConfig.BANK_FILE_BROWSE_NAME, CConfig.BANK_FILE_BROWSE_FILTER);
+    private final FileChooser.ExtensionFilter extensionFilter
+            = new FileChooser.ExtensionFilter(FileExtensions.BANK_FILE_BROWSE_NAME, FileExtensions.BANK_FILE_BROWSE_FILTER);
 
     public SaveBankController(Facade facade) {
         super(facade);
@@ -30,27 +31,27 @@ public class SaveBankController extends BaseController {
     public boolean checkCondition() {
         String message;
         ArrayList<String> notesIDsMatches = new ArrayList<>();
-        for (Map.Entry<String, SampleVO> entry : getMainModel().sampleVOs.entrySet()) {
-            SampleVO sampleVO = entry.getValue();
-            if (notesIDsMatches.contains(CNotes.NOTES_NAMES[sampleVO.noteID])) {
-                message = String.format(CStrings.NOTE_IS_DUBLICATED, CNotes.NOTES_NAMES[sampleVO.noteID]);
+        for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
+            Sample sample = entry.getValue();
+            if (notesIDsMatches.contains(Notes.NOTES_NAMES[sample.noteID])) {
+                message = String.format(Strings.NOTE_IS_DUBLICATED, Notes.NOTES_NAMES[sample.noteID]);
                 showMessageBoxInfo(message);
                 return false;
             }
 
-            if (sampleVO.loop != null
-                    && sampleVO.loopEnabled
-                    && sampleVO.samplesData.length - (sampleVO.loop.start * CConfig.BYTES_PER_SAMPLE) < CConfig.MIN_LOOP_LENGTH_BYTES) {
-                message = String.format(CStrings.LOOP_TIME_ERROR, sampleVO.fileName);
+            if (sample.loop != null
+                    && sample.loopEnabled
+                    && sample.samplesData.length - (sample.loop.start * Config.BYTES_PER_SAMPLE) < Config.MIN_LOOP_LENGTH_BYTES) {
+                message = String.format(Strings.LOOP_TIME_ERROR, sample.fileName);
                 showMessageBoxInfo(message);
                 return false;
             }
 
-            notesIDsMatches.add(CNotes.NOTES_NAMES[sampleVO.noteID]);
+            notesIDsMatches.add(Notes.NOTES_NAMES[sample.noteID]);
         }
 
-        if (getMainModel().sampleVOs.isEmpty()) {
-            showMessageBoxInfo(CStrings.BANK_IS_EMPTY);
+        if (getMainModel().samples.isEmpty()) {
+            showMessageBoxInfo(Strings.BANK_IS_EMPTY);
             return false;
         }
 
@@ -61,153 +62,151 @@ public class SaveBankController extends BaseController {
         File result;
         FileChooser fileChooser = getMainModel().getFileChooser();
 
-        fileChooser.setTitle(CStrings.SAVE_BTSQ_FILE);
+        fileChooser.setTitle(Strings.SAVE_BTSQ_FILE);
         fileChooser.getExtensionFilters().clear();
-        fileChooser.getExtensionFilters().add(filter);
-        fileChooser.setInitialFileName(getMainModel().optionsVO.fileName);
+        fileChooser.getExtensionFilters().add(extensionFilter);
+        fileChooser.setInitialFileName(getMainModel().sampleOptions.fileName);
         result = fileChooser.showSaveDialog(getFacade().getPrimaryStage());
 
         return result;
     }
 
     public void saveBank(File file) {
-        getMainModel().optionsVO.fileName = file.getName();
+        getMainModel().sampleOptions.fileName = file.getName();
         getMainModel().getFileChooser().setInitialDirectory(file.getParentFile());
         performSaveBank(file);
     }
 
     private void performSaveBank(File file) {
-        ByteArrayTool byteArrayTool = new ByteArrayTool();
         byte[] data;
         long sampleLength;
         long loopAddress;
         long allSamplesDataOffset;
         long dataShift;
-        int[] filtersValues = getMainModel().optionsVO.filtersValues;
+        int[] filtersValues = getMainModel().sampleOptions.filtersValues;
 
-        allSamplesDataOffset = CConfig.DATA_START_INDEX;
+        allSamplesDataOffset = Config.DATA_START_INDEX;
         try {
-            data = new byte[(int) getMainModel().getAllSamplesDataSize() + CConfig.DATA_START_INDEX];
+            data = new byte[(int) getMainModel().getAllSamplesDataSize() + Config.DATA_START_INDEX];
         } catch (OutOfMemoryError e) {
-            showMessageBoxError(CStrings.OUT_OF_MEMORY_ERROR);
+            showMessageBoxError(Strings.OUT_OF_MEMORY_ERROR);
             return;
         }
 
         // Add header
-        byteArrayTool.writeValueToByteArray(data, CConfig.HEADER_FIRST_CHUNK, 0, 4);
-        byteArrayTool.writeValueToByteArray(data, CConfig.HEADER_SECOND_CHUNK, 4, 4);
+        ByteArrayTool.writeValueToByteArray(data, Config.HEADER_FIRST_CHUNK, 0, 4);
+        ByteArrayTool.writeValueToByteArray(data, Config.HEADER_SECOND_CHUNK, 4, 4);
 
         // Add version
-        byteArrayTool.writeValueToByteArray(data, CConfig.VERSION, 8, 2);
+        ByteArrayTool.writeValueToByteArray(data, Config.VERSION, 8, 2);
 
         // Add all samples data begin
-        byteArrayTool.writeValueToByteArray(data, CConfig.DATA_START_INDEX, 10, 4);
+        ByteArrayTool.writeValueToByteArray(data, Config.DATA_START_INDEX, 10, 4);
 
         // Add all samples data size
-        byteArrayTool.writeValueToByteArray(data, getMainModel().getAllSamplesDataSize(), 14, 4);
+        ByteArrayTool.writeValueToByteArray(data, getMainModel().getAllSamplesDataSize(), 14, 4);
 
         // Add all filters values
         for (int i = 0; i < filtersValues.length; i++) {
-            data[i + CConfig.CONFIG_HEADER_CHUNK_SIZE]
+            data[i + Config.HEADER_CHUNK_SIZE]
                     = filtersValues[i] >= 0 ? (byte) (filtersValues[i] | 0x80) : 0x00;
         }
 
         // Add samples info and data
-        for (Map.Entry<String, SampleVO> entry : getMainModel().sampleVOs.entrySet()) {
-            SampleVO sampleVO = entry.getValue();
-            dataShift = CConfig.CONFIG_HEADER_CHUNK_SIZE + CConfig.CONFIG_KNOBS_CHUNK_SIZE + sampleVO.noteID * CConfig.CONFIG_SAMPLE_CHUNK_SIZE;
+        for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
+            Sample sample = entry.getValue();
+            dataShift = Config.HEADER_CHUNK_SIZE + Config.KNOBS_CHUNK_SIZE + sample.noteID * Config.SAMPLE_CHUNK_SIZE;
 
             // Add sample data first byte address
-            byteArrayTool.writeValueToByteArray(
+            ByteArrayTool.writeValueToByteArray(
                     data,
                     allSamplesDataOffset,
                     dataShift,
                     4);
 
             // Add sample data last byte address
-            sampleLength = sampleVO.samplesData.length;
-            byteArrayTool.writeValueToByteArray(
+            sampleLength = sample.samplesData.length;
+            ByteArrayTool.writeValueToByteArray(
                     data,
                     (sampleLength + allSamplesDataOffset),
                     dataShift + 4,
                     4);
 
             // Add sample data loop byte address
-            loopAddress = (sampleVO.loop != null) ? (sampleVO.loop.start * CConfig.BYTES_PER_SAMPLE * CConfig.CHANNELS_NUM + allSamplesDataOffset) : 0;
-            byteArrayTool.writeValueToByteArray(
+            loopAddress = (sample.loop != null) ? (sample.loop.start * Config.BYTES_PER_SAMPLE * Config.CHANNELS_NUM + allSamplesDataOffset) : 0;
+            ByteArrayTool.writeValueToByteArray(
                     data,
                     loopAddress,
                     dataShift + 8,
                     4);
 
             // Add panorama value
-            byteArrayTool.writeValueToByteArray(
-                    data,
-                    sampleVO.channels == 1 ? (sampleVO.panorama + CConfig.PANORAMA_MAX_VALUE) : 255,
+            ByteArrayTool.writeValueToByteArray(data,
+                    sample.channels == 1 ? (sample.panorama + Config.PANORAMA_MAX_VALUE) : 255,
                     dataShift + 12,
                     1);
 
             // Add config
-            byteArrayTool.writeValueToByteArray(
+            ByteArrayTool.writeValueToByteArray(
                     data,
-                    sampleVO.groupID
-                    | ((sampleVO.dynamic == true) ? 0x20 : 0x00)
-                    | ((sampleVO.disableNoteOff == true) ? 0x40 : 0x00)
-                    | ((sampleVO.loop != null && sampleVO.loopEnabled == true) ? 0x80 : 0x00),
+                    sample.groupID
+                    | ((sample.dynamic == true) ? 0x20 : 0x00)
+                    | ((sample.disableNoteOff == true) ? 0x40 : 0x00)
+                    | ((sample.loop != null && sample.loopEnabled == true) ? 0x80 : 0x00),
                     dataShift + 13,
                     1);
 
             // Write sample data
-            allSamplesDataOffset = writeSampleData(allSamplesDataOffset, data, sampleVO.samplesData);
+            allSamplesDataOffset = writeSampleData(allSamplesDataOffset, data, sample.samplesData);
 
-            dataShift = CConfig.CONFIG_PF_START_INDEX + sampleVO.noteID * CConfig.CONFIG_PF_SAMPLE_CHUNK_SIZE;
-            if (sampleVO.samplesDataP != null) {
+            dataShift = Config.PIANO_FORTE_START_INDEX + sample.noteID * Config.PIANO_FORTE_SAMPLE_CHUNK_SIZE;
+            if (sample.samplesDataP != null) {
                 // Add sample Piano data last byte address
-                sampleLength = sampleVO.samplesDataP.length;
-                byteArrayTool.writeValueToByteArray(
+                sampleLength = sample.samplesDataP.length;
+                ByteArrayTool.writeValueToByteArray(
                         data,
                         (sampleLength + allSamplesDataOffset),
                         dataShift,
                         4);
 
                 // Add sample Piano data loop byte address
-                loopAddress = (sampleVO.loopP != null) ? (sampleVO.loopP.start * CConfig.BYTES_PER_SAMPLE * CConfig.CHANNELS_NUM + allSamplesDataOffset) : 0;
-                byteArrayTool.writeValueToByteArray(
+                loopAddress = (sample.loopP != null) ? (sample.loopP.start * Config.BYTES_PER_SAMPLE * Config.CHANNELS_NUM + allSamplesDataOffset) : 0;
+                ByteArrayTool.writeValueToByteArray(
                         data,
                         loopAddress,
                         dataShift + 4,
                         4);
 
                 // Write Piano sample data
-                allSamplesDataOffset = writeSampleData(allSamplesDataOffset, data, sampleVO.samplesDataP);
+                allSamplesDataOffset = writeSampleData(allSamplesDataOffset, data, sample.samplesDataP);
             } else {
                 // Add sample Piano data last byte address
-                byteArrayTool.writeValueToByteArray(
+                ByteArrayTool.writeValueToByteArray(
                         data,
                         allSamplesDataOffset,
                         dataShift,
                         4);
             }
 
-            if (sampleVO.samplesDataF != null) {
+            if (sample.samplesDataF != null) {
                 // Add sample Forte data last byte address
-                sampleLength = sampleVO.samplesDataF.length;
-                byteArrayTool.writeValueToByteArray(
+                sampleLength = sample.samplesDataF.length;
+                ByteArrayTool.writeValueToByteArray(
                         data,
                         (sampleLength + allSamplesDataOffset),
                         dataShift + 8,
                         4);
 
                 // Add sample Forte data loop byte address
-                loopAddress = (sampleVO.loopF != null) ? (sampleVO.loopF.start * CConfig.BYTES_PER_SAMPLE * CConfig.CHANNELS_NUM + allSamplesDataOffset) : 0;
-                byteArrayTool.writeValueToByteArray(
+                loopAddress = (sample.loopF != null) ? (sample.loopF.start * Config.BYTES_PER_SAMPLE * Config.CHANNELS_NUM + allSamplesDataOffset) : 0;
+                ByteArrayTool.writeValueToByteArray(
                         data,
                         loopAddress,
                         dataShift + 12,
                         4);
 
                 // Write Forte sample data
-                allSamplesDataOffset = writeSampleData(allSamplesDataOffset, data, sampleVO.samplesDataF);
+                allSamplesDataOffset = writeSampleData(allSamplesDataOffset, data, sample.samplesDataF);
             }
         }
 
@@ -228,7 +227,7 @@ public class SaveBankController extends BaseController {
         while (true) {
             if (currentSampleDataOffset < samplesData.length) {
                 data[(int) allSamplesDataOffset] = samplesData[(int) currentSampleDataOffset];
-            } /*else if(currentSampleDataOffset % CConfig.BLOCK_SIZE > 0)
+            } /*else if(currentSampleDataOffset % Config.BLOCK_SIZE > 0)
             {
                 data[(int)allSamplesDataOffset] = 0x00;
             }*/ else {

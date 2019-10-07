@@ -1,6 +1,6 @@
 package com.hypnotriod.beatsqueezereditor.tools;
 
-import com.hypnotriod.beatsqueezereditor.constants.CStyle;
+import com.hypnotriod.beatsqueezereditor.constants.Styles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import javafx.scene.control.Tooltip;
@@ -13,7 +13,7 @@ import javafx.util.Duration;
 public class TooltipHelper {
 
     public static Tooltip getTooltip1(String str) {
-        return getTooltip(str, CStyle.TOOLTIP1_STYLE, 600, 60000, 200);
+        return getTooltip(str, Styles.TOOLTIP1_STYLE, 600, 60000, 200);
     }
 
     /* Java 11 */

@@ -1,12 +1,11 @@
 package com.hypnotriod.beatsqueezereditor.view.controller;
 
-import com.hypnotriod.beatsqueezereditor.constants.CConfig;
-import com.hypnotriod.beatsqueezereditor.constants.CGroups;
-import com.hypnotriod.beatsqueezereditor.constants.CNotes;
-import com.hypnotriod.beatsqueezereditor.constants.CStrings;
-import com.hypnotriod.beatsqueezereditor.constants.CStyle;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.SustainLoopVO;
+import com.hypnotriod.beatsqueezereditor.constants.Groups;
+import com.hypnotriod.beatsqueezereditor.constants.Notes;
+import com.hypnotriod.beatsqueezereditor.constants.Strings;
+import com.hypnotriod.beatsqueezereditor.constants.Styles;
+import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
+import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
 import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
 import com.hypnotriod.beatsqueezereditor.tools.TooltipHelper;
 import com.hypnotriod.beatsqueezereditor.tools.WaveDrawingTool;
@@ -85,53 +84,53 @@ public class SampleListCellViewController implements Initializable {
     private Tab tabForteSample;
 
     private SampleListCellHandler handler;
-    private SampleVO sampleVO;
+    private Sample sample;
     private String id;
 
     private Timeline samplePlayTimer = null;
 
-    public void setSampleVO(SampleVO sampleVO, String id) {
-        this.sampleVO = sampleVO;
+    public void setSample(Sample sample, String id) {
+        this.sample = sample;
         this.id = id;
 
         cbNoteID.getItems().clear();
-        cbNoteID.getItems().addAll((Object[]) CNotes.NOTES_NAMES);
-        cbNoteID.getSelectionModel().select(this.sampleVO.noteID);
-        cbGroupID.getSelectionModel().select(this.sampleVO.groupID);
-        chbDynamic.setSelected(this.sampleVO.dynamic);
-        chbDisableNoteOff.setSelected(this.sampleVO.disableNoteOff);
-        chbLoop.setSelected(this.sampleVO.loop != null && this.sampleVO.loopEnabled == true);
-        chbLoop.setDisable(this.sampleVO.loop == null);
-        if (sampleVO.channels == 1) {
+        cbNoteID.getItems().addAll((Object[]) Notes.NOTES_NAMES);
+        cbNoteID.getSelectionModel().select(this.sample.noteID);
+        cbGroupID.getSelectionModel().select(this.sample.groupID);
+        chbDynamic.setSelected(this.sample.dynamic);
+        chbDisableNoteOff.setSelected(this.sample.disableNoteOff);
+        chbLoop.setSelected(this.sample.loop != null && this.sample.loopEnabled == true);
+        chbLoop.setDisable(this.sample.loop == null);
+        if (sample.channels == 1) {
             sliderPan.setDisable(false);
             labelSiderValue.setDisable(false);
-            sliderPan.setValue(this.sampleVO.panorama);
-            updateLabelSliderValue(this.sampleVO.panorama);
+            sliderPan.setValue(this.sample.panorama);
+            updateLabelSliderValue(this.sample.panorama);
         } else {
             sliderPan.setDisable(true);
             labelSiderValue.setDisable(true);
             sliderPan.setValue(0);
             updateLabelSliderValue(0);
         }
-        labelFileName.setText(this.sampleVO.fileName);
-        updatePlayButtonLabel(this.sampleVO.isPlaying);
-        updateCanvasWave(canvasWave, this.sampleVO.samplesData, this.sampleVO.channels, this.sampleVO.loop, -1);
-        updateCanvasWave(canvasWaveP, this.sampleVO.samplesDataP, this.sampleVO.channels, this.sampleVO.loopP, -1);
-        updateCanvasWave(canvasWaveF, this.sampleVO.samplesDataF, this.sampleVO.channels, this.sampleVO.loopF, -1);
+        labelFileName.setText(this.sample.fileName);
+        updatePlayButtonLabel(this.sample.isPlaying);
+        updateCanvasWave(canvasWave, this.sample.samplesData, this.sample.channels, this.sample.loop, -1);
+        updateCanvasWave(canvasWaveP, this.sample.samplesDataP, this.sample.channels, this.sample.loopP, -1);
+        updateCanvasWave(canvasWaveF, this.sample.samplesDataF, this.sample.channels, this.sample.loopF, -1);
 
-        labelPianoSampleName.setVisible(sampleVO.samplesDataP == null);
-        labelForteSampleName.setVisible(sampleVO.samplesDataF == null);
-        canvasWaveP.setVisible(sampleVO.samplesDataP != null);
-        canvasWaveF.setVisible(sampleVO.samplesDataF != null);
+        labelPianoSampleName.setVisible(sample.samplesDataP == null);
+        labelForteSampleName.setVisible(sample.samplesDataF == null);
+        canvasWaveP.setVisible(sample.samplesDataP != null);
+        canvasWaveF.setVisible(sample.samplesDataF != null);
 
-        labelPianoSampleName.setText(String.format(CStrings.PIANO_SAMPLE_NAME_PROMT, this.sampleVO.fileRealName));
-        labelForteSampleName.setText(String.format(CStrings.FORTE_SAMPLE_NAME_PROMT, this.sampleVO.fileRealName));
+        labelPianoSampleName.setText(String.format(Strings.PIANO_SAMPLE_NAME_PROMT, this.sample.fileRealName));
+        labelForteSampleName.setText(String.format(Strings.FORTE_SAMPLE_NAME_PROMT, this.sample.fileRealName));
 
-        switch (this.sampleVO.selectedSampleExt) {
-            case CConfig.EXT_P:
+        switch (this.sample.selectedSampleExt) {
+            case Sample.EXT_P:
                 samplesTab.getSelectionModel().select(1);
                 break;
-            case CConfig.EXT_F:
+            case Sample.EXT_F:
                 samplesTab.getSelectionModel().select(2);
                 break;
             default:
@@ -139,7 +138,7 @@ public class SampleListCellViewController implements Initializable {
                 break;
         }
 
-        startStopTimerSchedule(this.sampleVO.isPlaying);
+        startStopTimerSchedule(this.sample.isPlaying);
     }
 
     public void setHandler(SampleListCellHandler handler) {
@@ -148,8 +147,8 @@ public class SampleListCellViewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cbNoteID.getItems().addAll((Object[]) CNotes.NOTES_NAMES);
-        cbGroupID.getItems().addAll((Object[]) CGroups.GROUPS_NAMES);
+        cbNoteID.getItems().addAll((Object[]) Notes.NOTES_NAMES);
+        cbGroupID.getItems().addAll((Object[]) Groups.GROUPS_NAMES);
 
         cbNoteID.getSelectionModel().selectedItemProperty().addListener(cbNoteChangeListener);
         cbGroupID.getSelectionModel().selectedItemProperty().addListener(cbGroupChangeListener);
@@ -175,30 +174,30 @@ public class SampleListCellViewController implements Initializable {
         labelForteSampleName.setOnDragEntered(onLabelDragEntered);
         labelForteSampleName.setOnDragExited(onLabelDragExited);
 
-        labelPianoSampleName.setStyle(CStyle.LABEL_P_F_SAMPLE_NAME);
-        labelForteSampleName.setStyle(CStyle.LABEL_P_F_SAMPLE_NAME);
+        labelPianoSampleName.setStyle(Styles.LABEL_P_F_SAMPLE_NAME);
+        labelForteSampleName.setStyle(Styles.LABEL_P_F_SAMPLE_NAME);
 
         initTooltips();
     }
 
     private void initTooltips() {
-        cbNoteID.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_NOTE_SHORT));
-        cbGroupID.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_GROUP_ID));
-        sliderPan.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PANORAMA));
-        chbDynamic.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_DYNAMIC));
-        chbDisableNoteOff.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_DISABLE_NOTE_OFF));
-        chbLoop.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_LOOP));
+        cbNoteID.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE_SHORT));
+        cbGroupID.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
+        sliderPan.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PANORAMA));
+        chbDynamic.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DYNAMIC));
+        chbDisableNoteOff.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DISABLE_NOTE_OFF));
+        chbLoop.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_LOOP));
 
-        labelNote.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_NOTE_SHORT));
-        labelCutGroup.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_GROUP_ID));
-        labelSiderValue.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PANORAMA));
+        labelNote.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE_SHORT));
+        labelCutGroup.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
+        labelSiderValue.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PANORAMA));
 
-        tabDefaultSample.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_DEFAULT_SAMPLE));
-        tabPianoSample.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PIANO_SAMPLE));
-        tabForteSample.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_FORTE_SAMPLE));
+        tabDefaultSample.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DEFAULT_SAMPLE));
+        tabPianoSample.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PIANO_SAMPLE));
+        tabForteSample.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_FORTE_SAMPLE));
 
-        btnDelete.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_DELETE_SAMPLE));
-        btnPlay.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PLAY));
+        btnDelete.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DELETE_SAMPLE));
+        btnPlay.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PLAY));
     }
 
     private final EventHandler onCanvasDragEntered = new EventHandler<DragEvent>() {
@@ -223,7 +222,7 @@ public class SampleListCellViewController implements Initializable {
         @Override
         public void handle(DragEvent event) {
             event.consume();
-            ((Node) event.getTarget()).setStyle(CStyle.LABEL_P_F_BACKGROUND_HIGHLIGHT);
+            ((Node) event.getTarget()).setStyle(Styles.LABEL_P_F_BACKGROUND_HIGHLIGHT);
             handler.onSampleListDragEntered();
         }
     };
@@ -232,7 +231,7 @@ public class SampleListCellViewController implements Initializable {
         @Override
         public void handle(DragEvent event) {
             event.consume();
-            ((Node) event.getTarget()).setStyle(CStyle.LABEL_P_F_BACKGROUND_NORMAL);
+            ((Node) event.getTarget()).setStyle(Styles.LABEL_P_F_BACKGROUND_NORMAL);
             handler.onSampleListDragExited();
         }
     };
@@ -241,22 +240,22 @@ public class SampleListCellViewController implements Initializable {
         @Override
         public void handle(DragEvent event) {
             event.consume();
-            handler.onSampleListCellFileDragged(sampleVO, event);
+            handler.onSampleListCellFileDragged(sample, event);
         }
     };
 
-    private void updateCanvasWave(Canvas canvas, byte[] samplesData, int channels, SustainLoopVO loopVO, int framePosition) {
+    private void updateCanvasWave(Canvas canvas, byte[] samplesData, int channels, SustainLoop loop, int framePosition) {
         if (samplesData != null) {
-            WaveDrawingTool.drawWave16Bit(canvas, samplesData, channels, loopVO, framePosition);
+            WaveDrawingTool.drawWave16Bit(canvas, samplesData, channels, loop, framePosition);
         }
     }
 
     private void updateLabelSliderValue(long value) {
-        labelSiderValue.setText(String.format(CStrings.PAN_VALUE, value));
+        labelSiderValue.setText(String.format(Strings.PAN_VALUE, value));
     }
 
     private void updatePlayButtonLabel(boolean isPlaying) {
-        btnPlay.setText(isPlaying ? CStrings.STOP : CStrings.PLAY);
+        btnPlay.setText(isPlaying ? Strings.STOP : Strings.PLAY);
     }
 
     private void startStopTimerSchedule(boolean run) {
@@ -275,20 +274,20 @@ public class SampleListCellViewController implements Initializable {
     private final EventHandler<ActionEvent> timerActionEvent = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            if (!sampleVO.isPlaying) {
-                startStopTimerSchedule(sampleVO.isPlaying);
-                updatePlayButtonLabel(sampleVO.isPlaying);
+            if (!sample.isPlaying) {
+                startStopTimerSchedule(sample.isPlaying);
+                updatePlayButtonLabel(sample.isPlaying);
             }
 
-            switch (sampleVO.playingSampleExt) {
-                case CConfig.EXT_P:
-                    updateCanvasWave(canvasWaveP, sampleVO.samplesDataP, sampleVO.channels, sampleVO.loopP, RawPCMDataPlayer.getFramePosition());
+            switch (sample.playingSampleExt) {
+                case Sample.EXT_P:
+                    updateCanvasWave(canvasWaveP, sample.samplesDataP, sample.channels, sample.loopP, RawPCMDataPlayer.getFramePosition());
                     break;
-                case CConfig.EXT_F:
-                    updateCanvasWave(canvasWaveF, sampleVO.samplesDataF, sampleVO.channels, sampleVO.loopF, RawPCMDataPlayer.getFramePosition());
+                case Sample.EXT_F:
+                    updateCanvasWave(canvasWaveF, sample.samplesDataF, sample.channels, sample.loopF, RawPCMDataPlayer.getFramePosition());
                     break;
                 default:
-                    updateCanvasWave(canvasWave, sampleVO.samplesData, sampleVO.channels, sampleVO.loop, RawPCMDataPlayer.getFramePosition());
+                    updateCanvasWave(canvasWave, sample.samplesData, sample.channels, sample.loop, RawPCMDataPlayer.getFramePosition());
                     break;
             }
         }
@@ -296,17 +295,17 @@ public class SampleListCellViewController implements Initializable {
 
     @FXML
     private void handleCanvasWaveClicked(MouseEvent event) {
-        onCanvasWaveClicked(canvasWave, sampleVO.samplesData, event);
+        onCanvasWaveClicked(canvasWave, sample.samplesData, event);
     }
 
     @FXML
     private void handleCanvasWavePClicked(MouseEvent event) {
-        onCanvasWaveClicked(canvasWaveP, sampleVO.samplesDataP, event);
+        onCanvasWaveClicked(canvasWaveP, sample.samplesDataP, event);
     }
 
     @FXML
     private void handleCanvasWaveFClicked(MouseEvent event) {
-        onCanvasWaveClicked(canvasWaveF, sampleVO.samplesDataF, event);
+        onCanvasWaveClicked(canvasWaveF, sample.samplesDataF, event);
     }
 
     private void onCanvasWaveClicked(Canvas canvas, byte[] samplesData, MouseEvent event) {
@@ -314,10 +313,10 @@ public class SampleListCellViewController implements Initializable {
             return;
         }
         double position = event.getX() / canvas.getWidth();
-        sampleVO.isPlaying = false;
-        handler.onSampleListCellPlay(sampleVO, position);
-        startStopTimerSchedule(sampleVO.isPlaying);
-        updatePlayButtonLabel(sampleVO.isPlaying);
+        sample.isPlaying = false;
+        handler.onSampleListCellPlay(sample, position);
+        startStopTimerSchedule(sample.isPlaying);
+        updatePlayButtonLabel(sample.isPlaying);
     }
 
     @FXML
@@ -327,29 +326,29 @@ public class SampleListCellViewController implements Initializable {
 
     @FXML
     private void handlePlayButtonClicked(MouseEvent event) {
-        handler.onSampleListCellPlay(sampleVO, 0);
-        startStopTimerSchedule(sampleVO.isPlaying);
-        updatePlayButtonLabel(sampleVO.isPlaying);
+        handler.onSampleListCellPlay(sample, 0);
+        startStopTimerSchedule(sample.isPlaying);
+        updatePlayButtonLabel(sample.isPlaying);
     }
 
     @FXML
     private void onTabDefaultSampleClicked(Event event) {
-        if (this.sampleVO != null) {
-            this.sampleVO.selectedSampleExt = CConfig.EXT_DEFAULT;
+        if (this.sample != null) {
+            this.sample.selectedSampleExt = Sample.EXT_DEFAULT;
         }
     }
 
     @FXML
     private void onTabPianoSampleClicked(Event event) {
-        if (this.sampleVO != null) {
-            this.sampleVO.selectedSampleExt = CConfig.EXT_P;
+        if (this.sample != null) {
+            this.sample.selectedSampleExt = Sample.EXT_P;
         }
     }
 
     @FXML
     private void onTabForteSampleClicked(Event event) {
-        if (this.sampleVO != null) {
-            this.sampleVO.selectedSampleExt = CConfig.EXT_F;
+        if (this.sample != null) {
+            this.sample.selectedSampleExt = Sample.EXT_F;
         }
     }
 
@@ -357,7 +356,7 @@ public class SampleListCellViewController implements Initializable {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
             if (newValue != null) {
-                sampleVO.noteID = CStrings.getIndexOfStringInArray(newValue, CNotes.NOTES_NAMES);
+                sample.noteID = Strings.getIndexOfStringInArray(newValue, Notes.NOTES_NAMES);
             }
         }
     };
@@ -365,27 +364,27 @@ public class SampleListCellViewController implements Initializable {
     ChangeListener<String> cbGroupChangeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            sampleVO.groupID = CStrings.getIndexOfStringInArray(newValue, CGroups.GROUPS_NAMES);
+            sample.groupID = Strings.getIndexOfStringInArray(newValue, Groups.GROUPS_NAMES);
         }
     };
 
     ChangeListener<Boolean> chbDynamicChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            sampleVO.dynamic = newValue;
+            sample.dynamic = newValue;
         }
     };
     ChangeListener<Boolean> chbDisableNoteOffChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            sampleVO.disableNoteOff = newValue;
+            sample.disableNoteOff = newValue;
         }
     };
     ChangeListener<Boolean> chbLoopChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            if (sampleVO.loop != null) {
-                sampleVO.loopEnabled = newValue;
+            if (sample.loop != null) {
+                sample.loopEnabled = newValue;
             }
         }
     };
@@ -393,7 +392,7 @@ public class SampleListCellViewController implements Initializable {
     ChangeListener<Number> sliderPanChangeListener = new ChangeListener<Number>() {
         @Override
         public void changed(ObservableValue<? extends Number> selected, Number oldValue, Number newValue) {
-            sampleVO.panorama = newValue.longValue();
+            sample.panorama = newValue.longValue();
             updateLabelSliderValue(newValue.longValue());
         }
     };

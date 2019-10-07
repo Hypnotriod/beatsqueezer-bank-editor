@@ -6,7 +6,7 @@ package com.hypnotriod.beatsqueezereditor.tools;
  */
 public class NoteFrequencyUtil {
 
-    public static double TWELTH_ROOT_OF_TWO = 1.059463094359;
+    public static final double TWELTH_ROOT_OF_TWO = Math.pow(2.0d, 1.0d / 12.0d);;
 
     public static float getPitchedNoteFrequency(float currentNoteFrequency, int semitones) {
         return currentNoteFrequency * (float) Math.pow(TWELTH_ROOT_OF_TWO, semitones);

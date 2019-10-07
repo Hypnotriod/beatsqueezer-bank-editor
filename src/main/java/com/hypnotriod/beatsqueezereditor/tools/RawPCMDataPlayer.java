@@ -15,7 +15,7 @@ import javax.sound.sampled.LineUnavailableException;
  */
 public class RawPCMDataPlayer {
 
-    public static AudioFormat AUDIO_FORMAT_44_16_STEREO = new AudioFormat(44100, 16, 2, true, false);
+    public static final AudioFormat AUDIO_FORMAT_44_16_STEREO = new AudioFormat(44100, 16, 2, true, false);
 
     private static AudioInputStream audioStream = null;
     private static Clip clip = null;

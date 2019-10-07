@@ -1,15 +1,15 @@
 package com.hypnotriod.beatsqueezereditor.view.controller;
 
 import com.hypnotriod.beatsqueezereditor.base.BaseViewController;
-import com.hypnotriod.beatsqueezereditor.constants.CConfig;
-import com.hypnotriod.beatsqueezereditor.constants.CGroups;
-import com.hypnotriod.beatsqueezereditor.constants.CNotes;
-import com.hypnotriod.beatsqueezereditor.constants.CStrings;
-import com.hypnotriod.beatsqueezereditor.constants.CStyle;
-import com.hypnotriod.beatsqueezereditor.model.vo.OptionsVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.PlayEventVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleDragEventVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
+import com.hypnotriod.beatsqueezereditor.constants.Config;
+import com.hypnotriod.beatsqueezereditor.constants.Groups;
+import com.hypnotriod.beatsqueezereditor.constants.Notes;
+import com.hypnotriod.beatsqueezereditor.constants.Strings;
+import com.hypnotriod.beatsqueezereditor.constants.Styles;
+import com.hypnotriod.beatsqueezereditor.model.entity.SampleOptions;
+import com.hypnotriod.beatsqueezereditor.model.dto.PlayEvent;
+import com.hypnotriod.beatsqueezereditor.model.dto.SampleDragEvent;
+import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
 import com.hypnotriod.beatsqueezereditor.tools.TooltipHelper;
 import com.hypnotriod.beatsqueezereditor.view.component.SampleListCell;
@@ -118,13 +118,13 @@ public class MainSceneViewController extends BaseViewController implements Initi
     @FXML
     private Label labelNormalize;
 
-    private HashMap<String, SampleVO> sampleVOs;
-    private OptionsVO optionsVO;
+    private HashMap<String, Sample> samples;
+    private SampleOptions sampleOptions;
     private ArrayList<ComboBox<String>> cbsFilters;
 
-    public void setSampleVOs(HashMap<String, SampleVO> sampleVOs, OptionsVO optionsVO) {
-        this.sampleVOs = sampleVOs;
-        this.optionsVO = optionsVO;
+    public void setSamples(HashMap<String, Sample> samples, SampleOptions sampleOptions) {
+        this.samples = samples;
+        this.sampleOptions = sampleOptions;
 
         refreshSelection();
         refreshFiltersValues();
@@ -146,19 +146,19 @@ public class MainSceneViewController extends BaseViewController implements Initi
         Menu menu;
         RadioMenuItem radioMenuItem;
         ToggleGroup toggleGroup;
-        for (i = 0; i < CStrings.MENUES_OPTIONS.length; i++) {
-            menu = new Menu(CStrings.MENUES_OPTIONS[i]);
+        for (i = 0; i < Strings.MENUES_OPTIONS.length; i++) {
+            menu = new Menu(Strings.MENUES_OPTIONS[i]);
             menuOptions.getItems().add(menu);
 
             switch (i) {
                 case 0:
                     toggleGroup = new ToggleGroup();
-                    for (String value : CStrings.MENUES_NOTES_NAMES_DISPLAY) {
+                    for (String value : Strings.MENUES_NOTES_NAMES_DISPLAY) {
                         radioMenuItem = new RadioMenuItem(value);
                         radioMenuItem.setToggleGroup(toggleGroup);
                         radioMenuItem.setOnAction(onMacroNotesNamesDisplay);
                         menu.getItems().add(radioMenuItem);
-                        if (value.equals(CStrings.MENUES_NOTES_NAMES_DISPLAY[0])) {
+                        if (value.equals(Strings.MENUES_NOTES_NAMES_DISPLAY[0])) {
                             radioMenuItem.setSelected(true);
                         }
                     }
@@ -171,48 +171,48 @@ public class MainSceneViewController extends BaseViewController implements Initi
         int i;
         Menu menu;
         MenuItem menuItem;
-        for (i = 0; i < CStrings.MENUES_MACRO.length; i++) {
-            menu = new Menu(CStrings.MENUES_MACRO[i]);
+        for (i = 0; i < Strings.MENUES_MACRO.length; i++) {
+            menu = new Menu(Strings.MENUES_MACRO[i]);
             menuMacro.getItems().add(menu);
 
             switch (i) {
                 case 0:
-                    for (String value : CStrings.MENUES_PAN) {
+                    for (String value : Strings.MENUES_PAN) {
                         menuItem = new MenuItem(value);
                         menuItem.setOnAction(onMacroPanorama);
                         menu.getItems().add(menuItem);
                     }
                     break;
                 case 1:
-                    for (String value : CGroups.GROUPS_NAMES) {
+                    for (String value : Groups.GROUPS_NAMES) {
                         menuItem = new MenuItem(value);
                         menuItem.setOnAction(onMacroGroup);
                         menu.getItems().add(menuItem);
                     }
                     break;
                 case 2:
-                    for (String value : CStrings.ENABLE_DISABLE) {
+                    for (String value : Strings.ENABLE_DISABLE) {
                         menuItem = new MenuItem(value);
                         menuItem.setOnAction(onMacroDynamic);
                         menu.getItems().add(menuItem);
                     }
                     break;
                 case 3:
-                    for (String value : CStrings.ENABLE_DISABLE) {
+                    for (String value : Strings.ENABLE_DISABLE) {
                         menuItem = new MenuItem(value);
                         menuItem.setOnAction(onMacroDisableNoteOff);
                         menu.getItems().add(menuItem);
                     }
                     break;
                 case 4:
-                    for (String value : CStrings.ENABLE_DISABLE) {
+                    for (String value : Strings.ENABLE_DISABLE) {
                         menuItem = new MenuItem(value);
                         menuItem.setOnAction(onMacroLoop);
                         menu.getItems().add(menuItem);
                     }
                     break;
                 case 5:
-                    for (String value : CStrings.MENUES_NOTES_SHIFT_SEMITONES) {
+                    for (String value : Strings.MENUES_NOTES_SHIFT_SEMITONES) {
                         menuItem = new MenuItem(value);
                         menuItem.setOnAction(onMacroNote);
                         menu.getItems().add(menuItem);
@@ -227,11 +227,11 @@ public class MainSceneViewController extends BaseViewController implements Initi
         Menu menuItem;
         CustomMenuItem customMenuItem;
         ComboBox<String> comboBox;
-        for (String menuName : CStrings.MENUES_FILTERS) {
+        for (String menuName : Strings.MENUES_FILTERS) {
             menuItem = new Menu(menuName);
             menuFilters.getItems().add(menuItem);
             comboBox = new ComboBox<>();
-            comboBox.getItems().addAll(CStrings.FILTERS_VALUES);
+            comboBox.getItems().addAll(Strings.FILTERS_VALUES);
             comboBox.getSelectionModel().selectedItemProperty().addListener(chbFilterChangeListener);
             cbsFilters.add(comboBox);
             customMenuItem = new CustomMenuItem(comboBox, false);
@@ -243,8 +243,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
 
     public void refreshFiltersValues() {
         cbFiltersUpdateInProgress = true;
-        for (int i = 0; i < optionsVO.filtersValues.length; i++) {
-            cbsFilters.get(i).getSelectionModel().select(optionsVO.filtersValues[i] + 1);
+        for (int i = 0; i < sampleOptions.filtersValues.length; i++) {
+            cbsFilters.get(i).getSelectionModel().select(sampleOptions.filtersValues[i] + 1);
         }
         cbFiltersUpdateInProgress = false;
     }
@@ -253,8 +253,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
         if (cbFiltersUpdateInProgress) {
             return;
         }
-        for (int i = 0; i < optionsVO.filtersValues.length; i++) {
-            optionsVO.filtersValues[i] = (byte) (cbsFilters.get(i).getSelectionModel().getSelectedIndex() - 1);
+        for (int i = 0; i < sampleOptions.filtersValues.length; i++) {
+            sampleOptions.filtersValues[i] = (byte) (cbsFilters.get(i).getSelectionModel().getSelectedIndex() - 1);
         }
     }
 
@@ -263,7 +263,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
         listView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> listView) {
-                return new SampleListCell(sampleVOs, self);
+                return new SampleListCell(samples, self);
             }
         });
         listView.setOnDragDropped(onListViewDragDropped);
@@ -274,13 +274,13 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     private void initComboboxes() {
-        cbNoteID.getItems().addAll((Object[]) CNotes.NOTES_NAMES);
-        cbGroupID.getItems().addAll((Object[]) CGroups.GROUPS_NAMES);
-        cbNormalize.getItems().addAll((Object[]) CStrings.NORMALIZE_DB_VALUES);
-        cbPitch.getItems().addAll((Object[]) CStrings.MENUES_PITCH_SEMITONES);
-        cbPitchStep.getItems().addAll((Object[]) CStrings.MENUES_PITCH_STEP_SEMITONES);
+        cbNoteID.getItems().addAll((Object[]) Notes.NOTES_NAMES);
+        cbGroupID.getItems().addAll((Object[]) Groups.GROUPS_NAMES);
+        cbNormalize.getItems().addAll((Object[]) Strings.NORMALIZE_DB_VALUES);
+        cbPitch.getItems().addAll((Object[]) Strings.MENUES_PITCH_SEMITONES);
+        cbPitchStep.getItems().addAll((Object[]) Strings.MENUES_PITCH_STEP_SEMITONES);
 
-        cbPitch.getSelectionModel().select(CStrings.MENUES_PITCH_SEMITONES.length / 2);
+        cbPitch.getSelectionModel().select(Strings.MENUES_PITCH_SEMITONES.length / 2);
         cbPitchStep.getSelectionModel().select(0);
     }
 
@@ -298,37 +298,37 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     public void refreshSelection() {
-        cbNoteID.getSelectionModel().select(this.optionsVO.noteID);
-        cbGroupID.getSelectionModel().select(this.optionsVO.groupID);
-        cbNormalize.getSelectionModel().select(this.optionsVO.normalizeIndex);
-        chbDynamic.setSelected(this.optionsVO.isDynamic);
-        chbDisableNoteOff.setSelected(this.optionsVO.playThrough);
-        chbLoop.setSelected(this.optionsVO.loopEnabled);
-        chbStereo.setSelected(this.optionsVO.stereo);
-        sliderPan.setValue(this.optionsVO.panorama);
-        updateLabelSliderValue(this.optionsVO.panorama);
+        cbNoteID.getSelectionModel().select(this.sampleOptions.noteID);
+        cbGroupID.getSelectionModel().select(this.sampleOptions.groupID);
+        cbNormalize.getSelectionModel().select(this.sampleOptions.normalizeIndex);
+        chbDynamic.setSelected(this.sampleOptions.isDynamic);
+        chbDisableNoteOff.setSelected(this.sampleOptions.playThrough);
+        chbLoop.setSelected(this.sampleOptions.loopEnabled);
+        chbStereo.setSelected(this.sampleOptions.stereo);
+        sliderPan.setValue(this.sampleOptions.panorama);
+        updateLabelSliderValue(this.sampleOptions.panorama);
     }
 
     private void initTooltips() {
-        cbPitch.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PITCH));
-        cbPitchStep.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PITCH_STEP));
-        cbNoteID.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_NOTE));
-        cbGroupID.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_GROUP_ID));
-        cbNormalize.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_NORMALIZE));
-        sliderPan.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PANORAMA));
-        chbDynamic.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_DYNAMIC));
-        chbDisableNoteOff.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_DISABLE_NOTE_OFF));
-        chbLoop.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_LOOP));
-        chbStereo.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_STEREO));
+        cbPitch.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH));
+        cbPitchStep.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH_STEP));
+        cbNoteID.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE));
+        cbGroupID.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
+        cbNormalize.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NORMALIZE));
+        sliderPan.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PANORAMA));
+        chbDynamic.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DYNAMIC));
+        chbDisableNoteOff.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DISABLE_NOTE_OFF));
+        chbLoop.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_LOOP));
+        chbStereo.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_STEREO));
 
-        labelPitch.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PITCH));
-        labelPitchStep.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PITCH_STEP));
-        labelNote.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_NOTE));
-        labelCutGroup.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_GROUP_ID));
-        labelNormalize.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_NORMALIZE));
-        labelsSiderValue.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_PANORAMA));
+        labelPitch.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH));
+        labelPitchStep.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH_STEP));
+        labelNote.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE));
+        labelCutGroup.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
+        labelNormalize.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NORMALIZE));
+        labelsSiderValue.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PANORAMA));
 
-        btnSort.setTooltip(TooltipHelper.getTooltip1(CStrings.TOOLTIP_REFRESH));
+        btnSort.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_REFRESH));
     }
 
     public void showLoading() {
@@ -350,7 +350,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
             ArrayList<String> arrayList = new ArrayList<>();
             ObservableList observableList = FXCollections.observableArrayList();
 
-            for (Map.Entry<String, SampleVO> entry : this.sampleVOs.entrySet()) {
+            for (Map.Entry<String, Sample> entry : this.samples.entrySet()) {
                 arrayList.add(entry.getKey());
             }
 
@@ -362,7 +362,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
         if (sort) {
             listView.getItems().sort(listViewComparator);
         }
-        btnSort.setDisable(this.sampleVOs.isEmpty());
+        btnSort.setDisable(this.samples.isEmpty());
 
         listView.refresh();
     }
@@ -370,8 +370,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     Comparator<String> listViewComparator = new Comparator<String>() {
         @Override
         public int compare(String key1, String key2) {
-            int index1 = sampleVOs.get(key1).noteID;
-            int index2 = sampleVOs.get(key2).noteID;
+            int index1 = samples.get(key1).noteID;
+            int index2 = samples.get(key2).noteID;
             if (index1 < index2) {
                 return -1;
             } else if (index1 > index2) {
@@ -382,9 +382,9 @@ public class MainSceneViewController extends BaseViewController implements Initi
         }
     };
 
-    Comparator<SampleVO> sampleVOsComparator = new Comparator<SampleVO>() {
+    Comparator<Sample> samplesComparator = new Comparator<Sample>() {
         @Override
-        public int compare(SampleVO key1, SampleVO key2) {
+        public int compare(Sample key1, Sample key2) {
             int index1 = key1.noteID;
             int index2 = key2.noteID;
             if (index1 < index2) {
@@ -415,7 +415,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
         @Override
         public void handle(DragEvent event) {
             dragAndDropInProgress = true;
-            listView.setStyle(CStyle.BORDER_HIGHLIGHT);
+            listView.setStyle(Styles.BORDER_HIGHLIGHT);
             event.consume();
         }
     };
@@ -444,22 +444,22 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     private void updateLabelSliderValue(long value) {
-        labelsSiderValue.setText(String.format(CStrings.PAN_VALUE, value));
+        labelsSiderValue.setText(String.format(Strings.PAN_VALUE, value));
     }
 
     private void applyStereoPan(float range, int minSize) {
-        ArrayList<SampleVO> sortedSampleVOs = new ArrayList<>();
-        for (Map.Entry<String, SampleVO> entry : this.sampleVOs.entrySet()) {
-            sortedSampleVOs.add(entry.getValue());
+        ArrayList<Sample> sortedSamples = new ArrayList<>();
+        for (Map.Entry<String, Sample> entry : this.samples.entrySet()) {
+            sortedSamples.add(entry.getValue());
         }
-        Collections.sort(sortedSampleVOs, sampleVOsComparator);
+        Collections.sort(sortedSamples, samplesComparator);
 
-        if (sortedSampleVOs.size() >= minSize) {
-            float position = CConfig.PANORAMA_MIN_VALUE * range;
-            float step = (position * -2) / (sortedSampleVOs.size() - 1);
+        if (sortedSamples.size() >= minSize) {
+            float position = Config.PANORAMA_MIN_VALUE * range;
+            float step = (position * -2) / (sortedSamples.size() - 1);
 
-            for (SampleVO sampleVO : sortedSampleVOs) {
-                sampleVO.panorama = (int) position;
+            for (Sample sample : sortedSamples) {
+                sample.panorama = (int) position;
                 position += step;
             }
         }
@@ -468,27 +468,27 @@ public class MainSceneViewController extends BaseViewController implements Initi
     EventHandler<ActionEvent> onMacroNotesNamesDisplay = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), CStrings.MENUES_NOTES_NAMES_DISPLAY);
+            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), Strings.MENUES_NOTES_NAMES_DISPLAY);
             switch (itemIndex) {
                 case 0:
-                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_C5;
+                    Notes.NOTES_NAMES = Notes.NOTES_NAMES_C5;
                     break;
                 case 1:
-                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_C4;
+                    Notes.NOTES_NAMES = Notes.NOTES_NAMES_C4;
                     break;
                 case 2:
-                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_C3;
+                    Notes.NOTES_NAMES = Notes.NOTES_NAMES_C3;
                     break;
                 case 3:
-                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_NUMBERS;
+                    Notes.NOTES_NAMES = Notes.NOTES_NAMES_NUMBERS;
                     break;
                 case 4:
-                    CNotes.NOTES_NAMES = CNotes.NOTES_NAMES_PERCUSSION;
+                    Notes.NOTES_NAMES = Notes.NOTES_NAMES_PERCUSSION;
                     break;
             }
             itemIndex = cbNoteID.getSelectionModel().getSelectedIndex();
             cbNoteID.getItems().clear();
-            cbNoteID.getItems().addAll((Object[]) CNotes.NOTES_NAMES);
+            cbNoteID.getItems().addAll((Object[]) Notes.NOTES_NAMES);
             cbNoteID.getSelectionModel().select(itemIndex);
             refreshListView(true, true);
         }
@@ -497,7 +497,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
     EventHandler<ActionEvent> onMacroPanorama = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), CStrings.MENUES_PAN);
+            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), Strings.MENUES_PAN);
             switch (itemIndex) {
                 case 0:
                     applyStereoPan(1.0f, 2);
@@ -522,8 +522,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     EventHandler<ActionEvent> onMacroGroup = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), CGroups.GROUPS_NAMES);
-            for (Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
+            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), Groups.GROUPS_NAMES);
+            for (Map.Entry<String, Sample> entry : samples.entrySet()) {
                 entry.getValue().groupID = itemIndex;
             }
             refreshListView(false, false);
@@ -533,8 +533,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     EventHandler<ActionEvent> onMacroDynamic = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), CStrings.ENABLE_DISABLE);
-            for (Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
+            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), Strings.ENABLE_DISABLE);
+            for (Map.Entry<String, Sample> entry : samples.entrySet()) {
                 entry.getValue().dynamic = (itemIndex == 0);
             }
             refreshListView(false, false);
@@ -544,8 +544,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     EventHandler<ActionEvent> onMacroDisableNoteOff = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), CStrings.ENABLE_DISABLE);
-            for (Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
+            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), Strings.ENABLE_DISABLE);
+            for (Map.Entry<String, Sample> entry : samples.entrySet()) {
                 entry.getValue().disableNoteOff = (itemIndex == 0);
             }
             refreshListView(false, false);
@@ -555,8 +555,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     EventHandler<ActionEvent> onMacroLoop = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent event) {
-            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), CStrings.ENABLE_DISABLE);
-            for (Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
+            int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), Strings.ENABLE_DISABLE);
+            for (Map.Entry<String, Sample> entry : samples.entrySet()) {
                 if (entry.getValue().loop != null) {
                     entry.getValue().loopEnabled = (itemIndex == 0);
                 }
@@ -569,25 +569,25 @@ public class MainSceneViewController extends BaseViewController implements Initi
         @Override
         public void handle(ActionEvent event) {
             String text = ((MenuItem) event.getSource()).getText();
-            int pitch1Index = CStrings.MENUES_NOTES_SHIFT_SEMITONES.length / 2;
-            int pitch = StringUtils.getIndexOfStringInArray(text, CStrings.MENUES_NOTES_SHIFT_SEMITONES) - pitch1Index;
+            int pitch1Index = Strings.MENUES_NOTES_SHIFT_SEMITONES.length / 2;
+            int pitch = StringUtils.getIndexOfStringInArray(text, Strings.MENUES_NOTES_SHIFT_SEMITONES) - pitch1Index;
 
             if (pitch >= 0) {
                 pitch++;
             }
 
-            if (pitch < -CNotes.SEMITONES_IN_OCTAVE_NUM) {
-                pitch = (-CNotes.SEMITONES_IN_OCTAVE_NUM - pitch + 1) * -CNotes.SEMITONES_IN_OCTAVE_NUM;
-            } else if (pitch > CNotes.SEMITONES_IN_OCTAVE_NUM) {
-                pitch = (pitch - CNotes.SEMITONES_IN_OCTAVE_NUM + 1) * CNotes.SEMITONES_IN_OCTAVE_NUM;
+            if (pitch < -Notes.SEMITONES_IN_OCTAVE_NUM) {
+                pitch = (-Notes.SEMITONES_IN_OCTAVE_NUM - pitch + 1) * -Notes.SEMITONES_IN_OCTAVE_NUM;
+            } else if (pitch > Notes.SEMITONES_IN_OCTAVE_NUM) {
+                pitch = (pitch - Notes.SEMITONES_IN_OCTAVE_NUM + 1) * Notes.SEMITONES_IN_OCTAVE_NUM;
             }
 
-            for (Map.Entry<String, SampleVO> entry : sampleVOs.entrySet()) {
+            for (Map.Entry<String, Sample> entry : samples.entrySet()) {
                 entry.getValue().noteID += pitch;
                 if (entry.getValue().noteID < 0) {
                     entry.getValue().noteID = 0;
-                } else if (entry.getValue().noteID >= CNotes.NOTES_NAMES.length) {
-                    entry.getValue().noteID = (CNotes.NOTES_NAMES.length - 1);
+                } else if (entry.getValue().noteID >= Notes.NOTES_NAMES.length) {
+                    entry.getValue().noteID = (Notes.NOTES_NAMES.length - 1);
                 }
             }
             refreshListView(false, false);
@@ -597,27 +597,27 @@ public class MainSceneViewController extends BaseViewController implements Initi
     ChangeListener<String> cbPitchChangeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            int pitch0Index = CStrings.MENUES_PITCH_SEMITONES.length / 2;
-            int pitch = StringUtils.getIndexOfStringInArray(newValue, CStrings.MENUES_PITCH_SEMITONES) - pitch0Index;
+            int pitch0Index = Strings.MENUES_PITCH_SEMITONES.length / 2;
+            int pitch = StringUtils.getIndexOfStringInArray(newValue, Strings.MENUES_PITCH_SEMITONES) - pitch0Index;
 
-            if (pitch < -CNotes.SEMITONES_IN_OCTAVE_NUM) {
-                pitch = (-CNotes.SEMITONES_IN_OCTAVE_NUM - pitch + 1) * -CNotes.SEMITONES_IN_OCTAVE_NUM;
-            } else if (pitch > CNotes.SEMITONES_IN_OCTAVE_NUM) {
-                pitch = (pitch - CNotes.SEMITONES_IN_OCTAVE_NUM + 1) * CNotes.SEMITONES_IN_OCTAVE_NUM;
+            if (pitch < -Notes.SEMITONES_IN_OCTAVE_NUM) {
+                pitch = (-Notes.SEMITONES_IN_OCTAVE_NUM - pitch + 1) * -Notes.SEMITONES_IN_OCTAVE_NUM;
+            } else if (pitch > Notes.SEMITONES_IN_OCTAVE_NUM) {
+                pitch = (pitch - Notes.SEMITONES_IN_OCTAVE_NUM + 1) * Notes.SEMITONES_IN_OCTAVE_NUM;
             }
 
-            optionsVO.pitch = pitch;
+            sampleOptions.pitch = pitch;
         }
     };
 
     ChangeListener<String> cbPitchStepListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            int step = StringUtils.getIndexOfStringInArray(newValue, CStrings.MENUES_PITCH_STEP_SEMITONES) + 1;
-            if (step >= CNotes.SEMITONES_IN_OCTAVE_NUM) {
-                step = ((step % CNotes.SEMITONES_IN_OCTAVE_NUM) + 1) * CNotes.SEMITONES_IN_OCTAVE_NUM;
+            int step = StringUtils.getIndexOfStringInArray(newValue, Strings.MENUES_PITCH_STEP_SEMITONES) + 1;
+            if (step >= Notes.SEMITONES_IN_OCTAVE_NUM) {
+                step = ((step % Notes.SEMITONES_IN_OCTAVE_NUM) + 1) * Notes.SEMITONES_IN_OCTAVE_NUM;
             }
-            optionsVO.pitchStep = step;
+            sampleOptions.pitchStep = step;
         }
     };
 
@@ -632,7 +632,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
             if (newValue != null) {
-                optionsVO.noteID = CStrings.getIndexOfStringInArray(newValue, CNotes.NOTES_NAMES);
+                sampleOptions.noteID = Strings.getIndexOfStringInArray(newValue, Notes.NOTES_NAMES);
             }
         }
     };
@@ -640,49 +640,49 @@ public class MainSceneViewController extends BaseViewController implements Initi
     ChangeListener<String> cbGroupChangeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            optionsVO.groupID = CStrings.getIndexOfStringInArray(newValue, CGroups.GROUPS_NAMES);
+            sampleOptions.groupID = Strings.getIndexOfStringInArray(newValue, Groups.GROUPS_NAMES);
         }
     };
 
     ChangeListener<String> cbNormalizeChangeListener = new ChangeListener<String>() {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
-            optionsVO.normalizeIndex = CStrings.getIndexOfStringInArray(newValue, CStrings.NORMALIZE_DB_VALUES);
+            sampleOptions.normalizeIndex = Strings.getIndexOfStringInArray(newValue, Strings.NORMALIZE_DB_VALUES);
         }
     };
 
     ChangeListener<Boolean> chbDynamicChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            optionsVO.isDynamic = newValue;
+            sampleOptions.isDynamic = newValue;
         }
     };
 
     ChangeListener<Boolean> chbDisableNoteOffChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            optionsVO.playThrough = newValue;
+            sampleOptions.playThrough = newValue;
         }
     };
 
     ChangeListener<Boolean> chbLoopChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            optionsVO.loopEnabled = newValue;
+            sampleOptions.loopEnabled = newValue;
         }
     };
 
     ChangeListener<Boolean> chbStereoChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            optionsVO.stereo = newValue;
+            sampleOptions.stereo = newValue;
         }
     };
 
     ChangeListener<Number> sliderPanChangeListener = new ChangeListener<Number>() {
         @Override
         public void changed(ObservableValue<? extends Number> selected, Number oldValue, Number newValue) {
-            optionsVO.panorama = newValue.longValue();
+            sampleOptions.panorama = newValue.longValue();
             updateLabelSliderValue(newValue.longValue());
         }
     };
@@ -693,8 +693,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     @Override
-    public void onSampleListCellPlay(SampleVO sampleVO, double position) {
-        sendToView(ON_SAMPLE_PLAY, new PlayEventVO(sampleVO, position));
+    public void onSampleListCellPlay(Sample sample, double position) {
+        sendToView(ON_SAMPLE_PLAY, new PlayEvent(sample, position));
     }
 
     @Override
@@ -706,14 +706,14 @@ public class MainSceneViewController extends BaseViewController implements Initi
     @Override
     public void onSampleListDragExited() {
         if (dragAndDropInProgress) {
-            listView.setStyle(CStyle.BORDER_HIGHLIGHT);
+            listView.setStyle(Styles.BORDER_HIGHLIGHT);
         }
     }
 
     @Override
-    public void onSampleListCellFileDragged(SampleVO sampleVO, DragEvent event) {
+    public void onSampleListCellFileDragged(Sample sample, DragEvent event) {
         dragAndDropInProgress = false;
-        sendToView(ON_SAMPLE_DRAG, new SampleDragEventVO(sampleVO, event));
+        sendToView(ON_SAMPLE_DRAG, new SampleDragEvent(sample, event));
     }
 
     @FXML

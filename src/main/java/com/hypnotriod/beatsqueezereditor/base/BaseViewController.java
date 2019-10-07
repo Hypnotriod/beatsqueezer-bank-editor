@@ -6,13 +6,13 @@ package com.hypnotriod.beatsqueezereditor.base;
  */
 public class BaseViewController {
 
-    private BaseView _view;
+    private BaseView view;
 
     public void setView(BaseView baseView) {
-        _view = baseView;
+        view = baseView;
     }
 
     protected void sendToView(String type, Object data) {
-        _view.handleViewControllerNotification(type, data);
+        view.handleViewControllerNotification(type, data);
     }
 }

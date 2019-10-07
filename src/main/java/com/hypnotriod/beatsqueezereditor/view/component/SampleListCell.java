@@ -2,8 +2,8 @@ package com.hypnotriod.beatsqueezereditor.view.component;
 
 import com.hypnotriod.beatsqueezereditor.view.controller.SampleListCellViewController;
 import com.hypnotriod.beatsqueezereditor.Main;
-import com.hypnotriod.beatsqueezereditor.constants.CResources;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
+import com.hypnotriod.beatsqueezereditor.constants.Resources;
+import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import java.io.IOException;
 import java.util.HashMap;
 import javafx.fxml.FXMLLoader;
@@ -17,12 +17,12 @@ import javafx.scene.layout.AnchorPane;
 public class SampleListCell extends ListCell<String> {
 
     private final SampleListCellHandler handler;
-    private final HashMap<String, SampleVO> sampleVOs;
+    private final HashMap<String, Sample> samples;
     private AnchorPane content = null;
     private SampleListCellViewController cellController = null;
 
-    public SampleListCell(HashMap<String, SampleVO> sampleVOs, SampleListCellHandler handler) {
-        this.sampleVOs = sampleVOs;
+    public SampleListCell(HashMap<String, Sample> samples, SampleListCellHandler handler) {
+        this.samples = samples;
         this.handler = handler;
     }
 
@@ -32,7 +32,7 @@ public class SampleListCell extends ListCell<String> {
         if (key != null && empty == false && content == null) {
             try {
                 FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(Main.class.getResource(CResources.PATH_SAMPLE_LIST_CELL));
+                loader.setLocation(Main.class.getResource(Resources.PATH_SAMPLE_LIST_CELL));
                 content = loader.load();
                 cellController = loader.getController();
             } catch (IOException e) {
@@ -46,9 +46,9 @@ public class SampleListCell extends ListCell<String> {
             content.setFocusTraversable(false);
         }
 
-        if (key != null && cellController != null && sampleVOs.get(key) != null) {
+        if (key != null && cellController != null && samples.get(key) != null) {
             cellController.setHandler(handler);
-            cellController.setSampleVO(sampleVOs.get(key), key);
+            cellController.setSample(samples.get(key), key);
         }
     }
 }

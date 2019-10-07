@@ -9,18 +9,18 @@ import com.hypnotriod.beatsqueezereditor.model.MainModel;
  */
 public abstract class BaseView {
 
-    private final Facade _facade;
+    private final Facade facade;
 
     public Facade getFacade() {
-        return _facade;
+        return facade;
     }
 
     public BaseView(Facade facade) {
-        _facade = facade;
+        this.facade = facade;
     }
 
     protected MainModel getMainModel() {
-        return _facade.getMainModel();
+        return facade.getMainModel();
     }
 
     protected abstract void handleViewControllerNotification(String name, Object data);

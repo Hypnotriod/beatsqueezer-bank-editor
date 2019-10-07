@@ -1,13 +1,14 @@
 package com.hypnotriod.beatsqueezereditor.controller;
 
 import com.hypnotriod.beatsqueezereditor.base.BaseController;
-import com.hypnotriod.beatsqueezereditor.constants.CConfig;
-import com.hypnotriod.beatsqueezereditor.constants.CStrings;
+import com.hypnotriod.beatsqueezereditor.constants.Config;
+import com.hypnotriod.beatsqueezereditor.constants.FileExtensions;
+import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleLoopVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.SustainLoopVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.WaveHeaderVO;
+import com.hypnotriod.beatsqueezereditor.model.entity.SampleLoop;
+import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
+import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
+import com.hypnotriod.beatsqueezereditor.model.entity.WaveHeader;
 import com.hypnotriod.beatsqueezereditor.tools.NoteFrequencyUtil;
 import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
 import com.hypnotriod.beatsqueezereditor.tools.WavePCMNormalizeTool;
@@ -29,10 +30,10 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public class LoadSamplesController extends BaseController {
 
-    private boolean _truncatedSampleMessageShown = false;
+    private boolean truncatedSampleMessageShown = false;
 
     private final FileChooser.ExtensionFilter filter
-            = new FileChooser.ExtensionFilter(CConfig.WAVE_FILE_BROWSE_NAME, CConfig.WAVE_FILE_BROWSE_FILTER_WAV, CConfig.WAVE_FILE_BROWSE_FILTER_WAVE);
+            = new FileChooser.ExtensionFilter(FileExtensions.WAVE_FILE_BROWSE_NAME, FileExtensions.WAVE_FILE_BROWSE_FILTER_WAV, FileExtensions.WAVE_FILE_BROWSE_FILTER_WAVE);
 
     public LoadSamplesController(Facade facade) {
         super(facade);
@@ -42,7 +43,7 @@ public class LoadSamplesController extends BaseController {
         List<File> result;
         FileChooser fileChooser = getMainModel().getFileChooser();
 
-        fileChooser.setTitle(CStrings.LOAD_SAMPLES);
+        fileChooser.setTitle(Strings.LOAD_SAMPLES);
         fileChooser.getExtensionFilters().clear();
         fileChooser.getExtensionFilters().add(filter);
         fileChooser.setInitialFileName(null);
@@ -65,8 +66,8 @@ public class LoadSamplesController extends BaseController {
 
     private void parseFiles(List<File> files, int pitchStep, int pitch) {
         int i;
-        SampleVO sampleVO;
-        WaveHeaderVO waveHeaderVO;
+        Sample sample;
+        WaveHeader waveHeader;
         int sampleRate;
         File additionalFile;
         ArrayList<File> additionalFiles = new ArrayList<>();
@@ -79,34 +80,34 @@ public class LoadSamplesController extends BaseController {
             } else {
                 for (i = 0; i < pitchStep; i++) {
                     try {
-                        sampleRate = NoteFrequencyUtil.getPitchedSampleRate(CConfig.SAMPLE_RATE, i + pitch);
-                        waveHeaderVO = new WaveHeaderVO(file);
-                        sampleVO = new SampleVO(getMainModel().getNoteIdOfNextSample());
-                        sampleVO.pitch = i;
-                        sampleVO.groupID = getMainModel().optionsVO.groupID;
-                        sampleVO.dynamic = getMainModel().optionsVO.isDynamic;
-                        sampleVO.panorama = getMainModel().optionsVO.panorama;
-                        sampleVO.disableNoteOff = getMainModel().optionsVO.playThrough;
-                        sampleVO.fileName = StringUtils.removeFileExtention(file.getName());
-                        sampleVO.fileRealName = sampleVO.fileName;
-                        sampleVO.filePath = file.getPath();
-                        sampleVO.waveHeader = waveHeaderVO;
-                        sampleVO.channels = (getMainModel().optionsVO.stereo && sampleVO.waveHeader.channels == 2) ? 2 : 1;
-                        sampleVO.samplesData = convertWAVEData(file, sampleRate, sampleVO.channels);
-                        parseLoopPoints(sampleVO, sampleRate, CConfig.EXT_DEFAULT, sampleVO.waveHeader.channels);
-                        if (sampleVO.loop != null) {
-                            sampleVO.loopEnabled = getMainModel().optionsVO.loopEnabled;
+                        sampleRate = NoteFrequencyUtil.getPitchedSampleRate(Config.SAMPLE_RATE, i + pitch);
+                        waveHeader = new WaveHeader(file);
+                        sample = new Sample(getMainModel().getNoteIdOfNextSample());
+                        sample.pitch = i;
+                        sample.groupID = getMainModel().sampleOptions.groupID;
+                        sample.dynamic = getMainModel().sampleOptions.isDynamic;
+                        sample.panorama = getMainModel().sampleOptions.panorama;
+                        sample.disableNoteOff = getMainModel().sampleOptions.playThrough;
+                        sample.fileName = StringUtils.removeFileExtension(file.getName());
+                        sample.fileRealName = sample.fileName;
+                        sample.filePath = file.getPath();
+                        sample.waveHeader = waveHeader;
+                        sample.channels = (getMainModel().sampleOptions.stereo && sample.waveHeader.channels == 2) ? 2 : 1;
+                        sample.samplesData = convertWAVEData(file, sampleRate, sample.channels);
+                        parseLoopPoints(sample, sampleRate, Sample.EXT_DEFAULT, sample.waveHeader.channels);
+                        if (sample.loop != null) {
+                            sample.loopEnabled = getMainModel().sampleOptions.loopEnabled;
                         }
                         if (i > 0) {
-                            sampleVO.fileName += String.format(CStrings.SAMPLE_PITCHED, i);
+                            sample.fileName += String.format(Strings.SAMPLE_PITCHED, i);
                         }
 
-                        getMainModel().addSampleVO(sampleVO);
+                        getMainModel().addSample(sample);
                     } catch (OutOfMemoryError e) {
-                        showMessageBoxError(CStrings.OUT_OF_MEMORY_ERROR);
+                        showMessageBoxError(Strings.OUT_OF_MEMORY_ERROR);
                         return;
                     } catch (Error | Exception e) {
-                        String message = String.format(CStrings.WAV_FILE_ERROR, e.getMessage());
+                        String message = String.format(Strings.WAV_FILE_ERROR, e.getMessage());
                         showMessageBoxError(message);
                         break;
                     }
@@ -123,51 +124,51 @@ public class LoadSamplesController extends BaseController {
         String extStr;
         String fileName;
 
-        fileName = StringUtils.removeFileExtention(file.getName());
+        fileName = StringUtils.removeFileExtension(file.getName());
         extStr = fileName.substring(fileName.length() - 2, fileName.length());
 
-        return (extStr.equals(CConfig.EXT_P) || extStr.equals(CConfig.EXT_F)) ? file : null;
+        return (extStr.equals(Sample.EXT_P) || extStr.equals(Sample.EXT_F)) ? file : null;
     }
 
     public void manageAdditionalSample(File file, String fileName, int pitch) {
         String extStr;
         String fileNameNoExt;
         int sampleRate;
-        WaveHeaderVO waveHeaderVO;
-        SampleVO sampleVO;
+        WaveHeader waveHeader;
+        Sample sample;
         boolean managed = false;
 
         if (fileName == null) {
-            fileName = StringUtils.removeFileExtention(file.getName());
+            fileName = StringUtils.removeFileExtension(file.getName());
         }
         extStr = fileName.substring(fileName.length() - 2, fileName.length());
 
         fileNameNoExt = fileName.substring(0, fileName.length() - 2);
-        for (String key : getMainModel().sampleVOs.keySet()) {
-            sampleVO = getMainModel().sampleVOs.get(key);
-            if (sampleVO.fileRealName.equals(fileNameNoExt)) {
+        for (String key : getMainModel().samples.keySet()) {
+            sample = getMainModel().samples.get(key);
+            if (sample.fileRealName.equals(fileNameNoExt)) {
                 try {
-                    sampleRate = NoteFrequencyUtil.getPitchedSampleRate(CConfig.SAMPLE_RATE, sampleVO.pitch + pitch);
-                    waveHeaderVO = new WaveHeaderVO(file);
+                    sampleRate = NoteFrequencyUtil.getPitchedSampleRate(Config.SAMPLE_RATE, sample.pitch + pitch);
+                    waveHeader = new WaveHeader(file);
                     switch (extStr) {
-                        case CConfig.EXT_DEFAULT:
-                            sampleVO.waveHeader = waveHeaderVO;
-                            sampleVO.samplesData = convertWAVEData(file, sampleRate, sampleVO.channels);
+                        case Sample.EXT_DEFAULT:
+                            sample.waveHeader = waveHeader;
+                            sample.samplesData = convertWAVEData(file, sampleRate, sample.channels);
                             break;
-                        case CConfig.EXT_P:
-                            sampleVO.waveHeaderP = waveHeaderVO;
-                            sampleVO.samplesDataP = convertWAVEData(file, sampleRate, sampleVO.channels);
+                        case Sample.EXT_P:
+                            sample.waveHeaderP = waveHeader;
+                            sample.samplesDataP = convertWAVEData(file, sampleRate, sample.channels);
                             break;
                         default:
-                            sampleVO.waveHeaderF = waveHeaderVO;
-                            sampleVO.samplesDataF = convertWAVEData(file, sampleRate, sampleVO.channels);
+                            sample.waveHeaderF = waveHeader;
+                            sample.samplesDataF = convertWAVEData(file, sampleRate, sample.channels);
                             break;
                     }
-                    parseLoopPoints(sampleVO, sampleRate, extStr, sampleVO.channels);
+                    parseLoopPoints(sample, sampleRate, extStr, sample.channels);
 
                     managed = true;
                 } catch (Exception e) {
-                    String message = String.format(CStrings.WAV_FILE_ERROR, e.getMessage());
+                    String message = String.format(Strings.WAV_FILE_ERROR, e.getMessage());
                     showMessageBoxError(message);
                     break;
                 }
@@ -175,64 +176,64 @@ public class LoadSamplesController extends BaseController {
         }
 
         if (managed == false) {
-            String message = String.format(CStrings.DEFAULT_SAMPLE_NOT_FOUND, fileName);
+            String message = String.format(Strings.DEFAULT_SAMPLE_NOT_FOUND, fileName);
             showMessageBoxInfo(message);
         }
     }
 
-    private void parseLoopPoints(SampleVO sampleVO, int sampleRate, String extStr, int channels) {
+    private void parseLoopPoints(Sample sample, int sampleRate, String extStr, int channels) {
         byte[] samplesData;
-        WaveHeaderVO waveHeader;
-        SustainLoopVO loop = null;
+        WaveHeader waveHeader;
+        SustainLoop loop = null;
         long endLoopByte;
         long startLoopByte;
 
         switch (extStr) {
-            case CConfig.EXT_P:
-                waveHeader = sampleVO.waveHeaderP;
+            case Sample.EXT_P:
+                waveHeader = sample.waveHeaderP;
                 break;
-            case CConfig.EXT_F:
-                waveHeader = sampleVO.waveHeaderF;
+            case Sample.EXT_F:
+                waveHeader = sample.waveHeaderF;
                 break;
             default:
-                waveHeader = sampleVO.waveHeader;
+                waveHeader = sample.waveHeader;
                 break;
         }
 
-        samplesData = getSamplesDataByExtention(extStr, sampleVO);
+        samplesData = getSamplesDataByExtension(extStr, sample);
 
         if (waveHeader.cuePoints != null && waveHeader.cuePoints.length > 0) {
-            loop = new SustainLoopVO();
+            loop = new SustainLoop();
             loop.start = (long) ((float) samplesData.length / (float) waveHeader.dataSize * (float) waveHeader.cuePoints[0].frameOffset * channels);
-            loop.end = samplesData.length / CConfig.BYTES_PER_SAMPLE;
+            loop.end = samplesData.length / Config.BYTES_PER_SAMPLE;
         }
         if (waveHeader.samplerChk != null && waveHeader.samplerChk.sampleLoops != null && waveHeader.samplerChk.sampleLoops.length > 0) {
-            for (SampleLoopVO sampleLoop : waveHeader.samplerChk.sampleLoops) {
+            for (SampleLoop sampleLoop : waveHeader.samplerChk.sampleLoops) {
                 if (sampleLoop.playCount == 0) {
-                    loop = new SustainLoopVO();
+                    loop = new SustainLoop();
                     loop.start = (long) ((float) samplesData.length / (float) waveHeader.dataSize * (float) sampleLoop.start * channels);
-                    loop.end = (long) ((float) samplesData.length / (float) waveHeader.dataSize * (float) sampleLoop.end * channels) + (1 * sampleVO.channels);
+                    loop.end = (long) ((float) samplesData.length / (float) waveHeader.dataSize * (float) sampleLoop.end * channels) + (1 * sample.channels);
                     break;
                 }
             }
         }
 
         switch (extStr) {
-            case CConfig.EXT_P:
-                sampleVO.loopP = loop;
+            case Sample.EXT_P:
+                sample.loopP = loop;
                 break;
-            case CConfig.EXT_F:
-                sampleVO.loopF = loop;
+            case Sample.EXT_F:
+                sample.loopF = loop;
                 break;
             default:
-                sampleVO.loop = loop;
+                sample.loop = loop;
                 break;
         }
 
         if (loop != null) {
             // Truncate sample by end of loop 
-            samplesData = getSamplesDataByExtention(extStr, sampleVO);
-            endLoopByte = loop.end * CConfig.BYTES_PER_SAMPLE;
+            samplesData = getSamplesDataByExtension(extStr, sample);
+            endLoopByte = loop.end * Config.BYTES_PER_SAMPLE;
 
             if (samplesData.length > endLoopByte) {
                 byte[] tmp = samplesData;
@@ -240,25 +241,25 @@ public class LoadSamplesController extends BaseController {
                 samplesData = new byte[(int) endLoopByte];
                 System.arraycopy(tmp, 0, samplesData, 0, (int) endLoopByte);
 
-                if (!_truncatedSampleMessageShown && sampleRate == CConfig.SAMPLE_RATE) {
-                    _truncatedSampleMessageShown = true;
-                    showMessageBoxInfo(CStrings.TRUNCATED_SAMPLE_ERROR);
+                if (!truncatedSampleMessageShown && sampleRate == Config.SAMPLE_RATE) {
+                    truncatedSampleMessageShown = true;
+                    showMessageBoxInfo(Strings.TRUNCATED_SAMPLE_ERROR);
                 }
             }
 
             // Increase loop length
-            if (loop.end - loop.start < CConfig.MIN_LOOP_LENGTH_SAMPLES) {
-                samplesData = getSamplesDataByExtention(extStr, sampleVO);
+            if (loop.end - loop.start < Config.MIN_LOOP_LENGTH_SAMPLES) {
+                samplesData = getSamplesDataByExtension(extStr, sample);
 
                 byte[] tmp = samplesData;
                 byte[] tail;
                 int i;
-                endLoopByte = loop.end * CConfig.BYTES_PER_SAMPLE;
-                startLoopByte = loop.start * CConfig.BYTES_PER_SAMPLE;
+                endLoopByte = loop.end * Config.BYTES_PER_SAMPLE;
+                startLoopByte = loop.start * Config.BYTES_PER_SAMPLE;
 
                 tail = new byte[(int) (endLoopByte - startLoopByte)];
                 System.arraycopy(tmp, (int) startLoopByte, tail, 0, tail.length);
-                i = (CConfig.MIN_LOOP_LENGTH_BYTES / tail.length) + 1;
+                i = (Config.MIN_LOOP_LENGTH_BYTES / tail.length) + 1;
                 samplesData = new byte[samplesData.length + (tail.length * i)];
                 System.arraycopy(tmp, 0, samplesData, 0, (int) startLoopByte);
 
@@ -267,31 +268,31 @@ public class LoadSamplesController extends BaseController {
                     startLoopByte += tail.length;
                 }
 
-                loop.end = samplesData.length / CConfig.BYTES_PER_SAMPLE;
+                loop.end = samplesData.length / Config.BYTES_PER_SAMPLE;
             }
 
             switch (extStr) {
-                case CConfig.EXT_P:
-                    sampleVO.samplesDataP = samplesData;
+                case Sample.EXT_P:
+                    sample.samplesDataP = samplesData;
                     break;
-                case CConfig.EXT_F:
-                    sampleVO.samplesDataF = samplesData;
+                case Sample.EXT_F:
+                    sample.samplesDataF = samplesData;
                     break;
                 default:
-                    sampleVO.samplesData = samplesData;
+                    sample.samplesData = samplesData;
                     break;
             }
         }
     }
 
-    private byte[] getSamplesDataByExtention(String extStr, SampleVO sampleVO) {
+    private byte[] getSamplesDataByExtension(String extStr, Sample sample) {
         switch (extStr) {
-            case CConfig.EXT_P:
-                return sampleVO.samplesDataP;
-            case CConfig.EXT_F:
-                return sampleVO.samplesDataF;
+            case Sample.EXT_P:
+                return sample.samplesDataP;
+            case Sample.EXT_F:
+                return sample.samplesDataF;
             default:
-                return sampleVO.samplesData;
+                return sample.samplesData;
         }
     }
 
@@ -299,18 +300,18 @@ public class LoadSamplesController extends BaseController {
         byte[] result;
         List<Byte> arrayList = new ArrayList<>();
         int readBytesCount;
-        byte[] buffer = new byte[CConfig.RESAMPLER_BUFFER_SIZE];
+        byte[] buffer = new byte[Config.RESAMPLER_BUFFER_SIZE];
 
         WaveFileReader reader = new WaveFileReader();
         try ( AudioInputStream audioIn = reader.getAudioInputStream(waveFile)) {
-            AudioFormat format = new AudioFormat(sampleRate, CConfig.BIT_RATE, channels, true, false);
+            AudioFormat format = new AudioFormat(sampleRate, Config.BIT_RATE, channels, true, false);
             try ( AudioInputStream resampler = AudioSystem.getAudioInputStream(format, audioIn)) {
                 while (true) {
-                    readBytesCount = resampler.read(buffer, 0, CConfig.RESAMPLER_BUFFER_SIZE);
+                    readBytesCount = resampler.read(buffer, 0, Config.RESAMPLER_BUFFER_SIZE);
                     for (int i = 0; i < readBytesCount; i++) {
                         arrayList.add(buffer[i]);
                     }
-                    if (readBytesCount != CConfig.RESAMPLER_BUFFER_SIZE) {
+                    if (readBytesCount != Config.RESAMPLER_BUFFER_SIZE) {
                         break;
                     }
                 }
@@ -325,8 +326,8 @@ public class LoadSamplesController extends BaseController {
 
         arrayList.clear();
 
-        if (getMainModel().optionsVO.normalizeIndex > 0) {
-            WavePCMNormalizeTool.normalize16Bit(result, getMainModel().optionsVO.normalizeIndex - 1);
+        if (getMainModel().sampleOptions.normalizeIndex > 0) {
+            WavePCMNormalizeTool.normalize16Bit(result, getMainModel().sampleOptions.normalizeIndex - 1);
         }
 
         return result;

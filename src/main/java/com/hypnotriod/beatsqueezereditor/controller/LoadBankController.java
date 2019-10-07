@@ -1,12 +1,13 @@
 package com.hypnotriod.beatsqueezereditor.controller;
 
 import com.hypnotriod.beatsqueezereditor.base.BaseController;
-import com.hypnotriod.beatsqueezereditor.constants.CConfig;
-import com.hypnotriod.beatsqueezereditor.constants.CNotes;
-import com.hypnotriod.beatsqueezereditor.constants.CStrings;
+import com.hypnotriod.beatsqueezereditor.constants.Config;
+import com.hypnotriod.beatsqueezereditor.constants.FileExtensions;
+import com.hypnotriod.beatsqueezereditor.constants.Notes;
+import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.SustainLoopVO;
+import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
+import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
 import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +20,8 @@ import javafx.stage.FileChooser;
  */
 public class LoadBankController extends BaseController {
 
-    private final FileChooser.ExtensionFilter filter
-            = new FileChooser.ExtensionFilter(CConfig.BANK_FILE_BROWSE_NAME, CConfig.BANK_FILE_BROWSE_FILTER);
+    private final FileChooser.ExtensionFilter extensionFilter
+            = new FileChooser.ExtensionFilter(FileExtensions.BANK_FILE_BROWSE_NAME, FileExtensions.BANK_FILE_BROWSE_FILTER);
 
     public LoadBankController(Facade facade) {
         super(facade);
@@ -30,9 +31,9 @@ public class LoadBankController extends BaseController {
         File result;
         FileChooser fileChooser = getMainModel().getFileChooser();
 
-        fileChooser.setTitle(CStrings.LOAD_BTSQ_FILE);
+        fileChooser.setTitle(Strings.LOAD_BTSQ_FILE);
         fileChooser.getExtensionFilters().clear();
-        fileChooser.getExtensionFilters().add(filter);
+        fileChooser.getExtensionFilters().add(extensionFilter);
         fileChooser.setInitialFileName(null);
         result = fileChooser.showOpenDialog(getFacade().getPrimaryStage());
 
@@ -42,15 +43,15 @@ public class LoadBankController extends BaseController {
     public void loadBank(File file) {
         RandomAccessFile randomAccessFile;
         getMainModel().getFileChooser().setInitialDirectory(file.getParentFile());
-        getMainModel().optionsVO.fileName = file.getName();
+        getMainModel().sampleOptions.fileName = file.getName();
         
         try {
             randomAccessFile = new RandomAccessFile(file, "r");
-            if (managePresetData(randomAccessFile, StringUtils.removeFileExtention(file.getName()))) {
-                getMainModel().optionsVO.fileName = file.getName();
+            if (managePresetData(randomAccessFile, StringUtils.removeFileExtension(file.getName()))) {
+                getMainModel().sampleOptions.fileName = file.getName();
             }
         } catch (OutOfMemoryError e) {
-            showMessageBoxError(CStrings.OUT_OF_MEMORY_ERROR);
+            showMessageBoxError(Strings.OUT_OF_MEMORY_ERROR);
         } catch (Error | Exception e) {
             showMessageBoxError(e.getMessage());
         }
@@ -64,42 +65,42 @@ public class LoadBankController extends BaseController {
         int headerFirstChunk;
         int headerSecondChunk;
         int version;
-        SustainLoopVO loop;
+        SustainLoop loop;
         long dataShift;
-        byte[] buffer = new byte[CConfig.CONFIG_HEADER_CHUNK_SIZE];
+        byte[] buffer = new byte[Config.HEADER_CHUNK_SIZE];
         byte[] sampleBuffer;
-        int[] filtersValues = getMainModel().optionsVO.filtersValues;
+        int[] filtersValues = getMainModel().sampleOptions.filtersValues;
         byte tmpByte;
-        SampleVO sampleVO;
+        Sample sample;
         int i;
 
         reader.seek(0);
-        reader.read(buffer, 0, CConfig.CONFIG_HEADER_CHUNK_SIZE);
+        reader.read(buffer, 0, Config.HEADER_CHUNK_SIZE);
 
         headerFirstChunk = ((buffer[0] & 0xFF) << 24) | ((buffer[1] & 0xFF) << 16) | ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
         headerSecondChunk = ((buffer[4] & 0xFF) << 24) | ((buffer[5] & 0xFF) << 16) | ((buffer[6] & 0xFF) << 8) | (buffer[7] & 0xFF);
         version = ((buffer[8] & 0xFF) << 8) | (buffer[9] & 0xFF);
         dataStartIndex = ((buffer[10] & 0xFF) << 24) | ((buffer[11] & 0xFF) << 16) | ((buffer[12] & 0xFF) << 8) | (buffer[13] & 0xFF);
 
-        if (headerFirstChunk != CConfig.HEADER_FIRST_CHUNK || headerSecondChunk != CConfig.HEADER_SECOND_CHUNK || version != CConfig.VERSION) {
-            String message = String.format(CStrings.NOT_A_BANK, CConfig.VERSION);
+        if (headerFirstChunk != Config.HEADER_FIRST_CHUNK || headerSecondChunk != Config.HEADER_SECOND_CHUNK || version != Config.VERSION) {
+            String message = String.format(Strings.NOT_A_BANK, Config.VERSION);
             showMessageBoxInfo(message);
             return false;
         }
 
         getMainModel().clearAllSamples();
 
-        reader.seek(CConfig.CONFIG_HEADER_CHUNK_SIZE);
+        reader.seek(Config.HEADER_CHUNK_SIZE);
         for (i = 0; i < filtersValues.length; i++) {
             tmpByte = (byte) reader.readByte();
             filtersValues[i] = ((tmpByte & 0x80) == 0x80) ? (tmpByte & 0x7F) : -1;
         }
 
-        for (i = 0; i < CNotes.NOTES_NAMES.length; i++) {
-            dataShift = CConfig.CONFIG_HEADER_CHUNK_SIZE + CConfig.CONFIG_KNOBS_CHUNK_SIZE + i * CConfig.CONFIG_SAMPLE_CHUNK_SIZE;
+        for (i = 0; i < Notes.NOTES_NAMES.length; i++) {
+            dataShift = Config.HEADER_CHUNK_SIZE + Config.KNOBS_CHUNK_SIZE + i * Config.SAMPLE_CHUNK_SIZE;
 
             reader.seek(dataShift);
-            reader.read(buffer, 0, CConfig.CONFIG_SAMPLE_CHUNK_SIZE);
+            reader.read(buffer, 0, Config.SAMPLE_CHUNK_SIZE);
 
             firstByteAddress = ((buffer[0] & 0xFF) << 24) | ((buffer[1] & 0xFF) << 16) | ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
             lastByteAddress = ((buffer[4] & 0xFF) << 24) | ((buffer[5] & 0xFF) << 16) | ((buffer[6] & 0xFF) << 8) | (buffer[7] & 0xFF);
@@ -115,33 +116,33 @@ public class LoadBankController extends BaseController {
 
             if (loopByteAddress > 0 && loopByteAddress - firstByteAddress < sampleBuffer.length) {
                 loopByteAddress -= firstByteAddress;
-                loop = new SustainLoopVO();
-                loop.start = (int) ((loopByteAddress) / CConfig.BYTES_PER_SAMPLE);
+                loop = new SustainLoop();
+                loop.start = (int) ((loopByteAddress) / Config.BYTES_PER_SAMPLE);
                 loop.end = sampleBuffer.length / 2;
             } else {
                 loop = null;
             }
 
-            sampleVO = new SampleVO(i);
-            sampleVO.fileName = StringUtils.getSampleName(fileName, i);
-            sampleVO.fileRealName = sampleVO.fileName;
-            sampleVO.channels = (buffer[12] & 0xFF) == 255 ? 2 : 1;
-            sampleVO.panorama = (buffer[12] & 0xFF) == 255 ? 0 : (buffer[12] & 0xFF) - CConfig.PANORAMA_MAX_VALUE;
-            sampleVO.groupID = (buffer[13] & 0x1F);
-            sampleVO.dynamic = (buffer[13] & 0x20) == 0x20;
-            sampleVO.disableNoteOff = (buffer[13] & 0x40) == 0x40;
-            sampleVO.samplesData = sampleBuffer;
-            sampleVO.loop = loop;
-            sampleVO.loopEnabled = ((buffer[13] & 0x80) == 0x80);
-            getMainModel().addSampleVO(sampleVO);
+            sample = new Sample(i);
+            sample.fileName = StringUtils.getSampleName(fileName, i);
+            sample.fileRealName = sample.fileName;
+            sample.channels = (buffer[12] & 0xFF) == 255 ? 2 : 1;
+            sample.panorama = (buffer[12] & 0xFF) == 255 ? 0 : (buffer[12] & 0xFF) - Config.PANORAMA_MAX_VALUE;
+            sample.groupID = (buffer[13] & 0x1F);
+            sample.dynamic = (buffer[13] & 0x20) == 0x20;
+            sample.disableNoteOff = (buffer[13] & 0x40) == 0x40;
+            sample.samplesData = sampleBuffer;
+            sample.loop = loop;
+            sample.loopEnabled = ((buffer[13] & 0x80) == 0x80);
+            getMainModel().addSample(sample);
 
-            if (dataStartIndex == CConfig.DATA_START_INDEX_V1) {
+            if (dataStartIndex == Config.DATA_START_INDEX_V1) {
                 continue;
             }
-            dataShift = CConfig.CONFIG_PF_START_INDEX + i * CConfig.CONFIG_PF_SAMPLE_CHUNK_SIZE;
+            dataShift = Config.PIANO_FORTE_START_INDEX + i * Config.PIANO_FORTE_SAMPLE_CHUNK_SIZE;
 
             reader.seek(dataShift);
-            reader.read(buffer, 0, CConfig.CONFIG_PF_SAMPLE_CHUNK_SIZE);
+            reader.read(buffer, 0, Config.PIANO_FORTE_SAMPLE_CHUNK_SIZE);
 
             firstByteAddress = lastByteAddress;
             lastByteAddress = ((buffer[0] & 0xFF) << 24) | ((buffer[1] & 0xFF) << 16) | ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
@@ -154,15 +155,15 @@ public class LoadBankController extends BaseController {
 
                 if (loopByteAddress > 0) {
                     loopByteAddress -= firstByteAddress;
-                    loop = new SustainLoopVO();
-                    loop.start = (int) ((loopByteAddress) / CConfig.BYTES_PER_SAMPLE);
+                    loop = new SustainLoop();
+                    loop.start = (int) ((loopByteAddress) / Config.BYTES_PER_SAMPLE);
                     loop.end = sampleBuffer.length / 2;
                 } else {
                     loop = null;
                 }
 
-                sampleVO.samplesDataP = sampleBuffer;
-                sampleVO.loopP = loop;
+                sample.samplesDataP = sampleBuffer;
+                sample.loopP = loop;
             }
 
             firstByteAddress = lastByteAddress;
@@ -176,15 +177,15 @@ public class LoadBankController extends BaseController {
 
                 if (loopByteAddress > 0) {
                     loopByteAddress -= firstByteAddress;
-                    loop = new SustainLoopVO();
-                    loop.start = (int) ((loopByteAddress) / CConfig.BYTES_PER_SAMPLE);
+                    loop = new SustainLoop();
+                    loop.start = (int) ((loopByteAddress) / Config.BYTES_PER_SAMPLE);
                     loop.end = sampleBuffer.length / 2;
                 } else {
                     loop = null;
                 }
 
-                sampleVO.samplesDataF = sampleBuffer;
-                sampleVO.loopF = loop;
+                sample.samplesDataF = sampleBuffer;
+                sample.loopF = loop;
             }
         }
 

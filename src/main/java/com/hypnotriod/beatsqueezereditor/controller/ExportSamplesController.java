@@ -1,12 +1,12 @@
 package com.hypnotriod.beatsqueezereditor.controller;
 
 import com.hypnotriod.beatsqueezereditor.base.BaseController;
-import com.hypnotriod.beatsqueezereditor.constants.CConfig;
-import com.hypnotriod.beatsqueezereditor.constants.CNotes;
-import com.hypnotriod.beatsqueezereditor.constants.CStrings;
+import com.hypnotriod.beatsqueezereditor.constants.FileExtensions;
+import com.hypnotriod.beatsqueezereditor.constants.Notes;
+import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
-import com.hypnotriod.beatsqueezereditor.model.vo.SampleVO;
-import com.hypnotriod.beatsqueezereditor.model.vo.SustainLoopVO;
+import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
+import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
 import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
 import com.hypnotriod.beatsqueezereditor.tools.WavFileWriter;
 import java.io.File;
@@ -20,8 +20,8 @@ import javafx.stage.FileChooser;
  */
 public class ExportSamplesController extends BaseController {
 
-    private final FileChooser.ExtensionFilter filter
-            = new FileChooser.ExtensionFilter(CConfig.WAVE_FILE_BROWSE_NAME, CConfig.WAVE_FILE_BROWSE_FILTER_WAV);
+    private final FileChooser.ExtensionFilter extensionFilter
+            = new FileChooser.ExtensionFilter(FileExtensions.WAVE_FILE_BROWSE_NAME, FileExtensions.WAVE_FILE_BROWSE_FILTER_WAV);
 
     public ExportSamplesController(Facade facade) {
         super(facade);
@@ -30,18 +30,18 @@ public class ExportSamplesController extends BaseController {
     public boolean checkCondition() {
         String message;
         ArrayList<String> notesIDsMatches = new ArrayList<>();
-        for (Map.Entry<String, SampleVO> entry : getMainModel().sampleVOs.entrySet()) {
-            SampleVO sampleVO = entry.getValue();
-            if (notesIDsMatches.contains(CNotes.NOTES_NAMES[sampleVO.noteID])) {
-                message = String.format(CStrings.NOTE_IS_DUBLICATED, CNotes.NOTES_NAMES[sampleVO.noteID]);
+        for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
+            Sample sample = entry.getValue();
+            if (notesIDsMatches.contains(Notes.NOTES_NAMES[sample.noteID])) {
+                message = String.format(Strings.NOTE_IS_DUBLICATED, Notes.NOTES_NAMES[sample.noteID]);
                 showMessageBoxInfo(message);
                 return false;
             }
-            notesIDsMatches.add(CNotes.NOTES_NAMES[sampleVO.noteID]);
+            notesIDsMatches.add(Notes.NOTES_NAMES[sample.noteID]);
         }
 
-        if (getMainModel().sampleVOs.isEmpty()) {
-            showMessageBoxInfo(CStrings.NO_SAMPLES);
+        if (getMainModel().samples.isEmpty()) {
+            showMessageBoxInfo(Strings.NO_SAMPLES);
             return false;
         }
 
@@ -51,11 +51,11 @@ public class ExportSamplesController extends BaseController {
     public File chooseFile() {
         File result;
         FileChooser fileChooser = getMainModel().getFileChooser();
-        String fileName = StringUtils.removeFileExtention(getMainModel().optionsVO.fileName) + ".wav";
+        String fileName = StringUtils.removeFileExtension(getMainModel().sampleOptions.fileName) + ".wav";
 
-        fileChooser.setTitle(CStrings.EXPORT_SAMPLES);
+        fileChooser.setTitle(Strings.EXPORT_SAMPLES);
         fileChooser.getExtensionFilters().clear();
-        fileChooser.getExtensionFilters().add(filter);
+        fileChooser.getExtensionFilters().add(extensionFilter);
         fileChooser.setInitialFileName(fileName);
         result = fileChooser.showSaveDialog(getFacade().getPrimaryStage());
 
@@ -68,24 +68,24 @@ public class ExportSamplesController extends BaseController {
     }
 
     public void saveSamples(File file) {
-        String name = StringUtils.removeFileExtention(file.getPath());
+        String name = StringUtils.removeFileExtension(file.getPath());
 
-        for (Map.Entry<String, SampleVO> entry : getMainModel().sampleVOs.entrySet()) {
-            SampleVO sampleVO = entry.getValue();
+        for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
+            Sample sample = entry.getValue();
 
-            if (sampleVO.samplesData != null) {
-                writeSample(StringUtils.getSampleName(name, sampleVO.noteID) + ".wav", sampleVO.samplesData, sampleVO.channels, sampleVO.loop, sampleVO.noteID);
+            if (sample.samplesData != null) {
+                writeSample(StringUtils.getSampleName(name, sample.noteID) + ".wav", sample.samplesData, sample.channels, sample.loop, sample.noteID);
             }
-            if (sampleVO.samplesDataP != null) {
-                writeSample(StringUtils.getSampleNameP(name, sampleVO.noteID) + ".wav", sampleVO.samplesDataP, sampleVO.channels, sampleVO.loopP, sampleVO.noteID);
+            if (sample.samplesDataP != null) {
+                writeSample(StringUtils.getSampleNameP(name, sample.noteID) + ".wav", sample.samplesDataP, sample.channels, sample.loopP, sample.noteID);
             }
-            if (sampleVO.samplesDataF != null) {
-                writeSample(StringUtils.getSampleNameF(name, sampleVO.noteID) + ".wav", sampleVO.samplesDataF, sampleVO.channels, sampleVO.loopF, sampleVO.noteID);
+            if (sample.samplesDataF != null) {
+                writeSample(StringUtils.getSampleNameF(name, sample.noteID) + ".wav", sample.samplesDataF, sample.channels, sample.loopF, sample.noteID);
             }
         }
     }
 
-    private void writeSample(String fullPath, byte[] samplesData, int channelsCount, SustainLoopVO loop, int noteID) {
+    private void writeSample(String fullPath, byte[] samplesData, int channelsCount, SustainLoop loop, int noteID) {
         try {
             if (loop != null) {
                 long[] cuePoints = {loop.start};
@@ -94,7 +94,7 @@ public class ExportSamplesController extends BaseController {
                 WavFileWriter.writeWavSampleFile_16_44100(samplesData, fullPath, channelsCount, null, noteID);
             }
         } catch (OutOfMemoryError e) {
-            showMessageBoxError(CStrings.OUT_OF_MEMORY_ERROR);
+            showMessageBoxError(Strings.OUT_OF_MEMORY_ERROR);
         } catch (Error | Exception e) {
             showMessageBoxError(e.getMessage());
         }
