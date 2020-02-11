@@ -2,7 +2,6 @@ package com.hypnotriod.beatsqueezereditor.tools;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
 
 /**
  *
@@ -10,12 +9,10 @@ import javafx.scene.control.ListView;
  */
 public class ComboBoxUtil {
 
-    public static void select(ComboBox comboBox, int index) {
-        comboBox.getSelectionModel().select(index);
-        ComboBoxListViewSkin skin = (ComboBoxListViewSkin) comboBox.getSkin();
-        if (skin != null) {
-            ListView listView = (ListView) skin.getPopupContent();
-            listView.scrollTo(index);
-        }
+    public static void provideScrollOnDropDown(ComboBox comboBox) {
+        comboBox.setOnShown(event -> {
+            ComboBoxListViewSkin skin = (ComboBoxListViewSkin) comboBox.getSkin();
+            skin.getListView().scrollTo(comboBox.getSelectionModel().getSelectedItem());
+        });
     }
 }

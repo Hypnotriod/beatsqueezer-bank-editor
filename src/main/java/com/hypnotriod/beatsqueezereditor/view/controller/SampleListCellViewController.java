@@ -6,6 +6,7 @@ import com.hypnotriod.beatsqueezereditor.constants.Styles;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import com.hypnotriod.beatsqueezereditor.model.entity.SampleOptions;
 import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
+import com.hypnotriod.beatsqueezereditor.tools.ComboBoxUtil;
 import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
 import com.hypnotriod.beatsqueezereditor.tools.TooltipHelper;
 import com.hypnotriod.beatsqueezereditor.tools.WaveDrawingTool;
@@ -157,6 +158,9 @@ public class SampleListCellViewController implements Initializable {
         chbDisableNoteOff.selectedProperty().addListener(chbDisableNoteOffChangeListener);
         chbLoop.selectedProperty().addListener(chbLoopChangeListener);
         sliderPan.valueProperty().addListener(sliderPanChangeListener);
+
+        ComboBoxUtil.provideScrollOnDropDown(cbNoteId);
+        ComboBoxUtil.provideScrollOnDropDown(cbGroupId);
 
         canvasWave.setOnDragDropped(onSampleDragDropped);
         canvasWave.setOnDragEntered(onCanvasDragEntered);

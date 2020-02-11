@@ -15,6 +15,7 @@ import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
 import com.hypnotriod.beatsqueezereditor.tools.TooltipHelper;
 import com.hypnotriod.beatsqueezereditor.view.component.SampleListCell;
 import com.hypnotriod.beatsqueezereditor.view.component.SampleListCellHandler;
+import com.sun.javafx.binding.BidirectionalBinding;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -294,6 +295,13 @@ public class MainSceneViewController extends BaseViewController implements Initi
         cbNoteId.getSelectionModel().selectedItemProperty().addListener(cbNoteChangeListener);
         cbGroupId.getSelectionModel().selectedItemProperty().addListener(cbGroupChangeListener);
         cbNormalize.getSelectionModel().selectedItemProperty().addListener(cbNormalizeChangeListener);
+        
+        ComboBoxUtil.provideScrollOnDropDown(cbPitch);
+        ComboBoxUtil.provideScrollOnDropDown(cbPitchStep);
+        ComboBoxUtil.provideScrollOnDropDown(cbNoteId);
+        ComboBoxUtil.provideScrollOnDropDown(cbGroupId);
+        ComboBoxUtil.provideScrollOnDropDown(cbNormalize);
+        
         chbDynamic.selectedProperty().addListener(chbDynamicChangeListener);
         chbDisableNoteOff.selectedProperty().addListener(chbDisableNoteOffChangeListener);
         chbLoop.selectedProperty().addListener(chbLoopChangeListener);
@@ -302,8 +310,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     public void refreshSelection() {
-        ComboBoxUtil.select(cbNoteId, this.sampleOptions.noteId);
-        ComboBoxUtil.select(cbGroupId, this.sampleOptions.groupId);
+        cbNoteId.getSelectionModel().select(this.sampleOptions.noteId);
+        cbGroupId.getSelectionModel().select(this.sampleOptions.groupId);
         cbNormalize.getSelectionModel().select(this.sampleOptions.normalizeIndex);
         chbDynamic.setSelected(this.sampleOptions.isDynamic);
         chbDisableNoteOff.setSelected(this.sampleOptions.playThrough);

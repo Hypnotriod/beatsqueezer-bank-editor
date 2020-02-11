@@ -10,15 +10,14 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    Facade _facade;
+    Facade facade;
 
     @Override
     public void start(Stage primaryStage) {
-        _facade = new Facade(this, primaryStage);
+        facade = new Facade(this, primaryStage);
     }
 
     public static void main(String[] args) {
         launch(args);
     }
-
 }
