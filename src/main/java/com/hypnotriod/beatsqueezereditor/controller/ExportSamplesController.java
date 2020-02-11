@@ -2,7 +2,6 @@ package com.hypnotriod.beatsqueezereditor.controller;
 
 import com.hypnotriod.beatsqueezereditor.base.BaseController;
 import com.hypnotriod.beatsqueezereditor.constants.FileExtensions;
-import com.hypnotriod.beatsqueezereditor.constants.Notes;
 import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
@@ -29,15 +28,16 @@ public class ExportSamplesController extends BaseController {
 
     public boolean checkCondition() {
         String message;
+        String[] notesNames = getMainModel().getNoteNamesDisplay();
         ArrayList<String> notesIdsMatches = new ArrayList<>();
         for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
             Sample sample = entry.getValue();
-            if (notesIdsMatches.contains(Notes.NOTES_NAMES[sample.noteId])) {
-                message = String.format(Strings.NOTE_IS_DUBLICATED, Notes.NOTES_NAMES[sample.noteId]);
+            if (notesIdsMatches.contains(notesNames[sample.noteId])) {
+                message = String.format(Strings.NOTE_IS_DUBLICATED, notesNames[sample.noteId]);
                 showMessageBoxInfo(message);
                 return false;
             }
-            notesIdsMatches.add(Notes.NOTES_NAMES[sample.noteId]);
+            notesIdsMatches.add(notesNames[sample.noteId]);
         }
 
         if (getMainModel().samples.isEmpty()) {
@@ -51,7 +51,7 @@ public class ExportSamplesController extends BaseController {
     public File chooseFile() {
         File result;
         FileChooser fileChooser = getMainModel().getFileChooser();
-        String fileName = StringUtils.removeFileExtension(getMainModel().sampleOptions.fileName) + ".wav";
+        String fileName = StringUtils.removeFileExtension(getMainModel().sampleOptions.fileName) + FileExtensions.WAV_FILE_EXTENSION;
 
         fileChooser.setTitle(Strings.EXPORT_SAMPLES);
         fileChooser.getExtensionFilters().clear();
@@ -69,18 +69,23 @@ public class ExportSamplesController extends BaseController {
 
     public void saveSamples(File file) {
         String name = StringUtils.removeFileExtension(file.getPath());
+        String[] notesNames = getMainModel().getNoteNamesDisplay();
 
         for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
             Sample sample = entry.getValue();
+            String sampleName;
 
             if (sample.samplesData != null) {
-                writeSample(StringUtils.getSampleName(name, sample.noteId) + ".wav", sample.samplesData, sample.channels, sample.loop, sample.noteId);
+                sampleName = StringUtils.getSampleName(name, sample.noteId, notesNames) + FileExtensions.WAV_FILE_EXTENSION;
+                writeSample(sampleName, sample.samplesData, sample.channels, sample.loop, sample.noteId);
             }
             if (sample.samplesDataP != null) {
-                writeSample(StringUtils.getSampleNameP(name, sample.noteId) + ".wav", sample.samplesDataP, sample.channels, sample.loopP, sample.noteId);
+                sampleName = StringUtils.getSampleNameP(name, sample.noteId, notesNames) + FileExtensions.WAV_FILE_EXTENSION;
+                writeSample(sampleName, sample.samplesDataP, sample.channels, sample.loopP, sample.noteId);
             }
             if (sample.samplesDataF != null) {
-                writeSample(StringUtils.getSampleNameF(name, sample.noteId) + ".wav", sample.samplesDataF, sample.channels, sample.loopF, sample.noteId);
+                sampleName = StringUtils.getSampleNameF(name, sample.noteId, notesNames) + FileExtensions.WAV_FILE_EXTENSION;
+                writeSample(sampleName, sample.samplesDataF, sample.channels, sample.loopF, sample.noteId);
             }
         }
     }

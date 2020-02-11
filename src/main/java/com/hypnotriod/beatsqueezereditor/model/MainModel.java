@@ -1,13 +1,21 @@
 package com.hypnotriod.beatsqueezereditor.model;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.hypnotriod.beatsqueezereditor.base.BaseModel;
 import com.hypnotriod.beatsqueezereditor.constants.Notes;
+import com.hypnotriod.beatsqueezereditor.constants.Resources;
 import com.hypnotriod.beatsqueezereditor.model.entity.SampleOptions;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
+import com.hypnotriod.beatsqueezereditor.model.entity.Settings;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.stage.FileChooser;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -19,12 +27,71 @@ public class MainModel extends BaseModel {
     public final HashMap<String, Sample> samples = new HashMap<>();
     public final SampleOptions sampleOptions = new SampleOptions();
 
+    private final Gson gson = new Gson();
+    private Settings settings = new Settings();
     private long itemIdCounter = 0;
 
     public MainModel() {
+        loadSettings();
+        sampleOptions.noteNamesDisplay = getNoteNamesDisplay();
         for (int i = 0; i < sampleOptions.filtersValues.length; i++) {
             sampleOptions.filtersValues[i] = -1;
         }
+    }
+
+    public String[] getNoteNamesDisplay() {
+        switch (settings.noteNamesDisplay) {
+            case C4:
+                return Notes.NOTES_NAMES_C4;
+            case C3:
+                return Notes.NOTES_NAMES_C3;
+            case NUMBERS:
+                return Notes.NOTES_NAMES_NUMBERS;
+            case PERCUSSION:
+                return Notes.NOTES_NAMES_PERCUSSION;
+            case C5:
+            default:
+                return Notes.NOTES_NAMES_C5;
+        }
+    }
+
+    public int getNoteNamesDisplaySelectionIndex() {
+        switch (settings.noteNamesDisplay) {
+            case C4:
+                return 1;
+            case C3:
+                return 2;
+            case NUMBERS:
+                return 3;
+            case PERCUSSION:
+                return 4;
+            case C5:
+            default:
+                return 0;
+        }
+    }
+
+    public void updateNoteNamesDisplayBySelectionIndex(int index) {
+        switch (index) {
+            case 1:
+                settings.noteNamesDisplay = Notes.NoteNamesDisplay.C4;
+                break;
+            case 2:
+                settings.noteNamesDisplay = Notes.NoteNamesDisplay.C3;
+                break;
+            case 3:
+                settings.noteNamesDisplay = Notes.NoteNamesDisplay.NUMBERS;
+                break;
+            case 4:
+                settings.noteNamesDisplay = Notes.NoteNamesDisplay.PERCUSSION;
+                break;
+            case 0:
+            default:
+                settings.noteNamesDisplay = Notes.NoteNamesDisplay.C5;
+                break;
+        }
+        sampleOptions.noteNamesDisplay = getNoteNamesDisplay();
+        saveSettings();
     }
 
     public FileChooser getFileChooser() {
@@ -42,8 +109,8 @@ public class MainModel extends BaseModel {
 
     public int getNoteIdOfNextSample() {
         int result = sampleOptions.noteId++;
-        if (sampleOptions.noteId >= Notes.NOTES_NAMES.length) {
-            sampleOptions.noteId = Notes.NOTES_NAMES.length - 1;
+        if (sampleOptions.noteId >= Notes.NOTE_NAMES_NUMBER) {
+            sampleOptions.noteId = Notes.NOTE_NAMES_NUMBER - 1;
         }
         return result;
     }
@@ -95,5 +162,25 @@ public class MainModel extends BaseModel {
 
     private String getSampleItemId() {
         return String.valueOf(itemIdCounter++);
+    }
+
+    private void saveSettings() {
+        String settingsJSON = gson.toJson(settings);
+        try {
+            FileUtils.writeStringToFile(new File(Resources.PATH_SETTINGS), settingsJSON);
+        } catch (IOException ex) {
+            Logger.getLogger(MainModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void loadSettings() {
+        File file = new File(Resources.PATH_SETTINGS);
+        if (file.exists()) {
+            try {
+                String settingsJSON = FileUtils.readFileToString(file);
+                settings = gson.fromJson(settingsJSON, Settings.class);
+            } catch (IOException | JsonParseException ex) {
+            }
+        }
     }
 }

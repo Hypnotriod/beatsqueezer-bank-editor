@@ -304,9 +304,9 @@ public class LoadSamplesController extends BaseController {
         byte[] buffer = new byte[Config.RESAMPLER_BUFFER_SIZE];
 
         WaveFileReader reader = new WaveFileReader();
-        try ( AudioInputStream audioIn = reader.getAudioInputStream(waveFile)) {
+        try (AudioInputStream audioIn = reader.getAudioInputStream(waveFile)) {
             AudioFormat format = new AudioFormat(sampleRate, Config.BIT_RATE, channels, true, false);
-            try ( AudioInputStream resampler = AudioSystem.getAudioInputStream(format, audioIn)) {
+            try (AudioInputStream resampler = AudioSystem.getAudioInputStream(format, audioIn)) {
                 while (true) {
                     readBytesCount = resampler.read(buffer, 0, Config.RESAMPLER_BUFFER_SIZE);
                     for (int i = 0; i < readBytesCount; i++) {

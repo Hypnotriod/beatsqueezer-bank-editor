@@ -70,8 +70,9 @@ public class MainView extends BaseView {
             Scene scene = new Scene(mainScene);
             getFacade().getPrimaryStage().setScene(scene);
             getFacade().getPrimaryStage().show();
-
-            mainSceneController.refreshListView(true, true);
+            
+            mainSceneController.setNoteNamesSelectionIndex(getMainModel().getNoteNamesDisplaySelectionIndex());
+            mainSceneController.updateNoteNamesDisplay();
         } catch (IOException e) {
         }
     }
@@ -114,7 +115,18 @@ public class MainView extends BaseView {
             case MainSceneViewController.ON_FILES_DRAG:
                 performFilesDrag((DragEvent) data);
                 break;
+
+            case MainSceneViewController.ON_NOTES_NAMES_DISPLAY_CHANGED:
+                onNotesNamesChanged((String) data);
+                break;
         }
+    }
+
+    private void onNotesNamesChanged(String notesName) {
+        int itemIndex = StringUtils.getIndexOfStringInArray(notesName, Strings.MENUES_NOTES_NAMES_DISPLAY);
+        getMainModel().updateNoteNamesDisplayBySelectionIndex(itemIndex);
+        mainSceneController.updateNoteNamesDisplay();
+        mainSceneController.refreshListView(true, true);
     }
 
     private void performFilesDrag(DragEvent event) {

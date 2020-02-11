@@ -1,7 +1,5 @@
 package com.hypnotriod.beatsqueezereditor.tools;
 
-import com.hypnotriod.beatsqueezereditor.constants.Notes;
-
 /**
  *
  * @author Ilya Pikin
@@ -12,23 +10,23 @@ public class StringUtils {
         return fileName.replaceFirst("[.][^.]+$", "");
     }
 
-    public static String getSampleName(String prefixName, int noteId) {
+    public static String getSampleName(String prefixName, int noteId, String[] notesNames) {
         return prefixName + "_"
                 + String.format("%03d", noteId) + "_"
-                + Notes.NOTES_NAMES[noteId];
+                + notesNames[noteId];
     }
 
-    public static String getSampleNameF(String prefixName, int noteId) {
+    public static String getSampleNameF(String prefixName, int noteId, String[] notesNames) {
         return prefixName + "_"
                 + String.format("%03d", noteId) + "_"
-                + Notes.NOTES_NAMES[noteId]
+                + notesNames[noteId]
                 + "_f";
     }
 
-    public static String getSampleNameP(String prefixName, int noteId) {
+    public static String getSampleNameP(String prefixName, int noteId, String[] notesNames) {
         return prefixName + "_"
                 + String.format("%03d", noteId) + "_"
-                + Notes.NOTES_NAMES[noteId]
+                + notesNames[noteId]
                 + "_p";
     }
 

@@ -1,6 +1,7 @@
 package com.hypnotriod.beatsqueezereditor.model.entity;
 
 import com.hypnotriod.beatsqueezereditor.constants.Config;
+import com.hypnotriod.beatsqueezereditor.constants.Notes;
 import com.hypnotriod.beatsqueezereditor.constants.Strings;
 
 /**
@@ -9,7 +10,7 @@ import com.hypnotriod.beatsqueezereditor.constants.Strings;
  */
 public class SampleOptions {
 
-    public int noteId = 0;
+    public int noteId = Notes.MIDDLE_C_INDEX;
     public int groupId = 1;
     public int normalizeIndex = 0;
     public boolean isDynamic = true;
@@ -20,6 +21,7 @@ public class SampleOptions {
     public int pitchStep = 1;
     public int pitch = 0;
     public boolean stereo = false;
+    public String[] noteNamesDisplay = Notes.NOTES_NAMES_C5;
 
     public int[] filtersValues = new int[Config.KNOBS_NUM];
 }

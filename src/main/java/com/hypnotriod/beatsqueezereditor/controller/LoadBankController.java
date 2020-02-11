@@ -44,7 +44,7 @@ public class LoadBankController extends BaseController {
         RandomAccessFile randomAccessFile;
         getMainModel().getFileChooser().setInitialDirectory(file.getParentFile());
         getMainModel().sampleOptions.fileName = file.getName();
-        
+
         try {
             randomAccessFile = new RandomAccessFile(file, "r");
             if (managePresetData(randomAccessFile, StringUtils.removeFileExtension(file.getName()))) {
@@ -67,6 +67,7 @@ public class LoadBankController extends BaseController {
         int version;
         SustainLoop loop;
         long dataShift;
+        String[] notesNames = getMainModel().getNoteNamesDisplay();
         byte[] buffer = new byte[Config.HEADER_CHUNK_SIZE];
         byte[] sampleBuffer;
         int[] filtersValues = getMainModel().sampleOptions.filtersValues;
@@ -96,7 +97,7 @@ public class LoadBankController extends BaseController {
             filtersValues[i] = ((tmpByte & 0x80) == 0x80) ? (tmpByte & 0x7F) : -1;
         }
 
-        for (i = 0; i < Notes.NOTES_NAMES.length; i++) {
+        for (i = 0; i < Notes.NOTE_NAMES_NUMBER; i++) {
             dataShift = Config.HEADER_CHUNK_SIZE + Config.KNOBS_CHUNK_SIZE + i * Config.SAMPLE_CHUNK_SIZE;
 
             reader.seek(dataShift);
@@ -125,7 +126,7 @@ public class LoadBankController extends BaseController {
 
             sample = new Sample();
             sample.noteId = i;
-            sample.fileName = StringUtils.getSampleName(fileName, i);
+            sample.fileName = StringUtils.getSampleName(fileName, i, notesNames);
             sample.fileRealName = sample.fileName;
             sample.channels = (buffer[12] & 0xFF) == 255 ? 2 : 1;
             sample.panorama = (buffer[12] & 0xFF) == 255 ? 0 : (buffer[12] & 0xFF) - Config.PANORAMA_MAX_VALUE;

@@ -30,11 +30,12 @@ public class SaveBankController extends BaseController {
 
     public boolean checkCondition() {
         String message;
+        String[] notesNames = getMainModel().getNoteNamesDisplay();
         ArrayList<String> notesIdsMatches = new ArrayList<>();
         for (Map.Entry<String, Sample> entry : getMainModel().samples.entrySet()) {
             Sample sample = entry.getValue();
-            if (notesIdsMatches.contains(Notes.NOTES_NAMES[sample.noteId])) {
-                message = String.format(Strings.NOTE_IS_DUBLICATED, Notes.NOTES_NAMES[sample.noteId]);
+            if (notesIdsMatches.contains(notesNames[sample.noteId])) {
+                message = String.format(Strings.NOTE_IS_DUBLICATED, notesNames[sample.noteId]);
                 showMessageBoxInfo(message);
                 return false;
             }
@@ -47,7 +48,7 @@ public class SaveBankController extends BaseController {
                 return false;
             }
 
-            notesIdsMatches.add(Notes.NOTES_NAMES[sample.noteId]);
+            notesIdsMatches.add(notesNames[sample.noteId]);
         }
 
         if (getMainModel().samples.isEmpty()) {

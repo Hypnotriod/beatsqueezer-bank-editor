@@ -1,5 +1,6 @@
 package com.hypnotriod.beatsqueezereditor.model.entity;
 
+import com.hypnotriod.beatsqueezereditor.constants.Notes;
 import com.hypnotriod.beatsqueezereditor.tools.ByteArrayInputStream16BitMonoToStereo;
 import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
 import java.io.ByteArrayInputStream;

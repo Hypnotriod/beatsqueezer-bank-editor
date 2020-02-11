@@ -1,10 +1,10 @@
 package com.hypnotriod.beatsqueezereditor.view.controller;
 
 import com.hypnotriod.beatsqueezereditor.constants.Groups;
-import com.hypnotriod.beatsqueezereditor.constants.Notes;
 import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.constants.Styles;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
+import com.hypnotriod.beatsqueezereditor.model.entity.SampleOptions;
 import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
 import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
 import com.hypnotriod.beatsqueezereditor.tools.TooltipHelper;
@@ -85,16 +85,18 @@ public class SampleListCellViewController implements Initializable {
 
     private SampleListCellHandler handler;
     private Sample sample;
+    private SampleOptions sampleOptions;
     private String id;
 
     private Timeline samplePlayTimer = null;
 
-    public void setSample(Sample sample, String id) {
+    public void setSampleCellData(Sample sample, SampleOptions sampleOptions, String id) {
         this.sample = sample;
+        this.sampleOptions = sampleOptions;
         this.id = id;
 
         cbNoteId.getItems().clear();
-        cbNoteId.getItems().addAll((Object[]) Notes.NOTES_NAMES);
+        cbNoteId.getItems().addAll((Object[]) sampleOptions.noteNamesDisplay);
         cbNoteId.getSelectionModel().select(this.sample.noteId);
         cbGroupId.getSelectionModel().select(this.sample.groupId);
         chbDynamic.setSelected(this.sample.dynamic);
@@ -147,7 +149,6 @@ public class SampleListCellViewController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cbNoteId.getItems().addAll((Object[]) Notes.NOTES_NAMES);
         cbGroupId.getItems().addAll((Object[]) Groups.GROUPS_NAMES);
 
         cbNoteId.getSelectionModel().selectedItemProperty().addListener(cbNoteChangeListener);
@@ -356,7 +357,7 @@ public class SampleListCellViewController implements Initializable {
         @Override
         public void changed(ObservableValue<? extends String> selected, String oldValue, String newValue) {
             if (newValue != null) {
-                sample.noteId = Strings.getIndexOfStringInArray(newValue, Notes.NOTES_NAMES);
+                sample.noteId = Strings.getIndexOfStringInArray(newValue, sampleOptions.noteNamesDisplay);
             }
         }
     };

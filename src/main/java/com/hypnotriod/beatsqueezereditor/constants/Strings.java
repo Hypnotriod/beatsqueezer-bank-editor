@@ -37,8 +37,8 @@ public class Strings {
     public static final String FORTE_SAMPLE_NAME_PROMT      = "Add \"_f\" to the end of your sample name: \"%s_f\"\nOr drag sample here.";
     public static final String FILE_NAME_UNTITLED           = "Untitled";
     
-    public static final String TOOLTIP_NOTE                 = "The next sample(s) loaded will be associated with this note name.\nThe note name will be auto incremented on each sample load.\nNotes names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\"\nCheck for the alternative Notes Names at \"Options\"->\"Notes Names Display\".";
-    public static final String TOOLTIP_NOTE_SHORT           = "Notes names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\"\nCheck for the alternative Notes Names at \"Options\"->\"Notes Names Display\".";
+    public static final String TOOLTIP_NOTE                 = "The next sample(s) loaded will be associated with this note name.\nThe note name will be auto incremented on each sample load.\nNote names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\"\nCheck for the alternative Note Names at \"Options\"->\"Note Names Display\".";
+    public static final String TOOLTIP_NOTE_SHORT           = "Note names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\"\nCheck for the alternative Note Names at \"Options\"->\"Note Names Display\".";
     public static final String TOOLTIP_GROUP_ID             = "Only one instance of sample from the specific \"Cut Group\" (1 - 30) can be played simultaneously.\n \"self\" group means that only one instance of current sample can be played simultaneously.\n \"none\" group means that any number of instances of the current sample can be played simultaneously.";
     public static final String TOOLTIP_PITCH                = "The next sample(s) loaded will be pitched by semitones amount.";
     public static final String TOOLTIP_PITCH_STEP           = "By setting \"Pitch Step\" more than 1 semitone, program will\nautomatically generate missed pitched samples from the next sample(s) loaded.";
@@ -103,7 +103,7 @@ public class Strings {
     };
 
     public static final String[] MENUES_OPTIONS = {
-        "Notes Names Display"
+        "Note Names Display"
     };
 
     public static final String[] MENUES_NOTES_NAMES_DISPLAY = {

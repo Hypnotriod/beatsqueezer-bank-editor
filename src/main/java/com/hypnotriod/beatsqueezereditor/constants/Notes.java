@@ -7,7 +7,13 @@ package com.hypnotriod.beatsqueezereditor.constants;
 public class Notes {
 
     public static final int SEMITONES_IN_OCTAVE_NUM = 12;
-    
+    public static final int MIDDLE_C_INDEX = 60;
+    public static final int NOTE_NAMES_NUMBER = 128;
+
+    public static enum NoteNamesDisplay {
+        C3, C4, C5, NUMBERS, PERCUSSION
+    }
+
     public static final String[] NOTES_NAMES_C3 = {
         "C-2", //0
         "C#-2",
@@ -138,7 +144,7 @@ public class Notes {
         "F#8",
         "G8" // 127
     };
-    
+
     public static final String[] NOTES_NAMES_C4 = {
         "C-1", //0
         "C#-1",
@@ -531,7 +537,7 @@ public class Notes {
         "#126",
         "#127"
     };
-    
+
     public static final String[] NOTES_NAMES_PERCUSSION = {
         "#0",
         "#1",
@@ -662,6 +668,4 @@ public class Notes {
         "#126",
         "#127"
     };
-
-    public static String[] NOTES_NAMES = NOTES_NAMES_C5;
 }
