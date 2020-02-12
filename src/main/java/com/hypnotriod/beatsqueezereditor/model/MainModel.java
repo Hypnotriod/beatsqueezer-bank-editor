@@ -186,5 +186,15 @@ public class MainModel extends BaseModel {
             } catch (IOException | JsonParseException ex) {
             }
         }
+        validateSettings();
+    }
+
+    private void validateSettings() {
+        if (settings.noteNamesDisplay == null) {
+            settings.noteNamesDisplay = Notes.NoteNamesDisplay.C5;
+        }
+        if (settings.lastBrowsingPath == null) {
+            settings.lastBrowsingPath = "";
+        }
     }
 }

@@ -10,5 +10,5 @@ public class Resources {
     public static final String PATH_SAMPLE_LIST_CELL = "/fxml/SampleListCell.fxml";
     public static final String PATH_ICON = "/icon/icon.png";
     public static final String PATH_USER_HOME = System.getProperty("user.home");
-    public static final String PATH_SETTINGS = PATH_USER_HOME + "/beatsqueezer_bank_editor/.settings.json";
+    public static final String PATH_SETTINGS = PATH_USER_HOME + "/beatsqueezer-bank-editor/.settings.json";
 }
