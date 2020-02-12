@@ -51,8 +51,7 @@ public class LoadSamplesController extends BaseController {
         result = fileChooser.showOpenMultipleDialog(getFacade().getPrimaryStage());
 
         if (result != null && result.size() > 0) {
-            File existDirectory = result.get(0).getParentFile();
-            fileChooser.setInitialDirectory(existDirectory);
+            getMainModel().setInitialDirectoryForFileChooser(result.get(0).getParentFile());
         }
 
         return result;

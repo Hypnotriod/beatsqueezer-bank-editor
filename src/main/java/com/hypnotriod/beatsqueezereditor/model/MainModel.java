@@ -95,12 +95,15 @@ public class MainModel extends BaseModel {
     }
 
     public FileChooser getFileChooser() {
-        File initialDirectory = fileChooser.getInitialDirectory();
-        if (initialDirectory == null || initialDirectory.exists() == false) {
-            fileChooser.setInitialDirectory(null);
-        }
+        File initialDirectory = new File(settings.lastBrowsingPath);
+        fileChooser.setInitialDirectory(initialDirectory.exists() ? initialDirectory : null);
 
         return fileChooser;
+    }
+
+    public void setInitialDirectoryForFileChooser(File file) {
+        settings.lastBrowsingPath = file.getPath();
+        saveSettings();
     }
 
     public void addSample(Sample sample) {
@@ -112,6 +115,7 @@ public class MainModel extends BaseModel {
         if (sampleOptions.noteId >= Notes.NOTE_NAMES_NUMBER) {
             sampleOptions.noteId = Notes.NOTE_NAMES_NUMBER - 1;
         }
+
         return result;
     }
 

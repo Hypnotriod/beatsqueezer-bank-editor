@@ -37,12 +37,15 @@ public class LoadBankController extends BaseController {
         fileChooser.setInitialFileName(null);
         result = fileChooser.showOpenDialog(getFacade().getPrimaryStage());
 
+        if (result != null) {
+            getMainModel().setInitialDirectoryForFileChooser(result.getParentFile());
+        }
+
         return result;
     }
 
     public void loadBank(File file) {
         RandomAccessFile randomAccessFile;
-        getMainModel().getFileChooser().setInitialDirectory(file.getParentFile());
         getMainModel().sampleOptions.fileName = file.getName();
 
         try {

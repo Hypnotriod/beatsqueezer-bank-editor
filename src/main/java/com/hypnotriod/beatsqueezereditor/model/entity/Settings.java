@@ -8,4 +8,5 @@ import com.hypnotriod.beatsqueezereditor.constants.Notes.NoteNamesDisplay;
  */
 public class Settings {
     public NoteNamesDisplay noteNamesDisplay = NoteNamesDisplay.C5;
+    public String lastBrowsingPath = "";
 }

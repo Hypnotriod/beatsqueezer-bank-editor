@@ -60,8 +60,7 @@ public class ExportSamplesController extends BaseController {
         result = fileChooser.showSaveDialog(getFacade().getPrimaryStage());
 
         if (result != null) {
-            File existDirectory = result.getParentFile();
-            fileChooser.setInitialDirectory(existDirectory);
+            getMainModel().setInitialDirectoryForFileChooser(result.getParentFile());
         }
 
         return result;

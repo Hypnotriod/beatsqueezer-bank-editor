@@ -3,7 +3,6 @@ package com.hypnotriod.beatsqueezereditor.controller;
 import com.hypnotriod.beatsqueezereditor.base.BaseController;
 import com.hypnotriod.beatsqueezereditor.constants.Config;
 import com.hypnotriod.beatsqueezereditor.constants.FileExtensions;
-import com.hypnotriod.beatsqueezereditor.constants.Notes;
 import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
@@ -69,12 +68,15 @@ public class SaveBankController extends BaseController {
         fileChooser.setInitialFileName(getMainModel().sampleOptions.fileName);
         result = fileChooser.showSaveDialog(getFacade().getPrimaryStage());
 
+        if (result != null) {
+            getMainModel().setInitialDirectoryForFileChooser(result.getParentFile());
+        }
+
         return result;
     }
 
     public void saveBank(File file) {
         getMainModel().sampleOptions.fileName = file.getName();
-        getMainModel().getFileChooser().setInitialDirectory(file.getParentFile());
         performSaveBank(file);
     }
 
