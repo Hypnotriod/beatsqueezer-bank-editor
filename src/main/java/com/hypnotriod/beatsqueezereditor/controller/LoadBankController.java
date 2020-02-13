@@ -8,7 +8,7 @@ import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
-import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
+import com.hypnotriod.beatsqueezereditor.utility.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -140,7 +140,7 @@ public class LoadBankController extends BaseController {
             sample.disableNoteOff = (buffer[13] & 0x40) == 0x40;
             sample.samplesData = sampleBuffer;
             sample.loop = loop;
-            sample.loopEnabled = ((buffer[13] & 0x80) == 0x80);
+            sample.isLoopEnabled = ((buffer[13] & 0x80) == 0x80);
             getMainModel().addSample(sample);
 
             if (dataStartIndex == Config.DATA_START_INDEX_V1) {

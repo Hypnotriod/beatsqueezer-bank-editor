@@ -1,4 +1,4 @@
-package com.hypnotriod.beatsqueezereditor.tools;
+package com.hypnotriod.beatsqueezereditor.utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

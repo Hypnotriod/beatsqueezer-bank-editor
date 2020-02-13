@@ -9,9 +9,9 @@ import com.hypnotriod.beatsqueezereditor.model.entity.SampleLoop;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
 import com.hypnotriod.beatsqueezereditor.model.entity.WaveHeader;
-import com.hypnotriod.beatsqueezereditor.tools.NoteFrequencyUtil;
-import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
-import com.hypnotriod.beatsqueezereditor.tools.WavePCMNormalizeTool;
+import com.hypnotriod.beatsqueezereditor.utility.NoteFrequencyUtil;
+import com.hypnotriod.beatsqueezereditor.utility.StringUtils;
+import com.hypnotriod.beatsqueezereditor.utility.WavePCMNormalizeUtil;
 import com.sun.media.sound.WaveFileReader;
 import java.io.File;
 import java.io.IOException;
@@ -111,7 +111,7 @@ public class LoadSamplesController extends BaseController {
         sample.samplesData = convertWAVEData(file, sampleRate, sample.channels);
         parseLoopPoints(sample, sampleRate, Sample.EXT_DEFAULT, sample.waveHeader.channels);
         if (sample.loop != null) {
-            sample.loopEnabled = getMainModel().sampleOptions.loopEnabled;
+            sample.isLoopEnabled = getMainModel().sampleOptions.loopEnabled;
         }
         if (pitch > 0) {
             sample.fileName += String.format(Strings.SAMPLE_PITCHED, pitch);
@@ -330,7 +330,7 @@ public class LoadSamplesController extends BaseController {
         arrayList.clear();
 
         if (getMainModel().sampleOptions.normalizeIndex > 0) {
-            WavePCMNormalizeTool.normalize16Bit(result, getMainModel().sampleOptions.normalizeIndex - 1);
+            WavePCMNormalizeUtil.normalize16Bit(result, getMainModel().sampleOptions.normalizeIndex - 1);
         }
 
         return result;

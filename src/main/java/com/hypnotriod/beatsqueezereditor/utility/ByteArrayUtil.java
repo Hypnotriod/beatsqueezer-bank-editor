@@ -1,10 +1,10 @@
-package com.hypnotriod.beatsqueezereditor.tools;
+package com.hypnotriod.beatsqueezereditor.utility;
 
 /**
  *
  * @author Ilya Pikin
  */
-public class ByteArrayTool {
+public class ByteArrayUtil {
 
     public static void writeValueToByteArray(byte[] bytes, long val, long offset, int bytesNum) {
         for (int i = 0; i < bytesNum; i++) {

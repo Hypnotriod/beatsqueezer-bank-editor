@@ -1,4 +1,4 @@
-package com.hypnotriod.beatsqueezereditor.tools;
+package com.hypnotriod.beatsqueezereditor.utility;
 
 import java.io.IOException;
 import javax.sound.sampled.AudioFormat;

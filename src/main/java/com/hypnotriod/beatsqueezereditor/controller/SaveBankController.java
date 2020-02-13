@@ -6,7 +6,7 @@ import com.hypnotriod.beatsqueezereditor.constants.FileExtensions;
 import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.facade.Facade;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
-import com.hypnotriod.beatsqueezereditor.tools.ByteArrayTool;
+import com.hypnotriod.beatsqueezereditor.utility.ByteArrayUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class SaveBankController extends BaseController {
             }
 
             if (sample.loop != null
-                    && sample.loopEnabled
+                    && sample.isLoopEnabled
                     && sample.samplesData.length - (sample.loop.start * Config.BYTES_PER_SAMPLE) < Config.MIN_LOOP_LENGTH_BYTES) {
                 message = String.format(Strings.LOOP_TIME_ERROR, sample.fileName);
                 showMessageBoxInfo(message);
@@ -97,17 +97,17 @@ public class SaveBankController extends BaseController {
         }
 
         // Add header
-        ByteArrayTool.writeValueToByteArray(data, Config.HEADER_FIRST_CHUNK, 0, 4);
-        ByteArrayTool.writeValueToByteArray(data, Config.HEADER_SECOND_CHUNK, 4, 4);
+        ByteArrayUtil.writeValueToByteArray(data, Config.HEADER_FIRST_CHUNK, 0, 4);
+        ByteArrayUtil.writeValueToByteArray(data, Config.HEADER_SECOND_CHUNK, 4, 4);
 
         // Add version
-        ByteArrayTool.writeValueToByteArray(data, Config.VERSION, 8, 2);
+        ByteArrayUtil.writeValueToByteArray(data, Config.VERSION, 8, 2);
 
         // Add all samples data begin
-        ByteArrayTool.writeValueToByteArray(data, Config.DATA_START_INDEX, 10, 4);
+        ByteArrayUtil.writeValueToByteArray(data, Config.DATA_START_INDEX, 10, 4);
 
         // Add all samples data size
-        ByteArrayTool.writeValueToByteArray(data, getMainModel().getAllSamplesDataSize(), 14, 4);
+        ByteArrayUtil.writeValueToByteArray(data, getMainModel().getAllSamplesDataSize(), 14, 4);
 
         // Add all filters values
         for (int i = 0; i < filtersValues.length; i++) {
@@ -121,7 +121,7 @@ public class SaveBankController extends BaseController {
             dataShift = Config.HEADER_CHUNK_SIZE + Config.KNOBS_CHUNK_SIZE + sample.noteId * Config.SAMPLE_CHUNK_SIZE;
 
             // Add sample data first byte address
-            ByteArrayTool.writeValueToByteArray(
+            ByteArrayUtil.writeValueToByteArray(
                     data,
                     allSamplesDataOffset,
                     dataShift,
@@ -129,7 +129,7 @@ public class SaveBankController extends BaseController {
 
             // Add sample data last byte address
             sampleLength = sample.samplesData.length;
-            ByteArrayTool.writeValueToByteArray(
+            ByteArrayUtil.writeValueToByteArray(
                     data,
                     (sampleLength + allSamplesDataOffset),
                     dataShift + 4,
@@ -137,25 +137,25 @@ public class SaveBankController extends BaseController {
 
             // Add sample data loop byte address
             loopAddress = (sample.loop != null) ? (sample.loop.start * Config.BYTES_PER_SAMPLE * Config.CHANNELS_NUM + allSamplesDataOffset) : 0;
-            ByteArrayTool.writeValueToByteArray(
+            ByteArrayUtil.writeValueToByteArray(
                     data,
                     loopAddress,
                     dataShift + 8,
                     4);
 
             // Add panorama value
-            ByteArrayTool.writeValueToByteArray(data,
+            ByteArrayUtil.writeValueToByteArray(data,
                     sample.channels == 1 ? (sample.panorama + Config.PANORAMA_MAX_VALUE) : 255,
                     dataShift + 12,
                     1);
 
             // Add config
-            ByteArrayTool.writeValueToByteArray(
+            ByteArrayUtil.writeValueToByteArray(
                     data,
                     sample.groupId
                     | ((sample.dynamic == true) ? 0x20 : 0x00)
                     | ((sample.disableNoteOff == true) ? 0x40 : 0x00)
-                    | ((sample.loop != null && sample.loopEnabled == true) ? 0x80 : 0x00),
+                    | ((sample.loop != null && sample.isLoopEnabled == true) ? 0x80 : 0x00),
                     dataShift + 13,
                     1);
 
@@ -166,7 +166,7 @@ public class SaveBankController extends BaseController {
             if (sample.samplesDataP != null) {
                 // Add sample Piano data last byte address
                 sampleLength = sample.samplesDataP.length;
-                ByteArrayTool.writeValueToByteArray(
+                ByteArrayUtil.writeValueToByteArray(
                         data,
                         (sampleLength + allSamplesDataOffset),
                         dataShift,
@@ -174,7 +174,7 @@ public class SaveBankController extends BaseController {
 
                 // Add sample Piano data loop byte address
                 loopAddress = (sample.loopP != null) ? (sample.loopP.start * Config.BYTES_PER_SAMPLE * Config.CHANNELS_NUM + allSamplesDataOffset) : 0;
-                ByteArrayTool.writeValueToByteArray(
+                ByteArrayUtil.writeValueToByteArray(
                         data,
                         loopAddress,
                         dataShift + 4,
@@ -184,7 +184,7 @@ public class SaveBankController extends BaseController {
                 allSamplesDataOffset = writeSampleData(allSamplesDataOffset, data, sample.samplesDataP);
             } else {
                 // Add sample Piano data last byte address
-                ByteArrayTool.writeValueToByteArray(
+                ByteArrayUtil.writeValueToByteArray(
                         data,
                         allSamplesDataOffset,
                         dataShift,
@@ -194,7 +194,7 @@ public class SaveBankController extends BaseController {
             if (sample.samplesDataF != null) {
                 // Add sample Forte data last byte address
                 sampleLength = sample.samplesDataF.length;
-                ByteArrayTool.writeValueToByteArray(
+                ByteArrayUtil.writeValueToByteArray(
                         data,
                         (sampleLength + allSamplesDataOffset),
                         dataShift + 8,
@@ -202,7 +202,7 @@ public class SaveBankController extends BaseController {
 
                 // Add sample Forte data loop byte address
                 loopAddress = (sample.loopF != null) ? (sample.loopF.start * Config.BYTES_PER_SAMPLE * Config.CHANNELS_NUM + allSamplesDataOffset) : 0;
-                ByteArrayTool.writeValueToByteArray(
+                ByteArrayUtil.writeValueToByteArray(
                         data,
                         loopAddress,
                         dataShift + 12,

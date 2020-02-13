@@ -1,4 +1,4 @@
-package com.hypnotriod.beatsqueezereditor.tools;
+package com.hypnotriod.beatsqueezereditor.utility;
 
 import com.hypnotriod.beatsqueezereditor.constants.Styles;
 import java.lang.reflect.Constructor;
@@ -10,9 +10,9 @@ import javafx.util.Duration;
  *
  * @author Ilya Pikin
  */
-public class TooltipHelper {
+public class TooltipUtil {
 
-    public static Tooltip getTooltip1(String str) {
+    public static Tooltip getTooltipDefault(String str) {
         return getTooltip(str, Styles.TOOLTIP1_STYLE, 600, 60000, 200);
     }
 

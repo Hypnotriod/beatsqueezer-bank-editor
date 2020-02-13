@@ -1,7 +1,7 @@
 package com.hypnotriod.beatsqueezereditor.model.entity;
 
-import com.hypnotriod.beatsqueezereditor.tools.ByteArrayInputStream16BitMonoToStereo;
-import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
+import com.hypnotriod.beatsqueezereditor.utility.ByteArrayInputStream16BitMonoToStereo;
+import com.hypnotriod.beatsqueezereditor.utility.RawPCMDataPlayer;
 import java.io.ByteArrayInputStream;
 import javax.sound.sampled.AudioInputStream;
 
@@ -31,7 +31,7 @@ public class Sample {
     public boolean dynamic = false;
     public boolean disableNoteOff = false;
     public long panorama = 0;
-    public boolean loopEnabled = false;
+    public boolean isLoopEnabled = false;
     public SustainLoop loop = null;
     public SustainLoop loopP = null;
     public SustainLoop loopF = null;

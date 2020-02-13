@@ -1,6 +1,6 @@
 package com.hypnotriod.beatsqueezereditor.model.entity;
 
-import com.hypnotriod.beatsqueezereditor.tools.FileInputStreamBinaryReader;
+import com.hypnotriod.beatsqueezereditor.utility.FileInputStreamBinaryReader;
 import com.sun.media.sound.WaveFileReader;
 import java.io.File;
 import java.io.FileInputStream;

@@ -45,7 +45,7 @@ public class Strings {
     public static final String TOOLTIP_NORMALIZE            = "The gain of next sample(s) loaded will be normalized up to dB amount\nby the peak normalization algorithm.";
     public static final String TOOLTIP_PANORAMA             = "Sample's panorama. \"-100%\" is full to the left and \"+100%\" is full to the right.\nCan only be used for mono samples.";
     public static final String TOOLTIP_DYNAMIC              = "When checked, the level of the sample will depend on the velocity.";
-    public static final String TOOLTIP_DISABLE_NOTE_OFF     = "When checked, the sample will ignore the \"note off\" message and play to the end.";
+    public static final String TOOLTIP_DISABLE_NOTE_OFF     = "When checked, the sample will ignore the \"note off\" message and play to the end.\nIf \"One Shot\" and Loop Point are defined, sample goes to \"Loop trigger\" mode,\nwhen 1-st press will play sample and 2-nd will stop it.";
     public static final String TOOLTIP_LOOP                 = "When checked, sample will loop from the \"loop point\" to the end.\nRequired \"Sustain Loop\", \"Loop\" or \"Marker\" info in the wav file.";
     public static final String TOOLTIP_STEREO               = "When checked, the next sample(s) loaded will keep its stereo channels.";
     public static final String TOOLTIP_DEFAULT_SAMPLE       = "This sample will be played in full range of note velocity,\nif \"Piano\" or/and \"Forte\" samples are not exist.";

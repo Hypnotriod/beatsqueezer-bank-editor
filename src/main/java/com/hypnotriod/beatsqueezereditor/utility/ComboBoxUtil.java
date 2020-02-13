@@ -1,4 +1,4 @@
-package com.hypnotriod.beatsqueezereditor.tools;
+package com.hypnotriod.beatsqueezereditor.utility;
 
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.control.ComboBox;
