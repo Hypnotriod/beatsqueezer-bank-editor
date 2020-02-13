@@ -50,6 +50,14 @@ public class RawPCMDataPlayer {
         clip.start();
     }
 
+    public static void updateLoopPoints(int loopStart, int loopEnd) {
+        if (clip != null && clip.isRunning()) {
+            clip.setFramePosition(getFramePosition());
+            clip.setLoopPoints(loopStart, loopEnd);
+            loop = loopStart;
+        }
+    }
+
     public static void stop() {
         if (clip != null && clip.isOpen()) {
             clip.stop();
@@ -68,6 +76,9 @@ public class RawPCMDataPlayer {
     }
 
     public static int getFramePosition() {
+        if (clip == null) {
+            return -1;
+        }
         if (clip.getFramePosition() > clip.getFrameLength()) {
             return loop + (clip.getFramePosition() - clip.getFrameLength()) % (clip.getFrameLength() - loop);
         } else {

@@ -15,7 +15,6 @@ import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
 import com.hypnotriod.beatsqueezereditor.tools.TooltipHelper;
 import com.hypnotriod.beatsqueezereditor.view.component.SampleListCell;
 import com.hypnotriod.beatsqueezereditor.view.component.SampleListCellHandler;
-import com.sun.javafx.binding.BidirectionalBinding;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +30,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -71,6 +71,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
 
     public static final String ON_FILES_DRAG = "ON_FILES_DRAG";
     public static final String ON_NOTES_NAMES_DISPLAY_CHANGED = "ON_NOTES_NAMES_DISPLAY_CHANGED";
+    public static final String ON_CURSOR_CHANGED = "ON_CURSOR_CHANGED";
 
     @FXML
     private ListView listView;
@@ -716,6 +717,11 @@ public class MainSceneViewController extends BaseViewController implements Initi
     public void onSampleListCellFileDragged(Sample sample, DragEvent event) {
         dragAndDropInProgress = false;
         sendToView(ON_SAMPLE_DRAG, new SampleDragEvent(sample, event));
+    }
+    
+    @Override
+    public void onCursorChange(Cursor cursor) {
+        sendToView(ON_CURSOR_CHANGED, cursor);
     }
 
     @FXML

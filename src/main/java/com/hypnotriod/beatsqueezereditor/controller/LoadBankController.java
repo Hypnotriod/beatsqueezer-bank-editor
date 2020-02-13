@@ -122,9 +122,11 @@ public class LoadBankController extends BaseController {
                 loopByteAddress -= firstByteAddress;
                 loop = new SustainLoop();
                 loop.start = (int) ((loopByteAddress) / Config.BYTES_PER_SAMPLE);
-                loop.end = sampleBuffer.length / 2;
+                loop.end = sampleBuffer.length / Config.BYTES_PER_SAMPLE;
             } else {
-                loop = null;
+                loop = new SustainLoop();
+                loop.start = 0;
+                loop.end = sampleBuffer.length / Config.BYTES_PER_SAMPLE;
             }
 
             sample = new Sample();
@@ -162,9 +164,11 @@ public class LoadBankController extends BaseController {
                     loopByteAddress -= firstByteAddress;
                     loop = new SustainLoop();
                     loop.start = (int) ((loopByteAddress) / Config.BYTES_PER_SAMPLE);
-                    loop.end = sampleBuffer.length / 2;
+                    loop.end = sampleBuffer.length / Config.BYTES_PER_SAMPLE;
                 } else {
-                    loop = null;
+                    loop = new SustainLoop();
+                    loop.start = 0;
+                    loop.end = sampleBuffer.length / Config.BYTES_PER_SAMPLE;
                 }
 
                 sample.samplesDataP = sampleBuffer;
@@ -184,9 +188,11 @@ public class LoadBankController extends BaseController {
                     loopByteAddress -= firstByteAddress;
                     loop = new SustainLoop();
                     loop.start = (int) ((loopByteAddress) / Config.BYTES_PER_SAMPLE);
-                    loop.end = sampleBuffer.length / 2;
+                    loop.end = sampleBuffer.length / Config.BYTES_PER_SAMPLE;
                 } else {
-                    loop = null;
+                    loop = new SustainLoop();
+                    loop.start = 0;
+                    loop.end = sampleBuffer.length / Config.BYTES_PER_SAMPLE;
                 }
 
                 sample.samplesDataF = sampleBuffer;

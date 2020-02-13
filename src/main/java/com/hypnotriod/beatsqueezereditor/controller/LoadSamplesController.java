@@ -217,6 +217,11 @@ public class LoadSamplesController extends BaseController {
                 }
             }
         }
+        if (loop == null) {
+            loop = new SustainLoop();
+            loop.start = 0;
+            loop.end = samplesData.length / Config.BYTES_PER_SAMPLE;
+        }
 
         switch (extStr) {
             case Sample.EXT_P:
@@ -230,58 +235,56 @@ public class LoadSamplesController extends BaseController {
                 break;
         }
 
-        if (loop != null) {
-            // Truncate sample by end of loop 
+        // Truncate sample by end of loop 
+        samplesData = getSamplesDataByExtension(extStr, sample);
+        endLoopByte = loop.end * Config.BYTES_PER_SAMPLE;
+
+        if (samplesData.length > endLoopByte) {
+            byte[] tmp = samplesData;
+
+            samplesData = new byte[(int) endLoopByte];
+            System.arraycopy(tmp, 0, samplesData, 0, (int) endLoopByte);
+
+            if (!truncatedSampleMessageShown && sampleRate == Config.SAMPLE_RATE) {
+                truncatedSampleMessageShown = true;
+                showMessageBoxInfo(Strings.TRUNCATED_SAMPLE_ERROR);
+            }
+        }
+
+        // Increase loop length
+        if (loop.end - loop.start < Config.MIN_LOOP_LENGTH_SAMPLES) {
             samplesData = getSamplesDataByExtension(extStr, sample);
+
+            byte[] tmp = samplesData;
+            byte[] tail;
+            int i;
             endLoopByte = loop.end * Config.BYTES_PER_SAMPLE;
+            startLoopByte = loop.start * Config.BYTES_PER_SAMPLE;
 
-            if (samplesData.length > endLoopByte) {
-                byte[] tmp = samplesData;
+            tail = new byte[(int) (endLoopByte - startLoopByte)];
+            System.arraycopy(tmp, (int) startLoopByte, tail, 0, tail.length);
+            i = (Config.MIN_LOOP_LENGTH_BYTES / tail.length) + 1;
+            samplesData = new byte[samplesData.length + (tail.length * i)];
+            System.arraycopy(tmp, 0, samplesData, 0, (int) startLoopByte);
 
-                samplesData = new byte[(int) endLoopByte];
-                System.arraycopy(tmp, 0, samplesData, 0, (int) endLoopByte);
-
-                if (!truncatedSampleMessageShown && sampleRate == Config.SAMPLE_RATE) {
-                    truncatedSampleMessageShown = true;
-                    showMessageBoxInfo(Strings.TRUNCATED_SAMPLE_ERROR);
-                }
+            for (; i >= 0; i--) {
+                System.arraycopy(tail, 0, samplesData, (int) startLoopByte, tail.length);
+                startLoopByte += tail.length;
             }
 
-            // Increase loop length
-            if (loop.end - loop.start < Config.MIN_LOOP_LENGTH_SAMPLES) {
-                samplesData = getSamplesDataByExtension(extStr, sample);
+            loop.end = samplesData.length / Config.BYTES_PER_SAMPLE;
+        }
 
-                byte[] tmp = samplesData;
-                byte[] tail;
-                int i;
-                endLoopByte = loop.end * Config.BYTES_PER_SAMPLE;
-                startLoopByte = loop.start * Config.BYTES_PER_SAMPLE;
-
-                tail = new byte[(int) (endLoopByte - startLoopByte)];
-                System.arraycopy(tmp, (int) startLoopByte, tail, 0, tail.length);
-                i = (Config.MIN_LOOP_LENGTH_BYTES / tail.length) + 1;
-                samplesData = new byte[samplesData.length + (tail.length * i)];
-                System.arraycopy(tmp, 0, samplesData, 0, (int) startLoopByte);
-
-                for (; i >= 0; i--) {
-                    System.arraycopy(tail, 0, samplesData, (int) startLoopByte, tail.length);
-                    startLoopByte += tail.length;
-                }
-
-                loop.end = samplesData.length / Config.BYTES_PER_SAMPLE;
-            }
-
-            switch (extStr) {
-                case Sample.EXT_P:
-                    sample.samplesDataP = samplesData;
-                    break;
-                case Sample.EXT_F:
-                    sample.samplesDataF = samplesData;
-                    break;
-                default:
-                    sample.samplesData = samplesData;
-                    break;
-            }
+        switch (extStr) {
+            case Sample.EXT_P:
+                sample.samplesDataP = samplesData;
+                break;
+            case Sample.EXT_F:
+                sample.samplesDataF = samplesData;
+                break;
+            default:
+                sample.samplesData = samplesData;
+                break;
         }
     }
 

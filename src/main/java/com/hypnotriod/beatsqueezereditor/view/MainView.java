@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
@@ -70,7 +71,7 @@ public class MainView extends BaseView {
             Scene scene = new Scene(mainScene);
             getFacade().getPrimaryStage().setScene(scene);
             getFacade().getPrimaryStage().show();
-            
+
             mainSceneController.setNoteNamesSelectionIndex(getMainModel().getNoteNamesDisplaySelectionIndex());
             mainSceneController.updateNoteNamesDisplay();
         } catch (IOException e) {
@@ -118,6 +119,10 @@ public class MainView extends BaseView {
 
             case MainSceneViewController.ON_NOTES_NAMES_DISPLAY_CHANGED:
                 onNotesNamesChanged((String) data);
+                break;
+
+            case MainSceneViewController.ON_CURSOR_CHANGED:
+                mainScene.setCursor((Cursor) data);
                 break;
         }
     }

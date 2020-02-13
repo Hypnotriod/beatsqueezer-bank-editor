@@ -1,6 +1,5 @@
 package com.hypnotriod.beatsqueezereditor.model.entity;
 
-import com.hypnotriod.beatsqueezereditor.constants.Notes;
 import com.hypnotriod.beatsqueezereditor.tools.ByteArrayInputStream16BitMonoToStereo;
 import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
 import java.io.ByteArrayInputStream;
@@ -11,10 +10,10 @@ import javax.sound.sampled.AudioInputStream;
  * @author Ilya Pikin
  */
 public class Sample {
-    
+
     public static final String EXT_DEFAULT = "_d";
-    public static final String EXT_P       = "_p";
-    public static final String EXT_F       = "_f";
+    public static final String EXT_P = "_p";
+    public static final String EXT_F = "_f";
 
     public int channels = 1;
     public byte[] samplesData = null;
@@ -42,19 +41,7 @@ public class Sample {
     public String playingSampleExt = EXT_DEFAULT;
 
     public AudioInputStream getAudioStream() {
-        byte[] data;
-
-        switch (selectedSampleExt) {
-            case EXT_P:
-                data = samplesDataP;
-                break;
-            case EXT_F:
-                data = samplesDataF;
-                break;
-            default:
-                data = samplesData;
-                break;
-        }
+        byte[] data = getSelectedSampleData();
 
         if (data != null) {
             if (channels == 2) {
@@ -73,6 +60,28 @@ public class Sample {
         }
 
         return null;
+    }
+
+    public byte[] getSelectedSampleData() {
+        switch (selectedSampleExt) {
+            case EXT_P:
+                return samplesDataP;
+            case EXT_F:
+                return samplesDataF;
+            default:
+                return samplesData;
+        }
+    }
+
+    public SustainLoop getSelectedSustainLoop() {
+        switch (selectedSampleExt) {
+            case EXT_P:
+                return loopP;
+            case EXT_F:
+                return loopF;
+            default:
+                return loop;
+        }
     }
 
     public void dispose() {

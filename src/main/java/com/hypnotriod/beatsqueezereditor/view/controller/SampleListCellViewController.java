@@ -1,5 +1,6 @@
 package com.hypnotriod.beatsqueezereditor.view.controller;
 
+import com.hypnotriod.beatsqueezereditor.constants.Config;
 import com.hypnotriod.beatsqueezereditor.constants.Groups;
 import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.constants.Styles;
@@ -15,6 +16,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -22,6 +24,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
@@ -88,6 +91,7 @@ public class SampleListCellViewController implements Initializable {
     private Sample sample;
     private SampleOptions sampleOptions;
     private String id;
+    private boolean isLoopPointDraggeg = false;
 
     private Timeline samplePlayTimer = null;
 
@@ -165,6 +169,11 @@ public class SampleListCellViewController implements Initializable {
         canvasWave.setOnDragDropped(onSampleDragDropped);
         canvasWave.setOnDragEntered(onCanvasDragEntered);
         canvasWave.setOnDragExited(onCanvasDragExited);
+        canvasWave.setOnMouseMoved(onCanvasMouseMoved);
+        canvasWave.setOnMouseExited(onCanvasMouseExited);
+        canvasWave.setOnMouseDragged(onCanvasMouseDragged);
+        canvasWave.setOnMousePressed(onCanvasMousePressed);
+        canvasWave.setOnMouseReleased(onCanvasMouseReleased);
         canvasWaveP.setOnDragDropped(onSampleDragDropped);
         canvasWaveP.setOnDragEntered(onCanvasDragEntered);
         canvasWaveP.setOnDragExited(onCanvasDragExited);
@@ -203,6 +212,97 @@ public class SampleListCellViewController implements Initializable {
 
         btnDelete.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DELETE_SAMPLE));
         btnPlay.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PLAY));
+    }
+
+    private void handleCanvasMoseMoved(MouseEvent event) {
+        Canvas canvas = (Canvas) event.getTarget();
+        byte[] samplesData = sample.getSelectedSampleData();
+        SustainLoop loop = sample.getSelectedSustainLoop();
+        long loopPositionOnDrag = getLoopPositionOnDrag(event, canvas, samplesData);
+        long loopDragArea = samplesData.length / Config.BYTES_PER_SAMPLE / (long) canvas.getWidth() * 2;
+
+        if (loopPositionOnDrag > loop.start - loopDragArea && loopPositionOnDrag < loop.start + loopDragArea) {
+            handler.onCursorChange(Cursor.OPEN_HAND);
+        } else {
+            handler.onCursorChange(Cursor.DEFAULT);
+        }
+    }
+
+    private void handleLoopPointDragStarted(MouseEvent event) {
+        Canvas canvas = (Canvas) event.getTarget();
+        byte[] samplesData = sample.getSelectedSampleData();
+        SustainLoop loop = sample.getSelectedSustainLoop();
+        long loopPositionOnDrag = getLoopPositionOnDrag(event, canvas, samplesData);
+        long loopDragArea = samplesData.length / Config.BYTES_PER_SAMPLE / (long) canvas.getWidth() * 2;
+
+        if (loopPositionOnDrag > loop.start - loopDragArea && loopPositionOnDrag < loop.start + loopDragArea) {
+            isLoopPointDraggeg = true;
+            handler.onCursorChange(Cursor.CLOSED_HAND);
+        }
+    }
+
+    private void handleLoopPointDragged(MouseEvent event) {
+        Canvas canvas = (Canvas) event.getTarget();
+        byte[] samplesData = sample.getSelectedSampleData();
+        SustainLoop loop = sample.getSelectedSustainLoop();
+
+        if (sample.loop != null) {
+            long loopPositionOnDrag = getLoopPositionOnDrag(event, canvas, samplesData);
+            loopPositionOnDrag = loopPositionOnDrag - loopPositionOnDrag % sample.channels;
+            if (loopPositionOnDrag < 0) {
+                loopPositionOnDrag = 0;
+            } else if (loopPositionOnDrag > samplesData.length / Config.BYTES_PER_SAMPLE) {
+                loopPositionOnDrag = samplesData.length / Config.BYTES_PER_SAMPLE - (Config.MIN_LOOP_LENGTH_SAMPLES * sample.channels);
+            }
+            loop.start = loopPositionOnDrag;
+            if (sample.isPlaying) {
+                RawPCMDataPlayer.updateLoopPoints((int) (loop.start / sample.channels), (int) (loop.end / sample.channels) - 1);
+            } else {
+                updateCanvasWave(canvas, samplesData, sample.channels, loop, -1);
+            }
+        }
+    }
+
+    private long getLoopPositionOnDrag(MouseEvent event, Canvas canvas, byte[] samplesData) {
+        return (long) (event.getX() / canvas.getWidth() * ((double) samplesData.length / Config.BYTES_PER_SAMPLE));
+    }
+
+    private void updateCanvasWave(Canvas canvas, byte[] samplesData, int channels, SustainLoop loop, int framePosition) {
+        if (samplesData != null) {
+            WaveDrawingTool.drawWave16Bit(canvas, samplesData, channels, loop, framePosition);
+        }
+    }
+
+    private void updateLabelSliderValue(long value) {
+        labelSiderValue.setText(String.format(Strings.PAN_VALUE, value));
+    }
+
+    private void updatePlayButtonLabel(boolean isPlaying) {
+        btnPlay.setText(isPlaying ? Strings.STOP : Strings.PLAY);
+    }
+
+    private void startStopTimerSchedule(boolean run) {
+        if (samplePlayTimer == null) {
+            samplePlayTimer = new Timeline(new KeyFrame(Duration.millis(50), timerActionEvent));
+            samplePlayTimer.setCycleCount(Timeline.INDEFINITE);
+        }
+
+        if (run == true) {
+            samplePlayTimer.play();
+        } else {
+            samplePlayTimer.stop();
+        }
+    }
+
+    private void onCanvasWaveClicked(Canvas canvas, byte[] samplesData, MouseEvent event) {
+        if (isLoopPointDraggeg || samplesData == null) {
+            return;
+        }
+        double position = event.getX() / canvas.getWidth();
+        sample.isPlaying = false;
+        handler.onSampleListCellPlay(sample, position);
+        startStopTimerSchedule(sample.isPlaying);
+        updatePlayButtonLabel(sample.isPlaying);
     }
 
     private final EventHandler onCanvasDragEntered = new EventHandler<DragEvent>() {
@@ -249,32 +349,51 @@ public class SampleListCellViewController implements Initializable {
         }
     };
 
-    private void updateCanvasWave(Canvas canvas, byte[] samplesData, int channels, SustainLoop loop, int framePosition) {
-        if (samplesData != null) {
-            WaveDrawingTool.drawWave16Bit(canvas, samplesData, channels, loop, framePosition);
+    private final EventHandler onCanvasMouseMoved = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            handleCanvasMoseMoved(event);
         }
-    }
+    };
 
-    private void updateLabelSliderValue(long value) {
-        labelSiderValue.setText(String.format(Strings.PAN_VALUE, value));
-    }
-
-    private void updatePlayButtonLabel(boolean isPlaying) {
-        btnPlay.setText(isPlaying ? Strings.STOP : Strings.PLAY);
-    }
-
-    private void startStopTimerSchedule(boolean run) {
-        if (samplePlayTimer == null) {
-            samplePlayTimer = new Timeline(new KeyFrame(Duration.millis(50), timerActionEvent));
-            samplePlayTimer.setCycleCount(Timeline.INDEFINITE);
+    private final EventHandler onCanvasMouseExited = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            if (!isLoopPointDraggeg) {
+                handler.onCursorChange(Cursor.DEFAULT);
+            }
         }
+    };
 
-        if (run == true) {
-            samplePlayTimer.play();
-        } else {
-            samplePlayTimer.stop();
+    private final EventHandler onCanvasMouseDragged = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            if (isLoopPointDraggeg) {
+                event.consume();
+                handleLoopPointDragged(event);
+            }
         }
-    }
+    };
+
+    private final EventHandler onCanvasMousePressed = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            handleLoopPointDragStarted(event);
+        }
+    };
+
+    private final EventHandler onCanvasMouseReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            if (isLoopPointDraggeg) {
+                event.consume();
+                Platform.runLater(() -> {
+                    isLoopPointDraggeg = false;
+                });
+                handler.onCursorChange(Cursor.DEFAULT);
+            }
+        }
+    };
 
     private final EventHandler<ActionEvent> timerActionEvent = new EventHandler<ActionEvent>() {
         @Override
@@ -311,17 +430,6 @@ public class SampleListCellViewController implements Initializable {
     @FXML
     private void handleCanvasWaveFClicked(MouseEvent event) {
         onCanvasWaveClicked(canvasWaveF, sample.samplesDataF, event);
-    }
-
-    private void onCanvasWaveClicked(Canvas canvas, byte[] samplesData, MouseEvent event) {
-        if (samplesData == null) {
-            return;
-        }
-        double position = event.getX() / canvas.getWidth();
-        sample.isPlaying = false;
-        handler.onSampleListCellPlay(sample, position);
-        startStopTimerSchedule(sample.isPlaying);
-        updatePlayButtonLabel(sample.isPlaying);
     }
 
     @FXML
