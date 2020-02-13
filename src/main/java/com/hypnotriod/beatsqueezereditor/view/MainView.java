@@ -12,9 +12,9 @@ import com.hypnotriod.beatsqueezereditor.model.dto.PlayEvent;
 import com.hypnotriod.beatsqueezereditor.model.dto.SampleDragEvent;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
-import com.hypnotriod.beatsqueezereditor.tools.FileName;
-import com.hypnotriod.beatsqueezereditor.tools.RawPCMDataPlayer;
-import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
+import com.hypnotriod.beatsqueezereditor.utility.FileName;
+import com.hypnotriod.beatsqueezereditor.utility.RawPCMDataPlayer;
+import com.hypnotriod.beatsqueezereditor.utility.StringUtils;
 import com.hypnotriod.beatsqueezereditor.view.controller.MainSceneViewController;
 import java.io.File;
 import java.io.IOException;
@@ -101,8 +101,8 @@ public class MainView extends BaseView {
                 performDeleteSample((String) data);
                 break;
 
-            case MainSceneViewController.ON_SAMPLE_PLAY:
-                performPlaySample((PlayEvent) data);
+            case MainSceneViewController.ON_SAMPLE_PLAY_STOP:
+                performPlayStopSample((PlayEvent) data);
                 break;
 
             case MainSceneViewController.ON_SAMPLE_DRAG:
@@ -196,7 +196,7 @@ public class MainView extends BaseView {
         updateTitle();
     }
 
-    private synchronized void performPlaySample(PlayEvent playEvent) {
+    private synchronized void performPlayStopSample(PlayEvent playEvent) {
         SustainLoop loop;
         AudioInputStream audioInputStream;
 
@@ -225,8 +225,8 @@ public class MainView extends BaseView {
                     }
 
                     RawPCMDataPlayer.play(audioInputStream,
-                            (loop != null && sample.loopEnabled) ? (int) (loop.start / sample.channels) : 0,
-                            (loop != null && sample.loopEnabled) ? (int) (loop.end / sample.channels) - 1 : 0,
+                            (loop != null && sample.isLoopEnabled) ? (int) (loop.start / sample.channels) : 0,
+                            (loop != null && sample.isLoopEnabled) ? (int) (loop.end / sample.channels) - 1 : 0,
                             sample.channels == 1 ? ((float) sample.panorama / (float) Config.PANORAMA_MAX_VALUE) : 0.0f,
                             playEvent.position,
                             lineListener);

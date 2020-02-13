@@ -10,9 +10,9 @@ import com.hypnotriod.beatsqueezereditor.model.entity.SampleOptions;
 import com.hypnotriod.beatsqueezereditor.model.dto.PlayEvent;
 import com.hypnotriod.beatsqueezereditor.model.dto.SampleDragEvent;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
-import com.hypnotriod.beatsqueezereditor.tools.ComboBoxUtil;
-import com.hypnotriod.beatsqueezereditor.tools.StringUtils;
-import com.hypnotriod.beatsqueezereditor.tools.TooltipHelper;
+import com.hypnotriod.beatsqueezereditor.utility.ComboBoxUtil;
+import com.hypnotriod.beatsqueezereditor.utility.StringUtils;
+import com.hypnotriod.beatsqueezereditor.utility.TooltipUtil;
 import com.hypnotriod.beatsqueezereditor.view.component.SampleListCell;
 import com.hypnotriod.beatsqueezereditor.view.component.SampleListCellHandler;
 import java.net.URL;
@@ -65,7 +65,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
     public static final String ON_LOAD_BANK = "ON_LOAD_BANK";
 
     public static final String ON_SAMPLE_DELETE = "ON_SAMPLE_DELETE";
-    public static final String ON_SAMPLE_PLAY = "ON_SAMPLE_PLAY";
+    public static final String ON_SAMPLE_PLAY_STOP = "ON_SAMPLE_PLAY_STOP";
     public static final String ON_SAMPLE_DRAG = "ON_SAMPLE_DRAG";
     public static final String ON_SAMPLES_CLEAR = "ON_SAMPLES_CLEAR";
 
@@ -323,25 +323,25 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     private void initTooltips() {
-        cbPitch.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH));
-        cbPitchStep.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH_STEP));
-        cbNoteId.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE));
-        cbGroupId.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
-        cbNormalize.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NORMALIZE));
-        sliderPan.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PANORAMA));
-        chbDynamic.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DYNAMIC));
-        chbDisableNoteOff.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_DISABLE_NOTE_OFF));
-        chbLoop.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_LOOP));
-        chbStereo.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_STEREO));
+        cbPitch.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_PITCH));
+        cbPitchStep.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_PITCH_STEP));
+        cbNoteId.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_NOTE));
+        cbGroupId.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_GROUP_ID));
+        cbNormalize.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_NORMALIZE));
+        sliderPan.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_PANORAMA));
+        chbDynamic.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_DYNAMIC));
+        chbDisableNoteOff.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_DISABLE_NOTE_OFF));
+        chbLoop.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_LOOP));
+        chbStereo.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_STEREO));
 
-        labelPitch.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH));
-        labelPitchStep.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PITCH_STEP));
-        labelNote.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NOTE));
-        labelCutGroup.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_GROUP_ID));
-        labelNormalize.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_NORMALIZE));
-        labelsSiderValue.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_PANORAMA));
+        labelPitch.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_PITCH));
+        labelPitchStep.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_PITCH_STEP));
+        labelNote.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_NOTE));
+        labelCutGroup.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_GROUP_ID));
+        labelNormalize.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_NORMALIZE));
+        labelsSiderValue.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_PANORAMA));
 
-        btnSort.setTooltip(TooltipHelper.getTooltip1(Strings.TOOLTIP_REFRESH));
+        btnSort.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_REFRESH));
     }
 
     public void showLoading() {
@@ -561,7 +561,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
             int itemIndex = StringUtils.getIndexOfStringInArray(((MenuItem) event.getSource()).getText(), Strings.ENABLE_DISABLE);
             for (Map.Entry<String, Sample> entry : samples.entrySet()) {
                 if (entry.getValue().loop != null) {
-                    entry.getValue().loopEnabled = (itemIndex == 0);
+                    entry.getValue().isLoopEnabled = (itemIndex == 0);
                 }
             }
             refreshListView(false, false);
@@ -696,8 +696,8 @@ public class MainSceneViewController extends BaseViewController implements Initi
     }
 
     @Override
-    public void onSampleListCellPlay(Sample sample, double position) {
-        sendToView(ON_SAMPLE_PLAY, new PlayEvent(sample, position));
+    public void onSampleListCellPlayStop(Sample sample, double position) {
+        sendToView(ON_SAMPLE_PLAY_STOP, new PlayEvent(sample, position));
     }
 
     @Override

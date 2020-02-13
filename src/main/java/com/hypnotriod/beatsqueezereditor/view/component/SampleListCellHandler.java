@@ -12,7 +12,7 @@ public interface SampleListCellHandler {
 
     public void onSampleListCellDelete(String id);
 
-    public void onSampleListCellPlay(Sample sample, double position);
+    public void onSampleListCellPlayStop(Sample sample, double position);
 
     public void onSampleListDragEntered();
 

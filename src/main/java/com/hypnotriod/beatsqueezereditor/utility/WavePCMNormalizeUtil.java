@@ -1,10 +1,10 @@
-package com.hypnotriod.beatsqueezereditor.tools;
+package com.hypnotriod.beatsqueezereditor.utility;
 
 /**
  *
  * @author Ilya Pikin
  */
-public class WavePCMNormalizeTool {
+public class WavePCMNormalizeUtil {
 
     /*
         Math.log10(sampleValue) * 20;   // sampleValue to dbValue
