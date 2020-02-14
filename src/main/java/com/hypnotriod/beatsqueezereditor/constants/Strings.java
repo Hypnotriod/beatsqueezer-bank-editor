@@ -52,7 +52,7 @@ public class Strings {
     public static final String TOOLTIP_PIANO_SAMPLE         = "If exists, this sample will be played for note velocity range of 1 - 60.\nOtherwise \"Default\" sample will be played.";
     public static final String TOOLTIP_FORTE_SAMPLE         = "If exists, this sample will be played for note velocity range of 110 - 127.\nOtherwise \"Default\" sample will be played.";
     public static final String TOOLTIP_DELETE_SAMPLE        = "Delete sample.";
-    public static final String TOOLTIP_REFRESH              = "Refresh list samples.";
+    public static final String TOOLTIP_REFRESH              = "Refresh and sort samples list.";
     public static final String TOOLTIP_PLAY                 = "Play/Stop sample.";
     
     public static final String[] NORMALIZE_DB_VALUES = {

@@ -121,7 +121,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
     private Label labelCutGroup;
     @FXML
     private Label labelNormalize;
-
+    @FXML
     private Menu noteNamesMenu;
 
     private HashMap<String, Sample> samples;
@@ -296,13 +296,13 @@ public class MainSceneViewController extends BaseViewController implements Initi
         cbNoteId.getSelectionModel().selectedItemProperty().addListener(cbNoteChangeListener);
         cbGroupId.getSelectionModel().selectedItemProperty().addListener(cbGroupChangeListener);
         cbNormalize.getSelectionModel().selectedItemProperty().addListener(cbNormalizeChangeListener);
-        
+
         ComboBoxUtil.provideScrollOnDropDown(cbPitch);
         ComboBoxUtil.provideScrollOnDropDown(cbPitchStep);
         ComboBoxUtil.provideScrollOnDropDown(cbNoteId);
         ComboBoxUtil.provideScrollOnDropDown(cbGroupId);
         ComboBoxUtil.provideScrollOnDropDown(cbNormalize);
-        
+
         chbDynamic.selectedProperty().addListener(chbDynamicChangeListener);
         chbDisableNoteOff.selectedProperty().addListener(chbDisableNoteOffChangeListener);
         chbLoop.selectedProperty().addListener(chbLoopChangeListener);
@@ -342,6 +342,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
         labelsSiderValue.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_PANORAMA));
 
         btnSort.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_REFRESH));
+        btnSort.setDisable(true);
     }
 
     public void showLoading() {
@@ -718,7 +719,7 @@ public class MainSceneViewController extends BaseViewController implements Initi
         dragAndDropInProgress = false;
         sendToView(ON_SAMPLE_DRAG, new SampleDragEvent(sample, event));
     }
-    
+
     @Override
     public void onCursorChange(Cursor cursor) {
         sendToView(ON_CURSOR_CHANGED, cursor);

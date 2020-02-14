@@ -22,6 +22,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
@@ -40,6 +41,12 @@ public abstract class SampleCanvasWavesController implements Initializable {
     private Canvas canvasWaveF;
     @FXML
     private Button btnPlay;
+    @FXML
+    private Button btnLoopStartDecrease;
+    @FXML
+    private Button btnLoopStartIncrease;
+    @FXML
+    private Label labelLoopStart;
 
     protected SampleOptions sampleOptions;
     protected String id;
@@ -297,5 +304,15 @@ public abstract class SampleCanvasWavesController implements Initializable {
         handler.onSampleListCellPlayStop(sample, 0);
         startStopTimerSchedule(sample.isPlaying);
         updatePlayButtonLabel(sample.isPlaying);
+    }
+
+    @FXML
+    private void handleLoopStartDecreaseButtonClicked(MouseEvent event) {
+        // TODO
+    }
+
+    @FXML
+    private void handleLoopStartIncreaseButtonClicked(MouseEvent event) {
+        // TODO
     }
 }
