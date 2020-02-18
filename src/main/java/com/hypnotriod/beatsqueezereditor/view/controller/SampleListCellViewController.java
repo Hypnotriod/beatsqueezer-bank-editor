@@ -69,8 +69,9 @@ public class SampleListCellViewController extends SampleCanvasWavesController im
     private Tab tabForteSample;
 
     @Override
-    public void setSampleCellData(Sample sample, SampleOptions sampleOptions, String id) {
-        super.setSampleCellData(sample, sampleOptions, id);
+    public void update(Sample sample, SampleOptions sampleOptions, String id) {
+        updateInProgress = true;
+        super.update(sample, sampleOptions, id);
 
         cbNoteId.getItems().clear();
         cbNoteId.getItems().addAll((Object[]) sampleOptions.noteNamesDisplay);
@@ -110,6 +111,8 @@ public class SampleListCellViewController extends SampleCanvasWavesController im
                 samplesTab.getSelectionModel().select(0);
                 break;
         }
+
+        updateInProgress = false;
     }
 
     public void setHandler(SampleListCellHandler handler) {
@@ -219,8 +222,9 @@ public class SampleListCellViewController extends SampleCanvasWavesController im
     ChangeListener<Boolean> chbLoopChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            if (sample.loop != null) {
+            if (sample.loop != null && !updateInProgress) {
                 sample.isLoopEnabled = newValue;
+                updateAdjustLoopStartComponents();
                 updateCanvasWaves();
                 if (sample.isPlaying) {
                     handler.onSampleListCellPlayStop(sample, 0);
@@ -246,6 +250,7 @@ public class SampleListCellViewController extends SampleCanvasWavesController im
     private void onTabDefaultSampleClicked(Event event) {
         if (this.sample != null) {
             this.sample.selectedSampleExt = Sample.EXT_DEFAULT;
+            updateAdjustLoopStartComponents();
         }
     }
 
@@ -253,6 +258,7 @@ public class SampleListCellViewController extends SampleCanvasWavesController im
     private void onTabPianoSampleClicked(Event event) {
         if (this.sample != null) {
             this.sample.selectedSampleExt = Sample.EXT_P;
+            updateAdjustLoopStartComponents();
         }
     }
 
@@ -260,6 +266,7 @@ public class SampleListCellViewController extends SampleCanvasWavesController im
     private void onTabForteSampleClicked(Event event) {
         if (this.sample != null) {
             this.sample.selectedSampleExt = Sample.EXT_F;
+            updateAdjustLoopStartComponents();
         }
     }
 }

@@ -51,7 +51,7 @@ public class SampleListCell extends ListCell<String> {
 
         if (key != null && cellController != null && samples.get(key) != null) {
             cellController.setHandler(handler);
-            cellController.setSampleCellData(samples.get(key), sampleOptions, key);
+            cellController.update(samples.get(key), sampleOptions, key);
         }
     }
 }

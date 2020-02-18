@@ -7,6 +7,7 @@ import com.hypnotriod.beatsqueezereditor.model.entity.SampleOptions;
 import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
 import com.hypnotriod.beatsqueezereditor.utility.LoopPointAdjustUtil;
 import com.hypnotriod.beatsqueezereditor.utility.RawPCMDataPlayer;
+import com.hypnotriod.beatsqueezereditor.utility.StringUtils;
 import com.hypnotriod.beatsqueezereditor.utility.TooltipUtil;
 import com.hypnotriod.beatsqueezereditor.utility.WaveDrawingUtil;
 import com.hypnotriod.beatsqueezereditor.view.component.SampleListCellHandler;
@@ -55,6 +56,7 @@ public abstract class SampleCanvasWavesController implements Initializable {
     protected boolean isLoopPointDraggeg = false;
     protected SampleListCellHandler handler;
     protected Timeline samplePlayTimer = null;
+    protected boolean updateInProgress = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -76,7 +78,7 @@ public abstract class SampleCanvasWavesController implements Initializable {
         canvasWave.setOnMouseReleased(onCanvasMouseReleased);
     }
 
-    public void setSampleCellData(Sample sample, SampleOptions sampleOptions, String id) {
+    public void update(Sample sample, SampleOptions sampleOptions, String id) {
         this.sample = sample;
         this.sampleOptions = sampleOptions;
         this.id = id;
@@ -87,7 +89,21 @@ public abstract class SampleCanvasWavesController implements Initializable {
         updatePlayButtonLabel(this.sample.isPlaying);
 
         updateCanvasWaves();
+        updateAdjustLoopStartComponents();
         startStopTimerSchedule(this.sample.isPlaying);
+    }
+
+    protected void updateAdjustLoopStartComponents() {
+        SustainLoop loop = sample.getSelectedSustainLoop();
+        if (loop != null) {
+            labelLoopStart.setText(StringUtils.getLoopStartTime(loop, sample.channels, Config.SAMPLE_RATE));
+        } else {
+            labelLoopStart.setText("");
+        }
+
+        labelLoopStart.setDisable(!sample.isLoopEnabled);
+        btnLoopStartDecrease.setDisable(!sample.isLoopEnabled);
+        btnLoopStartIncrease.setDisable(!sample.isLoopEnabled);
     }
 
     private void startStopTimerSchedule(boolean run) {
@@ -121,40 +137,37 @@ public abstract class SampleCanvasWavesController implements Initializable {
     }
 
     private void handleLoopPointDragged(MouseEvent event) {
-        Canvas canvas = (Canvas) event.getTarget();
+        Canvas canvas = getSelectedWaveCanvas();
         byte[] samplesData = sample.getSelectedSampleData();
         SustainLoop loop = sample.getSelectedSustainLoop();
 
         if (sample.loop != null) {
             long loopPositionOnDrag = getLoopPositionOnDrag(event, canvas, samplesData);
             loopPositionOnDrag = loopPositionOnDrag - loopPositionOnDrag % sample.channels;
-            if (loopPositionOnDrag < 0) {
-                loopPositionOnDrag = 0;
-            } else if (loopPositionOnDrag > samplesData.length / Config.BYTES_PER_SAMPLE) {
-                loopPositionOnDrag = samplesData.length / Config.BYTES_PER_SAMPLE - (Config.MIN_LOOP_LENGTH_SAMPLES * sample.channels);
-            }
             loop.start = loopPositionOnDrag;
-            onLoopPointChanged(canvas, samplesData, loop);
+            LoopPointAdjustUtil.normalizeLoop(samplesData, loop, sample.channels);
+            handleLoopPointChanged(canvas, samplesData, loop);
         }
     }
 
-    private void handleLoopPointDragFinished(MouseEvent event) {
-        Canvas canvas = (Canvas) event.getTarget();
+    private void handleLoopPointDragFinished() {
+        Canvas canvas = getSelectedWaveCanvas();
         byte[] samplesData = sample.getSelectedSampleData();
         SustainLoop loop = sample.getSelectedSustainLoop();
 
         if (sample.loop != null) {
-            LoopPointAdjustUtil.adjustLoopPoint(samplesData, loop, sample.channels);
-            onLoopPointChanged(canvas, samplesData, loop);
+            LoopPointAdjustUtil.adjustLoopStart(samplesData, loop, sample.channels);
+            handleLoopPointChanged(canvas, samplesData, loop);
         }
     }
 
-    private void onLoopPointChanged(Canvas canvas, byte[] samplesData, SustainLoop loop) {
-        if (sample.isPlaying) {
+    private void handleLoopPointChanged(Canvas canvas, byte[] samplesData, SustainLoop loop) {
+        if (sample.isPlaying && sample.selectedSampleExt.equals(sample.playingSampleExt)) {
             RawPCMDataPlayer.updateLoopPoints((int) (loop.start / sample.channels), (int) (loop.end / sample.channels) - 1);
         } else {
             updateCanvasWave(canvas, samplesData, sample.channels, loop, -1);
         }
+        updateAdjustLoopStartComponents();
     }
 
     private long getLoopPositionOnDrag(MouseEvent event, Canvas canvas, byte[] samplesData) {
@@ -166,7 +179,7 @@ public abstract class SampleCanvasWavesController implements Initializable {
             return;
         }
 
-        Canvas canvas = (Canvas) event.getTarget();
+        Canvas canvas = getSelectedWaveCanvas();
         byte[] samplesData = sample.getSelectedSampleData();
         SustainLoop loop = sample.getSelectedSustainLoop();
         long loopPositionOnDrag = getLoopPositionOnDrag(event, canvas, samplesData);
@@ -245,7 +258,7 @@ public abstract class SampleCanvasWavesController implements Initializable {
             if (isLoopPointDraggeg) {
                 event.consume();
                 handler.onCursorChange(Cursor.DEFAULT);
-                handleLoopPointDragFinished(event);
+                handleLoopPointDragFinished();
                 Platform.runLater(() -> {
                     isLoopPointDraggeg = false;
                 });
@@ -301,6 +314,17 @@ public abstract class SampleCanvasWavesController implements Initializable {
         }
     };
 
+    private Canvas getSelectedWaveCanvas() {
+        switch (sample.selectedSampleExt) {
+            case Sample.EXT_P:
+                return canvasWaveP;
+            case Sample.EXT_F:
+                return canvasWaveF;
+            default:
+                return canvasWave;
+        }
+    }
+
     @FXML
     private void handleCanvasWaveClicked(MouseEvent event) {
         onCanvasWaveClicked(canvasWave, sample.samplesData, event);
@@ -325,11 +349,25 @@ public abstract class SampleCanvasWavesController implements Initializable {
 
     @FXML
     private void handleLoopStartDecreaseButtonClicked(MouseEvent event) {
-        // TODO
+        Canvas canvas = getSelectedWaveCanvas();
+        byte[] samplesData = sample.getSelectedSampleData();
+        SustainLoop loop = sample.getSelectedSustainLoop();
+
+        if (sample.loop != null) {
+            LoopPointAdjustUtil.decreaseLoopStart(samplesData, loop, sample.channels);
+            handleLoopPointChanged(canvas, samplesData, loop);
+        }
     }
 
     @FXML
     private void handleLoopStartIncreaseButtonClicked(MouseEvent event) {
-        // TODO
+        Canvas canvas = getSelectedWaveCanvas();
+        byte[] samplesData = sample.getSelectedSampleData();
+        SustainLoop loop = sample.getSelectedSustainLoop();
+
+        if (sample.loop != null) {
+            LoopPointAdjustUtil.increaseLoopStart(samplesData, loop, sample.channels);
+            handleLoopPointChanged(canvas, samplesData, loop);
+        }
     }
 }

@@ -15,8 +15,31 @@ public class LoopPointAdjustUtil {
         return (short) (((data[index * Config.BYTES_PER_SAMPLE + 1] & 0xFF) << 8) | (data[index * Config.BYTES_PER_SAMPLE] & 0xFF));
     }
 
-    public static void adjustLoopPoint(byte[] data, SustainLoop loop, int channels) {
-        final short endLoopSample = getSampleByIndex(data.length / Config.BYTES_PER_SAMPLE - 1 * channels, data);
+    public static void normalizeLoop(byte[] samplesData, SustainLoop loop, int channels) {
+        long loopPositionMax = samplesData.length / Config.BYTES_PER_SAMPLE - (Config.MIN_LOOP_LENGTH_SAMPLES * channels);
+        if (loop.start < 0) {
+            loop.start = 0;
+        } else if (loop.start > loopPositionMax) {
+            loop.start = loopPositionMax;
+        }
+    }
+
+    public static void decreaseLoopStart(byte[] samplesData, SustainLoop loop, int channels) {
+        loop.start -= SAMPLES_SEARCH_LIMIT_NUMBER;
+        normalizeLoop(samplesData, loop, channels);
+        if (loop.start != 0) {
+            adjustLoopStart(samplesData, loop, channels);
+        }
+    }
+
+    public static void increaseLoopStart(byte[] samplesData, SustainLoop loop, int channels) {
+        loop.start += SAMPLES_SEARCH_LIMIT_NUMBER;
+        normalizeLoop(samplesData, loop, channels);
+        adjustLoopStart(samplesData, loop, channels);
+    }
+
+    public static void adjustLoopStart(byte[] samplesData, SustainLoop loop, int channels) {
+        final short endLoopSample = getSampleByIndex(samplesData.length / Config.BYTES_PER_SAMPLE - 1 * channels, samplesData);
         int lastSamplesDifference = Integer.MAX_VALUE;
         int bestIndex = 0;
         int currentIndex;
@@ -28,8 +51,8 @@ public class LoopPointAdjustUtil {
             currentIndex = 0;
         }
         int i = 0;
-        while (i < SAMPLES_SEARCH_LIMIT_NUMBER && currentIndex < data.length * Config.BYTES_PER_SAMPLE) {
-            startLoopSample = getSampleByIndex(currentIndex, data);
+        while (i < SAMPLES_SEARCH_LIMIT_NUMBER && currentIndex < samplesData.length * Config.BYTES_PER_SAMPLE) {
+            startLoopSample = getSampleByIndex(currentIndex, samplesData);
             samplesDifference = Math.abs(startLoopSample - endLoopSample);
             if (lastSamplesDifference > samplesDifference) {
                 bestIndex = currentIndex;
@@ -39,5 +62,7 @@ public class LoopPointAdjustUtil {
             i++;
         }
         loop.start = bestIndex;
+
+        normalizeLoop(samplesData, loop, channels);
     }
 }
