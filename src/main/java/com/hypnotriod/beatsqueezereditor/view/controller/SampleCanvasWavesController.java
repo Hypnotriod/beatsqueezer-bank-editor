@@ -5,6 +5,7 @@ import com.hypnotriod.beatsqueezereditor.constants.Strings;
 import com.hypnotriod.beatsqueezereditor.model.entity.Sample;
 import com.hypnotriod.beatsqueezereditor.model.entity.SampleOptions;
 import com.hypnotriod.beatsqueezereditor.model.entity.SustainLoop;
+import com.hypnotriod.beatsqueezereditor.utility.LoopPointAdjustUtil;
 import com.hypnotriod.beatsqueezereditor.utility.RawPCMDataPlayer;
 import com.hypnotriod.beatsqueezereditor.utility.TooltipUtil;
 import com.hypnotriod.beatsqueezereditor.utility.WaveDrawingUtil;
@@ -133,11 +134,26 @@ public abstract class SampleCanvasWavesController implements Initializable {
                 loopPositionOnDrag = samplesData.length / Config.BYTES_PER_SAMPLE - (Config.MIN_LOOP_LENGTH_SAMPLES * sample.channels);
             }
             loop.start = loopPositionOnDrag;
-            if (sample.isPlaying) {
-                RawPCMDataPlayer.updateLoopPoints((int) (loop.start / sample.channels), (int) (loop.end / sample.channels) - 1);
-            } else {
-                updateCanvasWave(canvas, samplesData, sample.channels, loop, -1);
-            }
+            onLoopPointChanged(canvas, samplesData, loop);
+        }
+    }
+
+    private void handleLoopPointDragFinished(MouseEvent event) {
+        Canvas canvas = (Canvas) event.getTarget();
+        byte[] samplesData = sample.getSelectedSampleData();
+        SustainLoop loop = sample.getSelectedSustainLoop();
+
+        if (sample.loop != null) {
+            LoopPointAdjustUtil.adjustLoopPoint(samplesData, loop, sample.channels);
+            onLoopPointChanged(canvas, samplesData, loop);
+        }
+    }
+
+    private void onLoopPointChanged(Canvas canvas, byte[] samplesData, SustainLoop loop) {
+        if (sample.isPlaying) {
+            RawPCMDataPlayer.updateLoopPoints((int) (loop.start / sample.channels), (int) (loop.end / sample.channels) - 1);
+        } else {
+            updateCanvasWave(canvas, samplesData, sample.channels, loop, -1);
         }
     }
 
@@ -229,6 +245,7 @@ public abstract class SampleCanvasWavesController implements Initializable {
             if (isLoopPointDraggeg) {
                 event.consume();
                 handler.onCursorChange(Cursor.DEFAULT);
+                handleLoopPointDragFinished(event);
                 Platform.runLater(() -> {
                     isLoopPointDraggeg = false;
                 });
