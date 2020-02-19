@@ -64,7 +64,14 @@ public abstract class SampleCanvasWavesController implements Initializable {
         registerWaveCanvasListeners(canvasWaveP);
         registerWaveCanvasListeners(canvasWaveF);
 
+        initTooltips();
+    }
+
+    private void initTooltips() {
         btnPlay.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_PLAY));
+        btnLoopStartDecrease.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_DECREASE_LOOP_START));
+        btnLoopStartIncrease.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_INCREASE_LOOP_START));
+        labelLoopStart.setTooltip(TooltipUtil.getTooltipDefault(Strings.TOOLTIP_LOOP_START_POSITION));
     }
 
     private void registerWaveCanvasListeners(Canvas canvasWave) {

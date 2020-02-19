@@ -25,7 +25,7 @@ public class LoopPointAdjustUtil {
     }
 
     public static void decreaseLoopStart(byte[] samplesData, SustainLoop loop, int channels) {
-        loop.start -= SAMPLES_SEARCH_LIMIT_NUMBER;
+        loop.start -= (SAMPLES_SEARCH_LIMIT_NUMBER * channels);
         normalizeLoop(samplesData, loop, channels);
         if (loop.start != 0) {
             adjustLoopStart(samplesData, loop, channels);
@@ -33,13 +33,16 @@ public class LoopPointAdjustUtil {
     }
 
     public static void increaseLoopStart(byte[] samplesData, SustainLoop loop, int channels) {
-        loop.start += SAMPLES_SEARCH_LIMIT_NUMBER;
+        loop.start += (SAMPLES_SEARCH_LIMIT_NUMBER * channels);
         normalizeLoop(samplesData, loop, channels);
         adjustLoopStart(samplesData, loop, channels);
     }
 
     public static void adjustLoopStart(byte[] samplesData, SustainLoop loop, int channels) {
-        final short endLoopSample = getSampleByIndex(samplesData.length / Config.BYTES_PER_SAMPLE - 1 * channels, samplesData);
+        final short endLoopSample = (channels == 2)
+                ? (short) ((getSampleByIndex((int) loop.end - 1, samplesData)
+                + getSampleByIndex((int) loop.end - 2, samplesData)) / 2)
+                : getSampleByIndex((int) loop.end - 1, samplesData);
         int lastSamplesDifference = Integer.MAX_VALUE;
         int bestIndex = 0;
         int currentIndex;
@@ -52,7 +55,9 @@ public class LoopPointAdjustUtil {
         }
         int i = 0;
         while (i < SAMPLES_SEARCH_LIMIT_NUMBER && currentIndex < samplesData.length * Config.BYTES_PER_SAMPLE) {
-            startLoopSample = getSampleByIndex(currentIndex, samplesData);
+            startLoopSample = (channels == 2)
+                    ? (short) ((getSampleByIndex(currentIndex, samplesData) + getSampleByIndex(currentIndex + 1, samplesData)) / 2)
+                    : getSampleByIndex(currentIndex, samplesData);
             samplesDifference = Math.abs(startLoopSample - endLoopSample);
             if (lastSamplesDifference > samplesDifference) {
                 bestIndex = currentIndex;

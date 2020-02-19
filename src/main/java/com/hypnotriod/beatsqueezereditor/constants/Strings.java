@@ -54,6 +54,9 @@ public class Strings {
     public static final String TOOLTIP_DELETE_SAMPLE        = "Delete sample.";
     public static final String TOOLTIP_REFRESH              = "Refresh and sort samples list.";
     public static final String TOOLTIP_PLAY                 = "Play/Stop sample.";
+    public static final String TOOLTIP_INCREASE_LOOP_START  = "Increase \"loop point\" position time.";
+    public static final String TOOLTIP_DECREASE_LOOP_START  = "Decrease \"loop point\" position time.";
+    public static final String TOOLTIP_LOOP_START_POSITION  = "\"Loop point\" position time.";
     
     public static final String[] NORMALIZE_DB_VALUES = {
         "no",
