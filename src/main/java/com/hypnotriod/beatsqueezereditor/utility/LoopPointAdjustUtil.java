@@ -16,7 +16,7 @@ public class LoopPointAdjustUtil {
     }
 
     public static void normalizeLoop(byte[] samplesData, SustainLoop loop, int channels) {
-        long loopPositionMax = samplesData.length / Config.BYTES_PER_SAMPLE - (Config.MIN_LOOP_LENGTH_SAMPLES * channels);
+        long loopPositionMax = loop.end - (Config.MIN_LOOP_LENGTH_SAMPLES * channels);
         if (loop.start < 0) {
             loop.start = 0;
         } else if (loop.start > loopPositionMax) {

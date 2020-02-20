@@ -79,7 +79,7 @@ public class SampleListCellViewController extends SampleCanvasWavesController im
         cbGroupId.getSelectionModel().select(this.sample.groupId);
         chbDynamic.setSelected(this.sample.dynamic);
         chbDisableNoteOff.setSelected(this.sample.disableNoteOff);
-        chbLoop.setSelected(this.sample.loop != null && this.sample.isLoopEnabled == true);
+        chbLoop.setSelected(this.sample.isLoopEnabled == true);
         chbLoop.setDisable(this.sample.loop == null);
         if (sample.channels == 1) {
             sliderPan.setDisable(false);
@@ -222,7 +222,7 @@ public class SampleListCellViewController extends SampleCanvasWavesController im
     ChangeListener<Boolean> chbLoopChangeListener = new ChangeListener<Boolean>() {
         @Override
         public void changed(ObservableValue<? extends Boolean> selected, Boolean oldValue, Boolean newValue) {
-            if (sample.loop != null && !updateInProgress) {
+            if (!updateInProgress) {
                 sample.isLoopEnabled = newValue;
                 updateAdjustLoopStartComponents();
                 updateCanvasWaves();

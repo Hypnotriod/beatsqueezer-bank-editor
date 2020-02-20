@@ -6,7 +6,7 @@ package com.hypnotriod.beatsqueezereditor.constants;
  * @author Ilya Pikin
  */
 public class Strings {
-    public static final String TITLE = "Beatsqueezer Bank Editor v1.0.3 - %s [%.1fMB]";
+    public static final String TITLE = "Beatsqueezer Bank Editor v1.0.4 - %s [%.1fMB]";
     
     public static final String ALERT_TITLE_ERROR            = "Error";
     public static final String ALERT_HEADER_ERROR           = "Ops, something went wrong!";
@@ -36,6 +36,7 @@ public class Strings {
     public static final String PIANO_SAMPLE_NAME_PROMT      = "Add \"_p\" to the end of your sample name: \"%s_p\"\nOr drag sample here.";
     public static final String FORTE_SAMPLE_NAME_PROMT      = "Add \"_f\" to the end of your sample name: \"%s_f\"\nOr drag sample here.";
     public static final String FILE_NAME_UNTITLED           = "Untitled";
+    public static final String LOOP_NOT_SPECIFIED           = "---";
     
     public static final String TOOLTIP_NOTE                 = "The next sample(s) loaded will be associated with this note name.\nThe note name will be auto incremented on each sample load.\nNote names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\"\nCheck for the alternative Note Names at \"Options\"->\"Note Names Display\".";
     public static final String TOOLTIP_NOTE_SHORT           = "Note names are based on MIDI specification: where C0 (0) is the lowest note,\nG10 (127) is the highest note, and C5 (60) is the \"Middle C\"\nCheck for the alternative Note Names at \"Options\"->\"Note Names Display\".";
@@ -54,8 +55,8 @@ public class Strings {
     public static final String TOOLTIP_DELETE_SAMPLE        = "Delete sample.";
     public static final String TOOLTIP_REFRESH              = "Refresh and sort samples list.";
     public static final String TOOLTIP_PLAY                 = "Play/Stop sample.";
-    public static final String TOOLTIP_INCREASE_LOOP_START  = "Increase \"loop point\" position time.";
-    public static final String TOOLTIP_DECREASE_LOOP_START  = "Decrease \"loop point\" position time.";
+    public static final String TOOLTIP_INCREASE_LOOP_START  = "Increase \"loop point\" position time.\nHold \"Ctrl\" or \"Command\" and click to fine tune.";
+    public static final String TOOLTIP_DECREASE_LOOP_START  = "Decrease \"loop point\" position time.\nHold \"Ctrl\" or \"Command\" and click to fine tune.";
     public static final String TOOLTIP_LOOP_START_POSITION  = "\"Loop point\" position time.";
     
     public static final String[] NORMALIZE_DB_VALUES = {

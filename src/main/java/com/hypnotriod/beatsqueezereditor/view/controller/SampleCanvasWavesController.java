@@ -105,12 +105,12 @@ public abstract class SampleCanvasWavesController implements Initializable {
         if (loop != null) {
             labelLoopStart.setText(StringUtils.getLoopStartTime(loop, sample.channels, Config.SAMPLE_RATE));
         } else {
-            labelLoopStart.setText("");
+            labelLoopStart.setText(Strings.LOOP_NOT_SPECIFIED);
         }
 
-        labelLoopStart.setDisable(!sample.isLoopEnabled);
-        btnLoopStartDecrease.setDisable(!sample.isLoopEnabled);
-        btnLoopStartIncrease.setDisable(!sample.isLoopEnabled);
+        labelLoopStart.setDisable(!sample.isLoopEnabled || loop == null);
+        btnLoopStartDecrease.setDisable(!sample.isLoopEnabled || loop == null);
+        btnLoopStartIncrease.setDisable(!sample.isLoopEnabled || loop == null);
     }
 
     private void startStopTimerSchedule(boolean run) {
@@ -147,14 +147,12 @@ public abstract class SampleCanvasWavesController implements Initializable {
         Canvas canvas = getSelectedWaveCanvas();
         byte[] samplesData = sample.getSelectedSampleData();
         SustainLoop loop = sample.getSelectedSustainLoop();
+        long loopPositionOnDrag = getLoopPositionOnDrag(event, canvas, samplesData);
+        loopPositionOnDrag = loopPositionOnDrag - loopPositionOnDrag % sample.channels;
+        loop.start = loopPositionOnDrag;
 
-        if (sample.loop != null) {
-            long loopPositionOnDrag = getLoopPositionOnDrag(event, canvas, samplesData);
-            loopPositionOnDrag = loopPositionOnDrag - loopPositionOnDrag % sample.channels;
-            loop.start = loopPositionOnDrag;
-            LoopPointAdjustUtil.normalizeLoop(samplesData, loop, sample.channels);
-            handleLoopPointChanged(canvas, samplesData, loop);
-        }
+        LoopPointAdjustUtil.normalizeLoop(samplesData, loop, sample.channels);
+        handleLoopPointChanged(canvas, samplesData, loop);
     }
 
     private void handleLoopPointDragFinished() {
@@ -162,10 +160,8 @@ public abstract class SampleCanvasWavesController implements Initializable {
         byte[] samplesData = sample.getSelectedSampleData();
         SustainLoop loop = sample.getSelectedSustainLoop();
 
-        if (sample.loop != null) {
-            LoopPointAdjustUtil.adjustLoopStart(samplesData, loop, sample.channels);
-            handleLoopPointChanged(canvas, samplesData, loop);
-        }
+        LoopPointAdjustUtil.adjustLoopStart(samplesData, loop, sample.channels);
+        handleLoopPointChanged(canvas, samplesData, loop);
     }
 
     private void handleLoopPointChanged(Canvas canvas, byte[] samplesData, SustainLoop loop) {
@@ -359,11 +355,15 @@ public abstract class SampleCanvasWavesController implements Initializable {
         Canvas canvas = getSelectedWaveCanvas();
         byte[] samplesData = sample.getSelectedSampleData();
         SustainLoop loop = sample.getSelectedSustainLoop();
+        event.consume();
 
-        if (sample.loop != null) {
+        if (event.isShortcutDown()) {
+            loop.start -= sample.channels;
+            LoopPointAdjustUtil.normalizeLoop(samplesData, loop, sample.channels);
+        } else {
             LoopPointAdjustUtil.decreaseLoopStart(samplesData, loop, sample.channels);
-            handleLoopPointChanged(canvas, samplesData, loop);
         }
+        handleLoopPointChanged(canvas, samplesData, loop);
     }
 
     @FXML
@@ -371,10 +371,14 @@ public abstract class SampleCanvasWavesController implements Initializable {
         Canvas canvas = getSelectedWaveCanvas();
         byte[] samplesData = sample.getSelectedSampleData();
         SustainLoop loop = sample.getSelectedSustainLoop();
+        event.consume();
 
-        if (sample.loop != null) {
+        if (event.isShortcutDown()) {
+            loop.start += sample.channels;
+            LoopPointAdjustUtil.normalizeLoop(samplesData, loop, sample.channels);
+        } else {
             LoopPointAdjustUtil.increaseLoopStart(samplesData, loop, sample.channels);
-            handleLoopPointChanged(canvas, samplesData, loop);
         }
+        handleLoopPointChanged(canvas, samplesData, loop);
     }
 }

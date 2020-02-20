@@ -15,7 +15,7 @@ public class StringUtils {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds);
         long hours = TimeUnit.MICROSECONDS.toHours(milliseconds);
 
-        return String.format("%02d:%02d:%02d.%03d", hours, minutes % 60, seconds % 60, milliseconds % 1000);
+        return String.format("%01d:%02d:%02d.%03d", hours, minutes % 60, seconds % 60, milliseconds % 1000);
     }
 
     public static String removeFileExtension(String fileName) {

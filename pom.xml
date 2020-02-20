@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.hypnotriod</groupId>
     <artifactId>Beatsqueezer-Bank-Editor</artifactId>
-    <version>v1.0.3</version>
+    <version>v1.0.4</version>
     <packaging>jar</packaging>
     
     <!-- Java 11 -->
