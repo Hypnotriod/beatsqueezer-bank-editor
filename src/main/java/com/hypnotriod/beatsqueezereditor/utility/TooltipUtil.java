@@ -1,8 +1,6 @@
 package com.hypnotriod.beatsqueezereditor.utility;
 
 import com.hypnotriod.beatsqueezereditor.constants.Styles;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
 

@@ -29,6 +29,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.LineEvent;
@@ -67,7 +68,7 @@ public class MainView extends BaseView {
             getFacade().getPrimaryStage().setMinWidth(UIConfig.APP_MIN_WIDTH);
             getFacade().getPrimaryStage().setMaxWidth(UIConfig.APP_MAX_WIDTH);
             updateTitle();
-
+            
             Scene scene = new Scene(mainScene);
             getFacade().getPrimaryStage().setScene(scene);
             getFacade().getPrimaryStage().show();
