@@ -17,17 +17,18 @@ public class TooltipUtil {
     }
 
     /* Java 11 */
-    /* public static Tooltip getTooltip(String str, String style, double openMillis, double visibleMillis, double closeMillis) {
+    public static Tooltip getTooltip(String str, String style, double openMillis, double visibleMillis, double closeMillis) {
         Tooltip tooltip = new Tooltip(str);
         tooltip.setStyle(style);
         tooltip.setShowDelay(new Duration(openMillis));
         tooltip.setShowDuration(new Duration(visibleMillis));
         tooltip.setHideDelay(new Duration(closeMillis));
         return tooltip;
-    } */
+    }
     /* End of Java 11 */
 
     /* Java 8 */
+    /*
     public static Tooltip getTooltip(String str, String style, double openMillis, double visibleMillis, double closeMillis) {
         Tooltip tooltip = new Tooltip(str);
         tooltip.setStyle(style);
@@ -52,5 +53,6 @@ public class TooltipUtil {
         }
         return tooltip;
     }
+    */
     /* End of Java 8 */
 }
