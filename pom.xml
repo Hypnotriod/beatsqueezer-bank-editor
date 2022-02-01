@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.hypnotriod</groupId>
     <artifactId>Beatsqueezer-Bank-Editor</artifactId>
-    <version>v1.0.4</version>
+    <version>v1.0.4-jfx11</version>
     <packaging>jar</packaging>
     
     <!-- Java 11 -->
-    <!--    <properties>
+    <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -84,7 +84,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <release>11</release>
                 </configuration>
@@ -92,7 +92,7 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.1</version>
+                <version>0.0.4</version>
                 <configuration>
                     <mainClass>com.hypnotriod.beatsqueezereditor.Launcher</mainClass>
                 </configuration>
@@ -100,7 +100,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.2.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -119,11 +119,11 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>-->
+    </build>
     <!-- End of Java 11 -->
     
     <!-- Java 8 -->
-    <properties>
+    <!--<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -165,7 +165,7 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
     <!-- End of Java 8 -->
     
 </project>
