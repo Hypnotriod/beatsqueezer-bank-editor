@@ -27,7 +27,7 @@
                         <Canvas fx:id="canvasWaveP" height="66.0" onDragDone="#handleCanvasWavePClicked" onMouseClicked="#handleCanvasWavePClicked" width="567.0" />
                         <Label fx:id="labelPianoSampleName" alignment="CENTER" contentDisplay="TOP" prefHeight="66.0" prefWidth="567.0" textAlignment="CENTER">
                            <font>
-                              <Font name="System Bold" size="12.0" />
+                              <Font name="Roboto Bold" size="12.0" />
                            </font>
                         </Label>
                      </children></AnchorPane>
@@ -40,7 +40,7 @@
                         <Canvas fx:id="canvasWaveF" height="66.0" onDragDone="#handleCanvasWaveFClicked" onMouseClicked="#handleCanvasWaveFClicked" width="567.0" />
                         <Label fx:id="labelForteSampleName" alignment="CENTER" contentDisplay="TOP" prefHeight="66.0" prefWidth="567.0" textAlignment="CENTER">
                            <font>
-                              <Font name="System Bold" size="12.0" />
+                              <Font name="Roboto Bold" size="12.0" />
                            </font>
                         </Label>
                      </children></AnchorPane>
@@ -50,7 +50,7 @@
       </TabPane>
       <Label fx:id="labelFileName" contentDisplay="TOP" layoutX="4.0" layoutY="3.0" prefHeight="17.0" prefWidth="567.0" text="File Name 44">
          <font>
-            <Font name="System Bold" size="12.0" />
+            <Font name="Roboto Bold" size="12.0" />
          </font></Label>
       <VBox alignment="CENTER" layoutX="4.0" layoutY="113.0" prefHeight="56.0" prefWidth="120.0">
          <children>

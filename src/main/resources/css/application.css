@@ -3,8 +3,11 @@
     src: url("/font/Roboto-Regular.ttf");
 }
 
+@font-face {
+    src: url("/font/Roboto-Bold.ttf");
+}
+
 .root {
     -fx-font-size: 12px;
-    -fx-font-style: normal;
     -fx-font-family: "Roboto";
 }
